@@ -5,6 +5,15 @@ import java.util.UUID;
 public class User {
 
     public User(UUID id, String username, String passwordHash, boolean mfaEnabled, String mfaSecret, boolean enabled) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null.");
+        }
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username cannot be null or blank.");
+        }
+        if (passwordHash == null || passwordHash.isBlank()) {
+            throw new IllegalArgumentException("Password hash cannot be null or blank.");
+        }
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -66,5 +75,18 @@ public class User {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

@@ -1,5 +1,6 @@
-package com.zerotrust.auth_gateway.infrastructure.persistence.entities;
+package com.zerotrust.auth_gateway.infrastructure.repository.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -13,13 +14,21 @@ public class UserEntity {
     @Id
     private UUID id;
 
+    @Column(nullable = false, length = 50, unique = true)
     private String username;
+
+    @Column(nullable = false)
     private String passwordHash;
+
     private boolean mfaEnabled;
+
+    @Column(length = 100)
     private String mfaSecret;
+
     private boolean enabled;
 
-    public UserEntity() {}
+    public UserEntity() {
+    }
 
     public UserEntity(UUID id, String username, String passwordHash, boolean mfaEnabled, String mfaSecret, boolean enabled) {
         this.id = id;
@@ -76,5 +85,28 @@ public class UserEntity {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserEntity)) return false;
+        UserEntity that = (UserEntity) o;
+        return id != null && id.equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", mfaEnabled=" + mfaEnabled +
+                ", enabled=" + enabled +
+                '}';
     }
 }

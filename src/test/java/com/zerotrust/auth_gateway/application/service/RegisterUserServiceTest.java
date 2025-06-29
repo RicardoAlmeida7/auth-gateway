@@ -1,0 +1,95 @@
+package com.zerotrust.auth_gateway.application.service;
+
+import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+public class RegisterUserServiceTest {
+
+    private PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+    private RegisterUserService registerUserService;
+
+    @BeforeEach
+    void setUp() {
+        passwordEncoder = mock(PasswordEncoder.class);
+        userRepository = mock(UserRepository.class);
+        registerUserService = new RegisterUserService(passwordEncoder, userRepository);
+    }
+
+    @Test
+    void shouldRegisterUserWithHashedPassword() {
+        // Arrange
+        String rawPassword = "12345678";
+        String hashedPassword = "hashed_pass";
+        RegisterRequest request = new RegisterRequest("username", rawPassword);
+
+        when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
+
+        // Act
+        registerUserService.register(request);
+
+        // Assert
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository, times(1)).save(userCaptor.capture());
+
+        User savedUser = userCaptor.getValue();
+        assertEquals("username", savedUser.getUsername());
+        assertEquals(hashedPassword, savedUser.getPasswordHash());
+        assertFalse(savedUser.isMfaEnabled());
+        assertEquals("", savedUser.getMfaSecret());
+        assertTrue(savedUser.isEnabled());
+        assertNotNull(savedUser.getId());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCommandIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                registerUserService.register(null)
+        );
+        assertEquals("RegisterUserCommand cannot be null.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUsernameIsNull() {
+        RegisterRequest request = new RegisterRequest(null, "password");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                registerUserService.register(request)
+        );
+        assertEquals("Username cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUsernameIsBlank() {
+        RegisterRequest request = new RegisterRequest("   ", "password");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                registerUserService.register(request)
+        );
+        assertEquals("Username cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPasswordIsNull() {
+        RegisterRequest request = new RegisterRequest("username", null);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                registerUserService.register(request)
+        );
+        assertEquals("Password cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPasswordIsBlank() {
+        RegisterRequest request = new RegisterRequest("username", "   ");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                registerUserService.register(request)
+        );
+        assertEquals("Password cannot be null or blank.", exception.getMessage());
+    }
+}

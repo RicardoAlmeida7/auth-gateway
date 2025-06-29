@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
-import com.zerotrust.auth_gateway.application.port.out.UserRepositoryPort;
-import com.zerotrust.auth_gateway.infrastructure.persistence.repositories.implementations.UserRepositoryAdapter;
-import com.zerotrust.auth_gateway.infrastructure.persistence.repositories.interfaces.JpaUserRepository;
+import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations.UserRepositoryImpl;
+import com.zerotrust.auth_gateway.infrastructure.repository.repositories.interfaces.JpaUserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class PersistenceConfig {
 
     @Bean
-    public UserRepositoryPort userRepositoryPort(JpaUserRepository jpaUserRepository) {
-        return new UserRepositoryAdapter(jpaUserRepository);
+    public UserRepository userRepository(JpaUserRepository jpaUserRepository) {
+        return new UserRepositoryImpl(jpaUserRepository);
     }
 }

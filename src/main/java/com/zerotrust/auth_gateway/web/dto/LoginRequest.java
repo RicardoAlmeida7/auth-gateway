@@ -2,14 +2,15 @@ package com.zerotrust.auth_gateway.web.dto;
 
 import java.util.Objects;
 
-public class RegisterRequest {
+public class LoginRequest {
+
+    public LoginRequest() {
+    }
+
     private String username;
     private String password;
 
-    public RegisterRequest() {
-    }
-
-    public RegisterRequest(String username, String password) {
+    public LoginRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
@@ -33,7 +34,7 @@ public class RegisterRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RegisterRequest that)) return false;
+        if (!(o instanceof LoginRequest that)) return false;
         return Objects.equals(username, that.username) && Objects.equals(password, that.password);
     }
 
@@ -44,7 +45,7 @@ public class RegisterRequest {
 
     @Override
     public String toString() {
-        return "RegisterRequest{" +
+        return "LoginRequest{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

@@ -1,18 +1,16 @@
-package com.zerotrust.auth_gateway.infrastructure.persistence.repositories.implementations;
+package com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations;
 
-import com.zerotrust.auth_gateway.application.port.out.UserRepositoryPort;
+import com.zerotrust.auth_gateway.application.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.model.User;
-import com.zerotrust.auth_gateway.infrastructure.persistence.entities.UserEntity;
-import com.zerotrust.auth_gateway.infrastructure.persistence.repositories.interfaces.JpaUserRepository;
-import org.springframework.stereotype.Repository;
+import com.zerotrust.auth_gateway.infrastructure.repository.entities.UserEntity;
+import com.zerotrust.auth_gateway.infrastructure.repository.repositories.interfaces.JpaUserRepository;
 
 import java.util.Optional;
 
-//@Repository
-public class UserRepositoryAdapter implements UserRepositoryPort {
+public class UserRepositoryImpl implements UserRepository {
     private JpaUserRepository jpaUserRepository;
 
-    public UserRepositoryAdapter(JpaUserRepository jpaUserRepository) {
+    public UserRepositoryImpl(JpaUserRepository jpaUserRepository) {
         this.jpaUserRepository = jpaUserRepository;
     }
 

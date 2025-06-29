@@ -7,6 +7,11 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:keys/public.pem
   jpa:
     hibernate:
       ddl-auto: create

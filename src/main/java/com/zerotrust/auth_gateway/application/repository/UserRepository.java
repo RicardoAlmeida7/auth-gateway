@@ -1,10 +1,10 @@
-package com.zerotrust.auth_gateway.application.port.out;
+package com.zerotrust.auth_gateway.application.repository;
 
 import com.zerotrust.auth_gateway.domain.model.User;
 
 import java.util.Optional;
 
-public interface UserRepositoryPort {
+public interface UserRepository {
     void save(User user);
     Optional<User> findByUsername(String username);
 }
