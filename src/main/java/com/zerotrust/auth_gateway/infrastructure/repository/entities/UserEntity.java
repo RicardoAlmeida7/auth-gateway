@@ -1,10 +1,9 @@
 package com.zerotrust.auth_gateway.infrastructure.repository.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,13 +29,22 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public UserEntity(UUID id, String username, String passwordHash, boolean mfaEnabled, String mfaSecret, boolean enabled) {
+    public UserEntity(
+            UUID id,
+            String username,
+            String passwordHash,
+            boolean mfaEnabled,
+            String mfaSecret,
+            boolean enabled,
+            List<RoleEntity> roles) {
+
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
         this.mfaEnabled = mfaEnabled;
         this.mfaSecret = mfaSecret;
         this.enabled = enabled;
+        this.roles = roles != null ? roles : new ArrayList<>();
     }
 
     public String getUsername() {
@@ -87,17 +95,24 @@ public class UserEntity {
         this.id = id;
     }
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<RoleEntity> roles = new ArrayList<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserEntity)) return false;
-        UserEntity that = (UserEntity) o;
+        if (!(o instanceof UserEntity that)) return false;
         return id != null && id.equals(that.getId());
     }
 
     @Override
     public int hashCode() {
-        return 31;
+        return this.id.hashCode();
     }
 
     @Override
@@ -108,5 +123,13 @@ public class UserEntity {
                 ", mfaEnabled=" + mfaEnabled +
                 ", enabled=" + enabled +
                 '}';
+    }
+
+    public List<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleEntity> roles) {
+        this.roles = roles != null ? roles : new ArrayList<>();
     }
 }

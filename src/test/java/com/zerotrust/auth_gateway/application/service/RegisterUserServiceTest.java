@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -91,5 +93,26 @@ public class RegisterUserServiceTest {
                 registerUserService.register(request)
         );
         assertEquals("Password cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRegisterUserWithCustomRoles() {
+        // Arrange
+        String rawPassword = "password";
+        String hashedPassword = "hashed_pass";
+        List<String> roles = List.of("ROLE_ADMIN", "ROLE_USER");
+        RegisterRequest request = new RegisterRequest("username", rawPassword, roles);
+
+        when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
+
+        // Act
+        registerUserService.register(request);
+
+        // Assert
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+
+        User savedUser = userCaptor.getValue();
+        assertEquals(roles, savedUser.getRoles());
     }
 }

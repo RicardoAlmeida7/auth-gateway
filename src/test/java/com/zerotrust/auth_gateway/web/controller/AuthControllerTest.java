@@ -9,8 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,26 +29,28 @@ public class AuthControllerTest {
     @Test
     void shouldRegisterUserSuccessfully() {
         // Given
-        RegisterRequest request = new RegisterRequest("john.doe", "secret");
+        RegisterRequest request = new RegisterRequest("username", "password");
 
         // When
         ResponseEntity<Void> response = authController.register(request);
 
         // Then
-        verify(registerUserUseCase).register(any());
+        verify(registerUserUseCase, times(1)).register(any(RegisterRequest.class));
         assertEquals(200, response.getStatusCodeValue());
+        assertNull(response.getBody());
     }
 
     @Test
     void shouldReturnJwtTokenOnLogin() {
         // Given
-        LoginRequest request = new LoginRequest("john.doe", "secret");
-        when(authService.login("john.doe", "secret")).thenReturn("mocked.jwt.token");
+        LoginRequest request = new LoginRequest("username", "password");
+        when(authService.login("username", "password")).thenReturn("mocked.jwt.token");
 
         // When
         ResponseEntity<JwtResponse> response = authController.login(request);
 
         // Then
+        assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals("mocked.jwt.token", response.getBody().getToken());
         assertEquals(200, response.getStatusCodeValue());

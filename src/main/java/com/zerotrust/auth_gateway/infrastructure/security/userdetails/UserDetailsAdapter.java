@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.security.userdetails;
 
 import com.zerotrust.auth_gateway.domain.model.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,12 +14,6 @@ public class UserDetailsAdapter implements UserDetails {
 
     public UserDetailsAdapter(User user) {
         this.user = user;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        //TODO Future roles can be added here
-        return List.of();
     }
 
     @Override
@@ -54,4 +49,13 @@ public class UserDetailsAdapter implements UserDetails {
     public User getDomainUser() {
         return this.user;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return user.getRoles()
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+    }
+
 }

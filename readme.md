@@ -63,12 +63,18 @@ build/reports/jacoco/test/html/index.html
 ## 🔒 To Do
 
 - Add validation and error handling to API layer
-- Implement role-based authorization
-- Persist roles in user registration
-- Integrate Flyway for schema versioning
-- Improve exception handling and logging
-- Set up CI/CD pipelines for automated builds and tests
-- **Create Dockerfile for containerizing the application**
-- **Add Kubernetes manifests for orchestration and deployment in a cluster**
 
+- Implement role-based authorization (ongoing)
+
+- Persist roles in user registration (implemented)
+
+- Integrate Flyway for schema versioning (roles table added)
+
+- Improve exception handling and logging
+
+- Set up CI/CD pipelines for automated builds and tests
+
+- Create Dockerfile for containerizing the application
+
+- Add Kubernetes manifests for orchestration and deployment in a cluster
 ---

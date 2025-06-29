@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserDetailsServiceAdapterTest {
 
@@ -28,15 +28,25 @@ public class UserDetailsServiceAdapterTest {
     @Test
     void shouldReturnUserDetailsWhenUserExists() {
         // Arrange
-        User user = new User(UUID.randomUUID(), "testuser", "hash", false, "secret", true);
+        UUID id = UUID.randomUUID();
+        List<String> roles = List.of("ROLE_USER", "ROLE_ADMIN");
+        User user = new User(id, "testuser", "hash", false, "secret", true, roles);
+
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
 
         // Act
-        UserDetails result = userDetailsServiceAdapter.loadUserByUsername("testuser");
+        UserDetails userDetails = userDetailsServiceAdapter.loadUserByUsername("testuser");
 
         // Assert
-        assertNotNull(result);
-        assertEquals("testuser", result.getUsername());
+        assertNotNull(userDetails);
+        assertEquals("testuser", userDetails.getUsername());
+        assertEquals("hash", userDetails.getPassword());
+        assertTrue(userDetails.isEnabled());
+        assertEquals(roles.size(), userDetails.getAuthorities().size());
+        assertTrue(userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER")));
+        assertTrue(userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,27 +22,32 @@ public class RegisterUserService implements RegisterUserUseCase {
     }
 
     @Override
-    public void register(RegisterRequest command) {
-        if (command == null) {
+    public void register(RegisterRequest request) {
+        if (request == null) {
             throw new IllegalArgumentException("RegisterUserCommand cannot be null.");
         }
 
-        if (command.getUsername() == null || command.getUsername().isBlank()) {
+        if (request.getUsername() == null || request.getUsername().isBlank()) {
             throw new IllegalArgumentException("Username cannot be null or blank.");
         }
 
-        if (command.getPassword() == null || command.getPassword().isBlank()) {
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
             throw new IllegalArgumentException("Password cannot be null or blank.");
         }
-        String passwordHashed = passwordEncoder.encode(command.getPassword());
+        String passwordHashed = passwordEncoder.encode(request.getPassword());
+        List<String> roles = request.getRoles();
+        if (roles == null || roles.isEmpty()) {
+            roles = List.of("ROLE_USER");
+        }
 
         User user = new User(
                 UUID.randomUUID(),
-                command.getUsername(),
+                request.getUsername(),
                 passwordHashed,
                 false,
                 "",
-                true
+                true,
+                roles
         );
 
         useRepositoryPort.save(user);

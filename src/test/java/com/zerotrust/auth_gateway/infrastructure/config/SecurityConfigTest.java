@@ -4,66 +4,56 @@ import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.security.providers.CustomAuthenticationProvider;
 import com.zerotrust.auth_gateway.infrastructure.security.userdetails.UserDetailsServiceAdapter;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Import(SecurityConfig.class) // Garante que a configuração seja aplicada
 public class SecurityConfigTest {
 
-    @Autowired
-    private SecurityFilterChain securityFilterChain;
+    private final SecurityConfig config = new SecurityConfig();
 
     @Test
-    void shouldCreateBeansProperly() throws Exception {
-        // Mock dependencies required by the SecurityConfig class
-        UserDetailsServiceAdapter userDetailsServiceAdapter = mock(UserDetailsServiceAdapter.class);
-        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-        AuthenticationConfiguration authenticationConfiguration = mock(AuthenticationConfiguration.class);
-        AuthenticationManager authenticationManager = mock(AuthenticationManager.class);
-
-        // Configure mock to return the mocked AuthenticationManager
-        Mockito.when(authenticationConfiguration.getAuthenticationManager()).thenReturn(authenticationManager);
-
-        // Instantiate the SecurityConfig class
-        SecurityConfig config = new SecurityConfig();
-
-        // Test PasswordEncoder bean creation and basic encode/match functionality
+    void shouldReturnPasswordEncoder() {
         PasswordEncoder encoder = config.passwordEncoder();
         assertNotNull(encoder);
-        assertTrue(encoder.matches("test", encoder.encode("test")));
-
-        // Test AuthenticationProvider bean creation and type correctness
-        AuthenticationProvider provider = config.authenticationProvider(userDetailsServiceAdapter, passwordEncoder);
-        assertNotNull(provider);
-        assertInstanceOf(CustomAuthenticationProvider.class, provider);
-
-        // Test AuthenticationManager bean creation returns the mocked instance
-        AuthenticationManager manager = config.authenticationManager(authenticationConfiguration);
-        assertNotNull(manager);
-        assertEquals(authenticationManager, manager);
-
-        // Mock HttpSecurity to simulate Spring Security DSL fluent API
-        var httpSecurity = Mockito.mock(org.springframework.security.config.annotation.web.builders.HttpSecurity.class,
-                invocation -> {
-                    // For fluent methods that return HttpSecurity, return the mock itself
-                    if (invocation.getMethod().getReturnType().equals(org.springframework.security.config.annotation.web.builders.HttpSecurity.class)) {
-                        return invocation.getMock();
-                    }
-                    return Mockito.RETURNS_DEFAULTS.answer(invocation);
-                });
+        assertTrue(encoder.matches("senha123", encoder.encode("senha123")));
     }
 
     @Test
-    void securityFilterChainIsCreated() {
-        assertNotNull(securityFilterChain);
+    void shouldReturnAuthenticationProvider() {
+        UserDetailsServiceAdapter adapter = mock(UserDetailsServiceAdapter.class);
+        PasswordEncoder encoder = mock(PasswordEncoder.class);
+
+        AuthenticationProvider provider = config.authenticationProvider(adapter, encoder);
+
+        assertNotNull(provider);
+        assertInstanceOf(CustomAuthenticationProvider.class, provider);
+    }
+
+    @Test
+    void shouldReturnAuthenticationManager() throws Exception {
+        AuthenticationConfiguration configuration = mock(AuthenticationConfiguration.class);
+        AuthenticationManager mockManager = mock(AuthenticationManager.class);
+
+        when(configuration.getAuthenticationManager()).thenReturn(mockManager);
+
+        AuthenticationManager result = config.authenticationManager(configuration);
+
+        assertNotNull(result);
+        assertEquals(mockManager, result);
+    }
+
+    @Test
+    void shouldCreateJwtAuthenticationFilter() {
+        JwtTokenGenerator generator = mock(JwtTokenGenerator.class);
+        assertNotNull(config.jwtAuthenticationFilter(generator));
     }
 }

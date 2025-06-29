@@ -3,12 +3,14 @@ package com.zerotrust.auth_gateway.infrastructure.security.userdetails;
 import com.zerotrust.auth_gateway.domain.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserDetailsAdapterTest {
 
@@ -23,7 +25,8 @@ public class UserDetailsAdapterTest {
                 "hashedpassword",
                 false,
                 "secret",
-                true
+                true,
+                List.of("ROLE_USER", "ROLE_ADMIN")  // importante setar roles para testar authorities
         );
         userDetails = new UserDetailsAdapter(user);
     }
@@ -39,8 +42,15 @@ public class UserDetailsAdapterTest {
     }
 
     @Test
-    void shouldReturnEmptyAuthorities() {
-        assertTrue(userDetails.getAuthorities().isEmpty());
+    void shouldReturnCorrectAuthorities() {
+        List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        assertEquals(2, roles.size());
+        assertTrue(roles.contains("ROLE_USER"));
+        assertTrue(roles.contains("ROLE_ADMIN"));
     }
 
     @Test

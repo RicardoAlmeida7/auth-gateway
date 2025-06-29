@@ -1,10 +1,12 @@
 package com.zerotrust.auth_gateway.domain.model;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class User {
 
-    public User(UUID id, String username, String passwordHash, boolean mfaEnabled, String mfaSecret, boolean enabled) {
+    public User(UUID id, String username, String passwordHash, boolean mfaEnabled, String mfaSecret, boolean enabled, List<String> roles) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null.");
         }
@@ -20,6 +22,7 @@ public class User {
         this.mfaEnabled = mfaEnabled;
         this.mfaSecret = mfaSecret;
         this.enabled = enabled;
+        this.roles = roles != null ? roles : Collections.emptyList();
     }
 
     private UUID id;
@@ -28,6 +31,7 @@ public class User {
     private boolean mfaEnabled;
     private String mfaSecret;
     private boolean enabled;
+    private List<String> roles;
 
     public String getUsername() {
         return username;
@@ -89,4 +93,22 @@ public class User {
     public int hashCode() {
         return id.hashCode();
     }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles != null ? roles : Collections.emptyList();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
+
 }
