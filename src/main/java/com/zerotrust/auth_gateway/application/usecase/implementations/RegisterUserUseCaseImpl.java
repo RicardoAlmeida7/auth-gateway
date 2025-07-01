@@ -1,7 +1,8 @@
-package com.zerotrust.auth_gateway.application.service;
+package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.zerotrust.auth_gateway.application.usecase.RegisterUserUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUseCase;
 import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,12 +12,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class RegisterUserService implements RegisterUserUseCase {
+public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository useRepositoryPort;
 
-    public RegisterUserService(PasswordEncoder passwordEncoder, UserRepository useRepositoryPort) {
+    public RegisterUserUseCaseImpl(PasswordEncoder passwordEncoder, UserRepository useRepositoryPort) {
         this.passwordEncoder = passwordEncoder;
         this.useRepositoryPort = useRepositoryPort;
     }
@@ -37,7 +38,7 @@ public class RegisterUserService implements RegisterUserUseCase {
         String passwordHashed = passwordEncoder.encode(request.getPassword());
         List<String> roles = request.getRoles();
         if (roles == null || roles.isEmpty()) {
-            roles = List.of("ROLE_USER");
+            roles = List.of(Role.ROLE_USER.name());
         }
 
         User user = new User(

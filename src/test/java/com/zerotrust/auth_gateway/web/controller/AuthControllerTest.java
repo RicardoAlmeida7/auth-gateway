@@ -1,7 +1,7 @@
 package com.zerotrust.auth_gateway.web.controller;
 
-import com.zerotrust.auth_gateway.application.service.AuthService;
-import com.zerotrust.auth_gateway.application.usecase.RegisterUserUseCase;
+import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUseCase;
 import com.zerotrust.auth_gateway.web.dto.JwtResponse;
 import com.zerotrust.auth_gateway.web.dto.LoginRequest;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
@@ -16,14 +16,14 @@ import static org.mockito.Mockito.*;
 public class AuthControllerTest {
 
     private RegisterUserUseCase registerUserUseCase;
-    private AuthService authService;
+    private AuthServiceUseCaseImpl authServiceUseCaseImpl;
     private AuthController authController;
 
     @BeforeEach
     void setUp() {
         registerUserUseCase = mock(RegisterUserUseCase.class);
-        authService = mock(AuthService.class);
-        authController = new AuthController(registerUserUseCase, authService);
+        authServiceUseCaseImpl = mock(AuthServiceUseCaseImpl.class);
+        authController = new AuthController(registerUserUseCase, authServiceUseCaseImpl);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class AuthControllerTest {
     void shouldReturnJwtTokenOnLogin() {
         // Given
         LoginRequest request = new LoginRequest("username", "password");
-        when(authService.login("username", "password")).thenReturn("mocked.jwt.token");
+        when(authServiceUseCaseImpl.login("username", "password")).thenReturn("mocked.jwt.token");
 
         // When
         ResponseEntity<JwtResponse> response = authController.login(request);

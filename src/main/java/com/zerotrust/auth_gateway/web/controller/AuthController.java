@@ -1,7 +1,8 @@
 package com.zerotrust.auth_gateway.web.controller;
 
-import com.zerotrust.auth_gateway.application.usecase.RegisterUserUseCase;
-import com.zerotrust.auth_gateway.application.service.AuthService;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUseCase;
+import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.web.dto.JwtResponse;
 import com.zerotrust.auth_gateway.web.dto.LoginRequest;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final RegisterUserUseCase registerUserUseCase;
-    private final AuthService authService;
+    private final AuthServiceUseCase authServiceUseCase;
 
-    public AuthController(RegisterUserUseCase registerUserUseCase, AuthService authService) {
+    public AuthController(RegisterUserUseCase registerUserUseCase, AuthServiceUseCase authServiceUseCase) {
         this.registerUserUseCase = registerUserUseCase;
-        this.authService = authService;
+        this.authServiceUseCase = authServiceUseCase;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -33,7 +34,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
-        String token = authService.login(request.getUsername(), request.getPassword());
+        String token = authServiceUseCase.login(request.getUsername(), request.getPassword());
         // TODO: Add error handling for authentication failures
         return ResponseEntity.ok(new JwtResponse(token));
     }

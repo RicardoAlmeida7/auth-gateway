@@ -1,6 +1,7 @@
-package com.zerotrust.auth_gateway.application.service;
+package com.zerotrust.auth_gateway.application.implementations;
 
 import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.application.usecase.implementations.RegisterUserUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,17 +14,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class RegisterUserServiceTest {
+public class RegisterUserUseCaseImplTest {
 
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
-    private RegisterUserService registerUserService;
+    private RegisterUserUseCaseImpl registerUserUseCaseImpl;
 
     @BeforeEach
     void setUp() {
         passwordEncoder = mock(PasswordEncoder.class);
         userRepository = mock(UserRepository.class);
-        registerUserService = new RegisterUserService(passwordEncoder, userRepository);
+        registerUserUseCaseImpl = new RegisterUserUseCaseImpl(passwordEncoder, userRepository);
     }
 
     @Test
@@ -36,7 +37,7 @@ public class RegisterUserServiceTest {
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
 
         // Act
-        registerUserService.register(request);
+        registerUserUseCaseImpl.register(request);
 
         // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -54,7 +55,7 @@ public class RegisterUserServiceTest {
     @Test
     void shouldThrowExceptionWhenCommandIsNull() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                registerUserService.register(null)
+                registerUserUseCaseImpl.register(null)
         );
         assertEquals("RegisterUserCommand cannot be null.", exception.getMessage());
     }
@@ -63,7 +64,7 @@ public class RegisterUserServiceTest {
     void shouldThrowExceptionWhenUsernameIsNull() {
         RegisterRequest request = new RegisterRequest(null, "password");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                registerUserService.register(request)
+                registerUserUseCaseImpl.register(request)
         );
         assertEquals("Username cannot be null or blank.", exception.getMessage());
     }
@@ -72,7 +73,7 @@ public class RegisterUserServiceTest {
     void shouldThrowExceptionWhenUsernameIsBlank() {
         RegisterRequest request = new RegisterRequest("   ", "password");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                registerUserService.register(request)
+                registerUserUseCaseImpl.register(request)
         );
         assertEquals("Username cannot be null or blank.", exception.getMessage());
     }
@@ -81,7 +82,7 @@ public class RegisterUserServiceTest {
     void shouldThrowExceptionWhenPasswordIsNull() {
         RegisterRequest request = new RegisterRequest("username", null);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                registerUserService.register(request)
+                registerUserUseCaseImpl.register(request)
         );
         assertEquals("Password cannot be null or blank.", exception.getMessage());
     }
@@ -90,7 +91,7 @@ public class RegisterUserServiceTest {
     void shouldThrowExceptionWhenPasswordIsBlank() {
         RegisterRequest request = new RegisterRequest("username", "   ");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                registerUserService.register(request)
+                registerUserUseCaseImpl.register(request)
         );
         assertEquals("Password cannot be null or blank.", exception.getMessage());
     }
@@ -106,7 +107,7 @@ public class RegisterUserServiceTest {
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
 
         // Act
-        registerUserService.register(request);
+        registerUserUseCaseImpl.register(request);
 
         // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);

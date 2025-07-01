@@ -3,6 +3,9 @@ package com.zerotrust.auth_gateway.infrastructure.config;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.security.providers.CustomAuthenticationProvider;
@@ -71,5 +74,10 @@ public class SecurityConfig {
     @Bean
     public JWTVerifier jwtVerifier(Algorithm algorithm) {
         return JWT.require(algorithm).build();
+    }
+
+    @Bean
+    public AuthServiceUseCase authServiceUseCase(AuthenticationManager authenticationManager, JwtTokenGenerator jwtTokenGenerator) {
+        return new AuthServiceUseCaseImpl(authenticationManager, jwtTokenGenerator);
     }
 }

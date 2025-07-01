@@ -1,11 +1,11 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
-import com.zerotrust.auth_gateway.application.usecase.RegisterUserUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUseCase;
 import com.zerotrust.auth_gateway.application.repository.UserRepository;
-import com.zerotrust.auth_gateway.application.service.RegisterUserService;
+import com.zerotrust.auth_gateway.application.usecase.implementations.RegisterUserUseCaseImpl;
+import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
-import com.zerotrust.auth_gateway.infrastructure.repository.entities.RoleEntity;
-import com.zerotrust.auth_gateway.infrastructure.repository.repositories.interfaces.JpaRoleRepository;
+import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,19 +22,13 @@ public class UseCaseConfig {
 
     @Bean
     public RegisterUserUseCase registerUserUseCase(PasswordEncoder passwordEncoder, UserRepository useRepositoryPort) {
-        return new RegisterUserService(passwordEncoder, useRepositoryPort);
+        return new RegisterUserUseCaseImpl(passwordEncoder, useRepositoryPort);
     }
 
     @Bean
-    public CommandLineRunner createAdminUser(AdminProperties adminProperties, UserRepository userRepository, PasswordEncoder passwordEncoder, JpaRoleRepository roleRepository) {
+    public CommandLineRunner createAdminUser(AdminProperties adminProperties, UserRepository userRepository, PasswordEncoder passwordEncoder, RoleSeeder roleSeeder) {
         return args -> {
-
-            if (roleRepository.findByName("ROLE_ADMIN").isEmpty()) {
-                roleRepository.save(new RoleEntity(null, "ROLE_ADMIN"));
-            }
-            if (roleRepository.findByName("ROLE_USER").isEmpty()) {
-                roleRepository.save(new RoleEntity(null, "ROLE_USER"));
-            }
+            roleSeeder.run();
 
             Optional<User> existingAdmin = userRepository.findByUsername(adminProperties.getUsername());
             if (existingAdmin.isEmpty()) {
@@ -45,7 +39,7 @@ public class UseCaseConfig {
                         false,
                         null,
                         true,
-                        List.of("ROLE_ADMIN")
+                        List.of(Role.ROLE_ADMIN.name())
                 );
 
                 userRepository.save(admin);

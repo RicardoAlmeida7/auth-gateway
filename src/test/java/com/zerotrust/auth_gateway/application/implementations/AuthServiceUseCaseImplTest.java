@@ -1,5 +1,7 @@
-package com.zerotrust.auth_gateway.application.service;
+package com.zerotrust.auth_gateway.application.implementations;
 
+import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,16 +19,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AuthServiceTest {
+public class AuthServiceUseCaseImplTest {
     private AuthenticationManager authenticationManager;
     private JwtTokenGenerator jwtTokenGenerator;
-    private AuthService authService;
+    private AuthServiceUseCase authServiceUseCaseImpl;
 
     @BeforeEach
     void setUp() {
         authenticationManager = mock(AuthenticationManager.class);
         jwtTokenGenerator = mock(JwtTokenGenerator.class);
-        authService = new AuthService(authenticationManager, jwtTokenGenerator);
+        authServiceUseCaseImpl = new AuthServiceUseCaseImpl(authenticationManager, jwtTokenGenerator);
     }
 
     @Test
@@ -45,7 +47,7 @@ public class AuthServiceTest {
         when(jwtTokenGenerator.generateToken(username, List.of("ROLE_USER")))
                 .thenReturn(expectedToken);
 
-        String token = authService.login(username, password);
+        String token = authServiceUseCaseImpl.login(username, password);
 
         assertEquals(expectedToken, token);
     }
@@ -53,7 +55,7 @@ public class AuthServiceTest {
     @Test
     void shouldThrowExceptionIfUsernameIsNull() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                authService.login(null, "123456")
+                authServiceUseCaseImpl.login(null, "123456")
         );
         assertEquals("Username cannot be null or blank.", exception.getMessage());
     }
@@ -61,7 +63,7 @@ public class AuthServiceTest {
     @Test
     void shouldThrowExceptionIfUsernameIsBlank() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                authService.login("   ", "123456")
+                authServiceUseCaseImpl.login("   ", "123456")
         );
         assertEquals("Username cannot be null or blank.", exception.getMessage());
     }
@@ -69,7 +71,7 @@ public class AuthServiceTest {
     @Test
     void shouldThrowExceptionIfPasswordIsNull() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                authService.login("username", null)
+                authServiceUseCaseImpl.login("username", null)
         );
         assertEquals("Password cannot be null or blank.", exception.getMessage());
     }
@@ -77,7 +79,7 @@ public class AuthServiceTest {
     @Test
     void shouldThrowExceptionIfPasswordIsBlank() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                authService.login("username", "   ")
+                authServiceUseCaseImpl.login("username", "   ")
         );
         assertEquals("Password cannot be null or blank.", exception.getMessage());
     }

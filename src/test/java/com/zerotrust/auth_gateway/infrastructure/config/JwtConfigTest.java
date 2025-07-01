@@ -82,4 +82,18 @@ public class JwtConfigTest {
         RuntimeException ex = assertThrows(RuntimeException.class, config::algorithm);
         assertTrue(ex.getMessage().contains("Simulated"));
     }
+
+    @Test
+    void loadPrivateKey_shouldLoadKeySuccessfully() {
+        JwtConfig config = new JwtConfig();
+        RSAPrivateKey privateKey = config.loadPrivateKey();
+        assertNotNull(privateKey);
+    }
+
+    @Test
+    void loadPublicKey_shouldLoadKeySuccessfully() {
+        JwtConfig config = new JwtConfig();
+        RSAPublicKey publicKey = config.loadPublicKey();
+        assertNotNull(publicKey);
+    }
 }

@@ -1,5 +1,7 @@
-package com.zerotrust.auth_gateway.application.service;
+package com.zerotrust.auth_gateway.application.usecase.implementations;
 
+import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,12 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AuthService {
+public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenGenerator jwtTokenGenerator;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenGenerator jwtTokenGenerator) {
+    public AuthServiceUseCaseImpl(AuthenticationManager authenticationManager, JwtTokenGenerator jwtTokenGenerator) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
     }
@@ -38,11 +40,6 @@ public class AuthService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
-        // Temporary fallback while roles are not implemented
-        if (roles.isEmpty()) {
-            roles = List.of("ROLE_USER"); // TODO: replace with real roles from user entity
-        }
 
         return jwtTokenGenerator.generateToken(username, roles);
 
