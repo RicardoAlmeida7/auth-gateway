@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
-import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.application.usecase.implementations.RegisterUserUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;

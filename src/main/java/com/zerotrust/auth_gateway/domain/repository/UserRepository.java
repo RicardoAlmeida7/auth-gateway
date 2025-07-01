@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.application.repository;
+package com.zerotrust.auth_gateway.domain.repository;
 
 import com.zerotrust.auth_gateway.domain.model.User;
 

@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations;
 
-import com.zerotrust.auth_gateway.application.repository.UserRepository;
+import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.RoleEntity;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.UserEntity;

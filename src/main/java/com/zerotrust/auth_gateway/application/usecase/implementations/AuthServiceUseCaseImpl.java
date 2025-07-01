@@ -1,6 +1,5 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.zerotrust.auth_gateway.application.repository.UserRepository;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.security.authentication.AuthenticationManager;
