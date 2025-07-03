@@ -4,6 +4,7 @@ import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUse
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,8 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
             throw new IllegalArgumentException("Username cannot be null or blank.");
         }
 
-        if (request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or blank.");
-        }
+        PasswordValidator.validate(request.getPassword());
+
         String passwordHashed = passwordEncoder.encode(request.getPassword());
         List<String> roles = request.getRoles();
         if (roles == null || roles.isEmpty()) {

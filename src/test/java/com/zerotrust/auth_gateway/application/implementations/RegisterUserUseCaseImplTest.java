@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
+import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.application.usecase.implementations.RegisterUserUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
@@ -30,16 +31,15 @@ public class RegisterUserUseCaseImplTest {
     @Test
     void shouldRegisterUserWithHashedPassword() {
         // Arrange
-        String rawPassword = "12345678";
+        String rawPassword = "Abcdef1@"; // senha válida, respeitando as regras
         String hashedPassword = "hashed_pass";
         RegisterRequest request = new RegisterRequest("username", rawPassword);
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
 
-        // Act
-        registerUserUseCaseImpl.register(request);
+        // Act & Assert
+        assertDoesNotThrow(() -> registerUserUseCaseImpl.register(request));
 
-        // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository, times(1)).save(userCaptor.capture());
 
@@ -58,6 +58,13 @@ public class RegisterUserUseCaseImplTest {
                 registerUserUseCaseImpl.register(null)
         );
         assertEquals("RegisterUserCommand cannot be null.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPasswordIsInvalid() {
+        RegisterRequest request = new RegisterRequest("username", "12345678");
+        InvalidPasswordException ex = assertThrows(InvalidPasswordException.class, () -> registerUserUseCaseImpl.register(request));
+        assertTrue(ex.getMessage().contains("uppercase"));
     }
 
     @Test
@@ -81,25 +88,21 @@ public class RegisterUserUseCaseImplTest {
     @Test
     void shouldThrowExceptionWhenPasswordIsNull() {
         RegisterRequest request = new RegisterRequest("username", null);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                registerUserUseCaseImpl.register(request)
-        );
-        assertEquals("Password cannot be null or blank.", exception.getMessage());
+        InvalidPasswordException exception = assertThrows(InvalidPasswordException.class, () -> registerUserUseCaseImpl.register(request));
+        assertTrue(exception.getMessage().contains("at least"));
     }
 
     @Test
     void shouldThrowExceptionWhenPasswordIsBlank() {
         RegisterRequest request = new RegisterRequest("username", "   ");
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                registerUserUseCaseImpl.register(request)
-        );
-        assertEquals("Password cannot be null or blank.", exception.getMessage());
+        InvalidPasswordException exception = assertThrows(InvalidPasswordException.class, () -> registerUserUseCaseImpl.register(request));
+        assertTrue(exception.getMessage().contains("at least"));
     }
 
     @Test
     void shouldRegisterUserWithCustomRoles() {
         // Arrange
-        String rawPassword = "password";
+        String rawPassword = "password@1234Test";
         String hashedPassword = "hashed_pass";
         List<String> roles = List.of("ROLE_ADMIN", "ROLE_USER");
         RegisterRequest request = new RegisterRequest("username", rawPassword, roles);
