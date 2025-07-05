@@ -2,14 +2,14 @@ package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUseCase;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.validation.EmailValidator;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
+import com.zerotrust.auth_gateway.domain.validation.UsernameValidator;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,29 +29,22 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
             throw new IllegalArgumentException("RegisterUserCommand cannot be null.");
         }
 
-        if (request.getUsername() == null || request.getUsername().isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null or blank.");
-        }
-
+        UsernameValidator.validate(request.getUsername());
         PasswordValidator.validate(request.getPassword());
+        EmailValidator.validate(request.getEmail());
 
         String passwordHashed = passwordEncoder.encode(request.getPassword());
-        List<String> roles = request.getRoles();
-        if (roles == null || roles.isEmpty()) {
-            roles = List.of(Role.ROLE_USER.name());
-        }
-
         User user = new User(
                 UUID.randomUUID(),
                 request.getUsername(),
                 passwordHashed,
+                request.getEmail(),
                 false,
                 "",
                 true,
-                roles
+                request.getRoles()
         );
 
         useRepositoryPort.save(user);
-        // TODO: Additional validations (e.g., email format, password strength) will be added as the project evolves.
     }
 }

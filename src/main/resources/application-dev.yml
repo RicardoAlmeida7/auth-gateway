@@ -25,3 +25,4 @@ spring:
 admin:
   username: admin
   password: admin123
+  email: admin@example.com

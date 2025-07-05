@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -29,7 +31,7 @@ public class AuthControllerTest {
     @Test
     void shouldRegisterUserSuccessfully() {
         // Given
-        RegisterRequest request = new RegisterRequest("username", "password");
+        RegisterRequest request = new RegisterRequest("username", "password", "example@email.com", List.of(""));
 
         // When
         ResponseEntity<Void> response = authController.register(request);

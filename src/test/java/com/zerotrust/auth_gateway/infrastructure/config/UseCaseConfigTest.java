@@ -77,6 +77,7 @@ public class UseCaseConfigTest {
                                 UUID.randomUUID(),
                                 "admin",
                                 "hash",
+                                "admin@example.com",
                                 false,
                                 null,
                                 true,

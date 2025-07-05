@@ -23,6 +23,7 @@ public class UserDetailsAdapterTest {
                 UUID.randomUUID(),
                 "testuser",
                 "hashedpassword",
+                "testuser@example.com",
                 false,
                 "secret",
                 true,

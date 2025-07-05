@@ -19,6 +19,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Column(nullable = false, length = 100, unique = true)
+    private String email;
+
     private boolean mfaEnabled;
 
     @Column(length = 100)
@@ -33,14 +36,15 @@ public class UserEntity {
             UUID id,
             String username,
             String passwordHash,
+            String email,
             boolean mfaEnabled,
             String mfaSecret,
             boolean enabled,
             List<RoleEntity> roles) {
-
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
+        this.email = email;
         this.mfaEnabled = mfaEnabled;
         this.mfaSecret = mfaSecret;
         this.enabled = enabled;
@@ -120,6 +124,7 @@ public class UserEntity {
         return "UserEntity{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
                 ", mfaEnabled=" + mfaEnabled +
                 ", enabled=" + enabled +
                 '}';
@@ -131,5 +136,13 @@ public class UserEntity {
 
     public void setRoles(List<RoleEntity> roles) {
         this.roles = roles != null ? roles : new ArrayList<>();
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

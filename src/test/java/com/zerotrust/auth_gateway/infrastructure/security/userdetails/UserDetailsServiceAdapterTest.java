@@ -30,7 +30,7 @@ public class UserDetailsServiceAdapterTest {
         // Arrange
         UUID id = UUID.randomUUID();
         List<String> roles = List.of("ROLE_USER", "ROLE_ADMIN");
-        User user = new User(id, "testuser", "hash", false, "secret", true, roles);
+        User user = new User(id, "testuser", "hash", "testuser@example.com",false, "secret", true, roles);
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
 

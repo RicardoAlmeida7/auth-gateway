@@ -36,6 +36,7 @@ public class UseCaseConfig {
                         UUID.randomUUID(),
                         adminProperties.getUsername(),
                         passwordEncoder.encode(adminProperties.getPassword()),
+                        "",
                         false,
                         null,
                         true,

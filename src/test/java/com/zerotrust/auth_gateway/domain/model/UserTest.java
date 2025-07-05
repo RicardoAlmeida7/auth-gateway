@@ -14,11 +14,12 @@ public class UserTest {
     void shouldCreateUserSuccessfully() {
         UUID id = UUID.randomUUID();
         List<String> roles = List.of("ROLE_USER");
-        User user = new User(id, "username", "hashed123", false, "SECRET", true, roles);
+        User user = new User(id, "username", "hashed123", "user@example.com", false, "SECRET", true, roles);
 
         assertEquals(id, user.getId());
         assertEquals("username", user.getUsername());
         assertEquals("hashed123", user.getPasswordHash());
+        assertEquals("user@example.com", user.getEmail());
         assertEquals("SECRET", user.getMfaSecret());
         assertTrue(user.isEnabled());
         assertFalse(user.isMfaEnabled());
@@ -27,7 +28,7 @@ public class UserTest {
 
     @Test
     void shouldUseEmptyListIfRolesIsNull() {
-        User user = new User(UUID.randomUUID(), "user", "pass", false, null, true, null);
+        User user = new User(UUID.randomUUID(), "user", "pass", "mail@mail.com", false, null, true, null);
         assertNotNull(user.getRoles());
         assertTrue(user.getRoles().isEmpty());
     }
@@ -35,36 +36,16 @@ public class UserTest {
     @Test
     void shouldThrowWhenIdIsNull() {
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new User(null, "username", "hashed", false, "secret", true, List.of("ROLE_USER"))
+                new User(null, "username", "hashed", "mail@mail.com", false, "secret", true, List.of("ROLE_USER"))
         );
         assertEquals("ID cannot be null.", exception.getMessage());
     }
 
     @Test
-    void shouldThrowWhenUsernameIsNullOrBlank() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new User(UUID.randomUUID(), null, "hashed", false, "secret", true, List.of("ROLE_USER"))
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-                new User(UUID.randomUUID(), "   ", "hashed", false, "secret", true, List.of("ROLE_USER"))
-        );
-    }
-
-    @Test
-    void shouldThrowWhenPasswordHashIsNullOrBlank() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new User(UUID.randomUUID(), "username", null, false, "secret", true, List.of("ROLE_USER"))
-        );
-        assertThrows(IllegalArgumentException.class, () ->
-                new User(UUID.randomUUID(), "username", "", false, "secret", true, List.of("ROLE_USER"))
-        );
-    }
-
-    @Test
     void shouldConsiderUsersEqualById() {
         UUID id = UUID.randomUUID();
-        User user1 = new User(id, "user1", "pass1", false, "sec1", true, List.of("ROLE_USER"));
-        User user2 = new User(id, "user2", "pass2", true, "sec2", false, List.of("ROLE_ADMIN"));
+        User user1 = new User(id, "user1", "pass1", "email1@mail.com", false, "sec1", true, List.of("ROLE_USER"));
+        User user2 = new User(id, "user2", "pass2", "email2@mail.com", true, "sec2", false, List.of("ROLE_ADMIN"));
 
         assertEquals(user1, user2);
         assertEquals(user1.hashCode(), user2.hashCode());
@@ -73,7 +54,7 @@ public class UserTest {
     @Test
     void shouldAllowChangingFieldsViaSetters() {
         UUID id = UUID.randomUUID();
-        User user = new User(id, "username", "pass", false, "secret", true, List.of("ROLE_USER"));
+        User user = new User(id, "username", "pass", "original@email.com", false, "secret", true, List.of("ROLE_USER"));
 
         user.setUsername("username2");
         user.setPasswordHash("newpass");
@@ -81,6 +62,7 @@ public class UserTest {
         user.setEnabled(false);
         user.setMfaSecret("newsecret");
         user.setRoles(Collections.singletonList("ROLE_ADMIN"));
+        user.setEmail("updated@email.com");
 
         assertEquals("username2", user.getUsername());
         assertEquals("newpass", user.getPasswordHash());
@@ -88,11 +70,12 @@ public class UserTest {
         assertEquals("newsecret", user.getMfaSecret());
         assertFalse(user.isEnabled());
         assertEquals(List.of("ROLE_ADMIN"), user.getRoles());
+        assertEquals("updated@email.com", user.getEmail());
     }
 
     @Test
     void testToStringContainsUsernameAndRoles() {
-        User user = new User(UUID.randomUUID(), "username", "pass", false, null, true, List.of("ROLE_USER"));
+        User user = new User(UUID.randomUUID(), "username", "pass", "email@example.com", false, null, true, List.of("ROLE_USER"));
         String output = user.toString();
         assertTrue(output.contains("username"));
         assertTrue(output.contains("ROLE_USER"));

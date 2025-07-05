@@ -36,7 +36,7 @@ public class UserRepositoryImplTest {
         UUID userId = UUID.randomUUID();
         String roleName = "ROLE_USER";
         RoleEntity roleEntity = new RoleEntity(UUID.randomUUID(), roleName);
-        User user = new User(userId, "testuser", "hashedpass", false, "", true, List.of(roleName));
+        User user = new User(userId, "testuser", "hashedpass", "testuser@example.com", false, "", true, List.of(roleName));
 
         // Mock para simular busca da role no banco
         when(jpaRoleRepository.findByName(roleName)).thenReturn(Optional.of(roleEntity));
@@ -64,7 +64,7 @@ public class UserRepositoryImplTest {
     void findByUsername_shouldReturnMappedUser_whenUserExists() {
         UUID id = UUID.randomUUID();
         RoleEntity role = new RoleEntity(UUID.randomUUID(), "ROLE_USER");
-        UserEntity userEntity = new UserEntity(id, "testuser", "hashedpass", false, "", true, List.of(role));
+        UserEntity userEntity = new UserEntity(id, "testuser", "hashedpass", "testuser@example.com", false, "", true, List.of(role));
 
         when(jpaUserRepository.findByUsername("testuser")).thenReturn(Optional.of(userEntity));
 
@@ -95,7 +95,7 @@ public class UserRepositoryImplTest {
     void save_shouldThrowException_whenRoleNotFound() {
         UUID userId = UUID.randomUUID();
         String missingRole = "ROLE_MISSING";
-        User user = new User(userId, "testuser", "hashedpass", false, "", true, List.of(missingRole));
+        User user = new User(userId, "testuser", "hashedpass", "testuser@example.com", false, "", true, List.of(missingRole));
 
         when(jpaRoleRepository.findByName(missingRole)).thenReturn(Optional.empty());
 

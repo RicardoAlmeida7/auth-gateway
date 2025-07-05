@@ -12,9 +12,11 @@ public class AdminPropertiesTest {
         AdminProperties properties = new AdminProperties();
         properties.setUsername("admin");
         properties.setPassword("securepass");
+        properties.setEmail("admin.@example.com");
 
         assertEquals("admin", properties.getUsername());
         assertEquals("securepass", properties.getPassword());
+        assertEquals("admin.@example.com", properties.getEmail());
     }
 
     @Test

@@ -1,25 +1,31 @@
 package com.zerotrust.auth_gateway.web.dto;
 
+import com.zerotrust.auth_gateway.domain.enums.Role;
+
 import java.util.List;
 import java.util.Objects;
 
 public class RegisterRequest {
     private String username;
     private String password;
+    private String email;
     private List<String> roles;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String password) {
+    public RegisterRequest(String username, String password, String email, List<String> roles) {
+        if (roles == null || roles.isEmpty()) {
+            roles = List.of(Role.ROLE_USER.name());
+        }
         this.username = username;
         this.password = password;
+        this.email = email;
+        this.roles = roles;
     }
 
-    public RegisterRequest(String username, String password, List<String> roles) {
-        this.username = username;
-        this.password = password;
-        this.roles = roles;
+    public RegisterRequest(String username, String password, String email) {
+        this(username, password, email, List.of(Role.ROLE_USER.name()));
     }
 
     public String getUsername() {
@@ -64,5 +70,13 @@ public class RegisterRequest {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
