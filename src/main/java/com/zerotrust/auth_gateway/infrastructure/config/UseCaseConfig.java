@@ -1,10 +1,15 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
-import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUseCase;
+import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.application.usecase.implementations.RegisterUserUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -21,8 +26,24 @@ import java.util.UUID;
 public class UseCaseConfig {
 
     @Bean
-    public RegisterUserUseCase registerUserUseCase(PasswordEncoder passwordEncoder, UserRepository useRepositoryPort) {
-        return new RegisterUserUseCaseImpl(passwordEncoder, useRepositoryPort);
+    public UserServiceUseCase registerUserUseCase(
+            PasswordEncoder passwordEncoder,
+            UserRepository useRepositoryPort,
+            TOTPService totpService,
+            JwtTokenGenerator jwtTokenGenerator,
+            EmailService emailService) {
+
+        return new UserServiceUseCaseImpl(
+                passwordEncoder,
+                useRepositoryPort,
+                totpService,
+                jwtTokenGenerator,
+                emailService);
+    }
+
+    @Bean
+    public ActivateAccountUseCase activateAccountUseCase(JwtTokenGenerator jwtTokenGenerator, UserRepository userRepository) {
+        return new ActivateAccountUseCaseImpl(jwtTokenGenerator, userRepository);
     }
 
     @Bean
@@ -32,16 +53,7 @@ public class UseCaseConfig {
 
             Optional<User> existingAdmin = userRepository.findByUsername(adminProperties.getUsername());
             if (existingAdmin.isEmpty()) {
-                User admin = new User(
-                        UUID.randomUUID(),
-                        adminProperties.getUsername(),
-                        passwordEncoder.encode(adminProperties.getPassword()),
-                        "",
-                        false,
-                        null,
-                        true,
-                        List.of(Role.ROLE_ADMIN.name())
-                );
+                User admin = new User(UUID.randomUUID(), adminProperties.getUsername(), passwordEncoder.encode(adminProperties.getPassword()), "", false, null, true, List.of(Role.ROLE_ADMIN.name()));
 
                 userRepository.save(admin);
             }

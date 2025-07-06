@@ -1,10 +1,13 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
-import com.zerotrust.auth_gateway.application.usecase.interfaces.RegisterUserUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.application.usecase.implementations.RegisterUserUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,12 +27,22 @@ public class UseCaseConfigTest {
     void shouldCreateRegisterUserUseCaseBean() {
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         UserRepository userRepository = mock(UserRepository.class);
+        TOTPService totpService = mock(TOTPService.class);
+        JwtTokenGenerator jwtTokenGenerator = mock(JwtTokenGenerator.class);
+        EmailService emailService = mock(EmailService.class);
+
         UseCaseConfig config = new UseCaseConfig();
 
-        RegisterUserUseCase useCase = config.registerUserUseCase(passwordEncoder, userRepository);
+        UserServiceUseCase useCase = config.registerUserUseCase(
+                passwordEncoder,
+                userRepository,
+                totpService,
+                jwtTokenGenerator,
+                emailService
+        );
 
         assertNotNull(useCase);
-        assertEquals(RegisterUserUseCaseImpl.class, useCase.getClass());
+        assertEquals(UserServiceUseCaseImpl.class, useCase.getClass());
     }
 
     @Test

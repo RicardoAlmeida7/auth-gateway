@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RegisterRequestTest {
 
     @Test
-    void shouldCreateRegisterRequestWithAllFields() {
+    void shouldCreateRegisterRequestWithNullRolesDefaultsToRoleUser() {
         String username = "newUser";
         String password = "newPass";
         String email = "newuser@example.com";
@@ -24,7 +24,18 @@ public class RegisterRequestTest {
     }
 
     @Test
-    void shouldCreateRegisterRequestWithRoles() {
+    void shouldCreateRegisterRequestWithEmptyRolesDefaultsToRoleUser() {
+        String username = "emptyRolesUser";
+        String password = "pass";
+        String email = "empty@example.com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email, List.of());
+
+        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles()); // default role
+    }
+
+    @Test
+    void shouldCreateRegisterRequestWithExplicitRoles() {
         String username = "userWithRoles";
         String password = "passWithRoles";
         String email = "roles@example.com";
@@ -32,9 +43,6 @@ public class RegisterRequestTest {
 
         RegisterRequest request = new RegisterRequest(username, password, email, roles);
 
-        assertEquals(username, request.getUsername());
-        assertEquals(password, request.getPassword());
-        assertEquals(email, request.getEmail());
         assertEquals(roles, request.getRoles());
     }
 
@@ -46,10 +54,24 @@ public class RegisterRequestTest {
 
         RegisterRequest request = new RegisterRequest(username, password, email);
 
+        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles());
+        assertFalse(request.isMfaEnabled());
+    }
+
+    @Test
+    void shouldCreateRegisterRequestWithMfaEnabled() {
+        String username = "mfaUser";
+        String password = "mfaPass";
+        String email = "mfa@example.com";
+        boolean mfaEnabled = true;
+
+        RegisterRequest request = new RegisterRequest(username, password, email, mfaEnabled);
+
         assertEquals(username, request.getUsername());
         assertEquals(password, request.getPassword());
         assertEquals(email, request.getEmail());
         assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles());
+        assertTrue(request.isMfaEnabled());
     }
 
     @Test
@@ -58,12 +80,14 @@ public class RegisterRequestTest {
         request.setUsername("user2");
         request.setPassword("pass2");
         request.setEmail("user2@example.com");
-        request.setRoles(List.of("ROLE_USER"));
+        request.setRoles(List.of("ROLE_USER", "ROLE_ADMIN"));
+        request.setMfaEnabled(true);
 
         assertEquals("user2", request.getUsername());
         assertEquals("pass2", request.getPassword());
         assertEquals("user2@example.com", request.getEmail());
-        assertEquals(List.of("ROLE_USER"), request.getRoles());
+        assertEquals(List.of("ROLE_USER", "ROLE_ADMIN"), request.getRoles());
+        assertTrue(request.isMfaEnabled());
     }
 
     @Test

@@ -14,12 +14,11 @@ import static org.mockito.Mockito.*;
 public class JwtTokenGeneratorTest {
 
     private JwtTokenGenerator generator;
-    private Algorithm algorithm;
     private JWTVerifier verifier;
 
     @BeforeEach
     void setUp() {
-        algorithm = Algorithm.HMAC256("test-secret");
+        Algorithm algorithm = Algorithm.HMAC256("test-secret");
         verifier = mock(JWTVerifier.class);
         generator = new JwtTokenGenerator(algorithm, verifier);
     }
@@ -75,5 +74,27 @@ public class JwtTokenGeneratorTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> generator.verifyToken(token));
         assertEquals("Invalid or expired JWT token", ex.getMessage());
+    }
+
+    @Test
+    void shouldGenerateActivationTokenWithExpectedClaims() {
+        String username = "testuser";
+        String email = "testuser@example.com";
+
+        String token = generator.generateActivationToken(username, email);
+
+        assertNotNull(token);
+        assertTrue(token.startsWith("ey"), "Token should start with JWT format");
+
+        DecodedJWT decodedJWT = generator.verifyToken(token);
+
+        assertEquals(username, decodedJWT.getSubject());
+        assertEquals(email, decodedJWT.getClaim("email").asString());
+        assertEquals("activation", decodedJWT.getClaim("type").asString());
+
+        assertNotNull(decodedJWT.getIssuedAt());
+        assertNotNull(decodedJWT.getExpiresAt());
+
+        assertTrue(decodedJWT.getExpiresAt().after(decodedJWT.getIssuedAt()), "Expiry must be after issuedAt");
     }
 }

@@ -2,6 +2,6 @@ package com.zerotrust.auth_gateway.application.usecase.interfaces;
 
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
 
-public interface RegisterUserUseCase {
+public interface UserServiceUseCase {
     void register(RegisterRequest command);
 }

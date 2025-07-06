@@ -10,11 +10,13 @@ public class RegisterRequest {
     private String password;
     private String email;
     private List<String> roles;
+    private boolean mfaEnabled;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String password, String email, List<String> roles) {
+    public RegisterRequest(String username, String password, String email, List<String> roles, boolean mfaEnabled) {
+        this.mfaEnabled = mfaEnabled;
         if (roles == null || roles.isEmpty()) {
             roles = List.of(Role.ROLE_USER.name());
         }
@@ -24,8 +26,16 @@ public class RegisterRequest {
         this.roles = roles;
     }
 
+    public RegisterRequest(String username, String password, String email, List<String> roles) {
+        this(username, password, email, roles, false);
+    }
+
+    public RegisterRequest(String username, String password, String email, boolean mfaEnabled) {
+        this(username, password, email, List.of(Role.ROLE_USER.name()), mfaEnabled);
+    }
+
     public RegisterRequest(String username, String password, String email) {
-        this(username, password, email, List.of(Role.ROLE_USER.name()));
+        this(username, password, email, List.of(Role.ROLE_USER.name()), false);
     }
 
     public String getUsername() {
@@ -78,5 +88,13 @@ public class RegisterRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isMfaEnabled() {
+        return mfaEnabled;
+    }
+
+    public void setMfaEnabled(boolean mfaEnabled) {
+        this.mfaEnabled = mfaEnabled;
     }
 }

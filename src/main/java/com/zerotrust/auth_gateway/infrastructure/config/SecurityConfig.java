@@ -5,9 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
+import com.zerotrust.auth_gateway.domain.repository.UserRepository;
+import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.security.providers.CustomAuthenticationProvider;
+import com.zerotrust.auth_gateway.infrastructure.security.totp.TOTPServiceImpl;
 import com.zerotrust.auth_gateway.infrastructure.security.userdetails.UserDetailsServiceAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,18 +35,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
-        httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/login").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+        httpSecurity.csrf(AbstractHttpConfigurer::disable).headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)).authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/login").permitAll().requestMatchers("/api/v1/users/**").permitAll().requestMatchers("/h2-console/**").permitAll().anyRequest().authenticated()).authenticationProvider(authenticationProvider).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling(exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
         return httpSecurity.build();
     }
@@ -60,8 +52,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsServiceAdapter userDetailsServiceAdapter,
-                                                         PasswordEncoder passwordEncoder) {
+    public AuthenticationProvider authenticationProvider(UserDetailsServiceAdapter userDetailsServiceAdapter, PasswordEncoder passwordEncoder) {
         return new CustomAuthenticationProvider(userDetailsServiceAdapter, passwordEncoder);
     }
 
@@ -76,7 +67,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthServiceUseCase authServiceUseCase(AuthenticationManager authenticationManager, JwtTokenGenerator jwtTokenGenerator) {
-        return new AuthServiceUseCaseImpl(authenticationManager, jwtTokenGenerator);
+    public AuthServiceUseCase authServiceUseCase(
+            AuthenticationManager authenticationManager,
+            JwtTokenGenerator jwtTokenGenerator,
+            UserRepository userRepository,
+            TOTPService totpService) {
+        return new AuthServiceUseCaseImpl(authenticationManager, jwtTokenGenerator, userRepository, totpService);
+    }
+
+    @Bean
+    public TOTPService totpService() {
+        return new TOTPServiceImpl();
     }
 }

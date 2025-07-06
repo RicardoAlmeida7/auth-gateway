@@ -30,11 +30,15 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	runtimeOnly("com.h2database:h2:2.3.232")
+	// https://mvnrepository.com/artifact/commons-codec/commons-codec
+	implementation("commons-codec:commons-codec:1.18.0")
 
 	// Security
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.3")
 	implementation("org.springframework.boot:spring-boot-starter-security:3.5.3")
 	implementation("com.auth0:java-jwt:4.5.0")
+	// https://mvnrepository.com/artifact/com.eatthepath/java-otp
+	implementation("com.eatthepath:java-otp:0.4.0")
 
 	// Tests
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.2")

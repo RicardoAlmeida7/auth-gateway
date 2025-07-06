@@ -1,7 +1,10 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
+import com.zerotrust.auth_gateway.domain.repository.UserRepository;
+import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
+import com.zerotrust.auth_gateway.infrastructure.security.providers.CustomAuthenticationProvider;
 import com.zerotrust.auth_gateway.infrastructure.security.userdetails.UserDetailsServiceAdapter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +39,7 @@ public class SecurityConfigTest {
         AuthenticationProvider provider = config.authenticationProvider(adapter, encoder);
 
         assertNotNull(provider);
-        assertInstanceOf(com.zerotrust.auth_gateway.infrastructure.security.providers.CustomAuthenticationProvider.class, provider);
+        assertInstanceOf(CustomAuthenticationProvider.class, provider);
     }
 
     @Test
@@ -62,30 +65,33 @@ public class SecurityConfigTest {
     void shouldCreateAuthServiceUseCase() {
         AuthenticationManager authenticationManager = mock(AuthenticationManager.class);
         JwtTokenGenerator jwtTokenGenerator = mock(JwtTokenGenerator.class);
-        assertNotNull(config.authServiceUseCase(authenticationManager, jwtTokenGenerator));
+        UserRepository userRepository = mock(UserRepository.class);
+        TOTPService totpService = mock(TOTPService.class);
+
+        assertNotNull(config.authServiceUseCase(authenticationManager, jwtTokenGenerator, userRepository, totpService));
+    }
+
+    @Test
+    void shouldCreateTOTPService() {
+        assertNotNull(config.totpService());
     }
 
     @Test
     void shouldConfigureSecurityFilterChain() throws Exception {
-        // Arrange
         HttpSecurity http = mock(HttpSecurity.class, RETURNS_DEEP_STUBS);
         AuthenticationProvider authProvider = mock(AuthenticationProvider.class);
         JwtAuthenticationFilter jwtFilter = mock(JwtAuthenticationFilter.class);
 
-        when(http.authenticationProvider(authProvider)).thenReturn(http);
-        when(http.addFilterBefore(eq(jwtFilter), any())).thenReturn(http);
         when(http.csrf(any())).thenReturn(http);
-        when(http.sessionManagement(any())).thenReturn(http);
-        when(http.exceptionHandling(any())).thenReturn(http);
         when(http.headers(any())).thenReturn(http);
         when(http.authorizeHttpRequests(any())).thenReturn(http);
+        when(http.authenticationProvider(authProvider)).thenReturn(http);
+        when(http.addFilterBefore(eq(jwtFilter), any())).thenReturn(http);
+        when(http.sessionManagement(any())).thenReturn(http);
+        when(http.exceptionHandling(any())).thenReturn(http);
 
-        SecurityConfig config = new SecurityConfig();
-
-        // Act
         SecurityFilterChain chain = config.securityFilterChain(http, authProvider, jwtFilter);
 
-        // Assert
         assertNotNull(chain);
         verify(http).authenticationProvider(authProvider);
         verify(http).addFilterBefore(eq(jwtFilter), any());

@@ -9,10 +9,16 @@ public class LoginRequest {
 
     private String username;
     private String password;
+    private String otp;
 
-    public LoginRequest(String username, String password) {
+    public LoginRequest(String username, String password, String otp) {
         this.username = username;
         this.password = password;
+        this.otp = otp;
+    }
+
+    public LoginRequest(String username, String password) {
+        this(username, password, null);
     }
 
     public String getUsername() {
@@ -49,5 +55,13 @@ public class LoginRequest {
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
     }
 }
