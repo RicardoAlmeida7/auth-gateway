@@ -5,6 +5,7 @@ import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.validation.EmailValidator;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
+import com.zerotrust.auth_gateway.domain.validation.RoleValidator;
 import com.zerotrust.auth_gateway.domain.validation.UsernameValidator;
 import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,7 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
         UsernameValidator.validate(request.getUsername());
         PasswordValidator.validate(request.getPassword());
         EmailValidator.validate(request.getEmail());
+        RoleValidator.validate(request.getRoles());
 
         String passwordHashed = passwordEncoder.encode(request.getPassword());
         User user = new User(

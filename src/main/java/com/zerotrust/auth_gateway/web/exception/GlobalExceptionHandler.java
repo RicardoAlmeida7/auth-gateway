@@ -3,6 +3,7 @@ package com.zerotrust.auth_gateway.web.exception;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
+import com.zerotrust.auth_gateway.domain.exception.InvalidRoleException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<Object> handleTokenExpiredException(TokenExpiredException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, "Token has expired.");
+    }
+
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<Object> handleRoleException(InvalidRoleException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     private ResponseEntity<Object> buildResponse(HttpStatus status, String message) {

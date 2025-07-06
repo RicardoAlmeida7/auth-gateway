@@ -3,6 +3,7 @@ package com.zerotrust.auth_gateway.web.exception;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
+import com.zerotrust.auth_gateway.domain.exception.InvalidRoleException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,4 +108,17 @@ class GlobalExceptionHandlerTest {
         assertNotNull(body.get("timestamp"));
     }
 
+    void shouldHandleInvalidRoleException() {
+        String message = "Invalid role: TEST. Valid roles: [ROLE_USER, ROLE_ADMIN]";
+        InvalidRoleException ex = new InvalidRoleException(message);
+
+        ResponseEntity<Object> response = handler.handleRoleException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(400, body.get("status"));
+        assertEquals("Bad Request", body.get("error"));
+        assertEquals(message, body.get("message"));
+        assertNotNull(body.get("timestamp"));
+    }
 }
