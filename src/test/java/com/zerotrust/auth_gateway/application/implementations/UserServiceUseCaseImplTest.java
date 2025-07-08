@@ -44,7 +44,16 @@ public class UserServiceUseCaseImplTest {
     void shouldRegisterUserWithHashedPassword() {
         String rawPassword = "Abcdef1@";
         String hashedPassword = "hashed_pass";
-        RegisterRequest request = new RegisterRequest("validUser", rawPassword, "user@example.com", List.of());
+
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                rawPassword,
+                "user@example.com",
+                List.of(),
+                false,
+                rawPassword,
+                false
+        );
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
         when(jwtTokenGenerator.generateActivationToken(any(), any())).thenReturn("fake-token");
@@ -61,6 +70,7 @@ public class UserServiceUseCaseImplTest {
         assertFalse(savedUser.isMfaEnabled());
         assertEquals("", savedUser.getMfaSecret());
         assertFalse(savedUser.isEnabled());
+        assertFalse(savedUser.isFirstAccessRequired());
         assertNotNull(savedUser.getId());
     }
 
@@ -74,49 +84,113 @@ public class UserServiceUseCaseImplTest {
 
     @Test
     void shouldThrowExceptionWhenPasswordIsInvalid() {
-        RegisterRequest request = new RegisterRequest("validUser", "12345678", "user@example.com", List.of());
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                "12345678",
+                "user@example.com",
+                List.of(Role.ROLE_USER.name()),
+                false,
+                "12345678",
+                false
+        );
         assertThrows(InvalidPasswordException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
     @Test
     void shouldThrowExceptionWhenUsernameIsNull() {
-        RegisterRequest request = new RegisterRequest(null, "Password1@", "user@example.com", List.of());
+        RegisterRequest request = new RegisterRequest(
+                null,
+                "Password1@",
+                "user@example.com",
+                List.of(Role.ROLE_USER.name()),
+                false,
+                "Password1@",
+                false
+        );
         assertThrows(InvalidUsernameException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
     @Test
     void shouldThrowExceptionWhenUsernameIsBlank() {
-        RegisterRequest request = new RegisterRequest("   ", "Password1@", "user@example.com", List.of());
+        RegisterRequest request = new RegisterRequest(
+                "   ",
+                "Password1@",
+                "user@example.com",
+                List.of(Role.ROLE_USER.name()),
+                false,
+                "Password1@",
+                false
+        );
         assertThrows(InvalidUsernameException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
     @Test
     void shouldThrowExceptionWhenUsernameIsTooShort() {
-        RegisterRequest request = new RegisterRequest("ab", "Password1@", "user@example.com", List.of());
+        RegisterRequest request = new RegisterRequest(
+                "ab",
+                "Password1@",
+                "user@example.com",
+                List.of(Role.ROLE_USER.name()),
+                false,
+                "Password1@",
+                false
+        );
         assertThrows(InvalidUsernameException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
     @Test
     void shouldThrowExceptionWhenPasswordIsNull() {
-        RegisterRequest request = new RegisterRequest("validUser", null, "user@example.com", List.of());
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                null,
+                "user@example.com",
+                List.of(Role.ROLE_USER.name()),
+                false,
+                null,
+                false
+        );
         assertThrows(InvalidPasswordException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
     @Test
     void shouldThrowExceptionWhenPasswordIsBlank() {
-        RegisterRequest request = new RegisterRequest("validUser", "   ", "user@example.com", List.of());
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                "   ",
+                "user@example.com",
+                List.of(Role.ROLE_USER.name()),
+                false,
+                "   ",
+                false
+        );
         assertThrows(InvalidPasswordException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
     @Test
     void shouldThrowExceptionWhenEmailIsNull() {
-        RegisterRequest request = new RegisterRequest("validUser", "Password1@", null, List.of());
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                "Password1@",
+                null,
+                List.of(Role.ROLE_USER.name()),
+                false,
+                "Password1@",
+                false
+        );
         assertThrows(InvalidEmailException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
     @Test
     void shouldThrowExceptionWhenEmailIsBlank() {
-        RegisterRequest request = new RegisterRequest("validUser", "Password1@", "  ", List.of());
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                "Password1@",
+                "  ",
+                List.of(Role.ROLE_USER.name()),
+                false,
+                "Password1@",
+                false
+        );
         assertThrows(InvalidEmailException.class, () -> registerUserUseCaseImpl.register(request));
     }
 
@@ -125,7 +199,16 @@ public class UserServiceUseCaseImplTest {
         String rawPassword = "Password@1234";
         String hashedPassword = "hashed_pass";
         List<String> roles = List.of("ROLE_ADMIN", "ROLE_USER");
-        RegisterRequest request = new RegisterRequest("validUser", rawPassword, "user@example.com", roles);
+
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                rawPassword,
+                "user@example.com",
+                roles,
+                false,
+                rawPassword,
+                false
+        );
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
         when(jwtTokenGenerator.generateActivationToken(any(), any())).thenReturn("fake-token");
@@ -146,7 +229,16 @@ public class UserServiceUseCaseImplTest {
         String hashedPassword = "hashed_pass";
         String secret = "test-secret";
         String qrCodeUrl = "qr-code-url";
-        RegisterRequest request = new RegisterRequest("validUser", rawPassword, "user@example.com", List.of(Role.ROLE_USER.name()), true);
+
+        RegisterRequest request = new RegisterRequest(
+                "validUser",
+                rawPassword,
+                "user@example.com",
+                List.of(Role.ROLE_USER.name()),
+                true,
+                rawPassword,
+                false
+        );
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
         when(totpService.generateSecret()).thenReturn(secret);

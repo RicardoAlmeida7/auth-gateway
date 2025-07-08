@@ -1,10 +1,7 @@
 package com.zerotrust.auth_gateway.web.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidRoleException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
+import com.zerotrust.auth_gateway.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -52,13 +49,22 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    private ResponseEntity<Object> buildResponse(HttpStatus status, String message) {
+    @ExceptionHandler(FirstAccessPasswordRequiredException.class)
+    public ResponseEntity<Object> handleFirstAccessPasswordRequiredException(FirstAccessPasswordRequiredException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, "FIRST_TIME_LOGIN", ex.getMessage());
+    }
+
+    private ResponseEntity<Object> buildResponse(HttpStatus status, String specificErrorCode, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now());
         body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
+        body.put("error", specificErrorCode);
         body.put("message", message);
 
         return new ResponseEntity<>(body, status);
+    }
+
+    private ResponseEntity<Object> buildResponse(HttpStatus status, String message) {
+        return this.buildResponse(status, status.getReasonPhrase(), message);
     }
 }

@@ -16,9 +16,13 @@ public final class PasswordValidator {
     private static final Pattern DIGIT = Pattern.compile("\\d");
     private static final Pattern SPECIAL = Pattern.compile("[^a-zA-Z0-9]");
 
-    public static void validate(String password) {
+    public static void validate(String password, String confirmedPassword) {
         if (password == null || password.length() < MIN_LENGTH) {
             throw new InvalidPasswordException("Password must be at least " + MIN_LENGTH + " characters long.");
+        }
+
+        if (!password.equals(confirmedPassword)) {
+            throw new InvalidPasswordException("Password and confirmation password do not match.");
         }
 
         if (!UPPERCASE.matcher(password).find()) {

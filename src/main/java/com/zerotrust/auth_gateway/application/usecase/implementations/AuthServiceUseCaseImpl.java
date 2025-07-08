@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
+import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
@@ -42,6 +43,10 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
 
         if (!user.isEnabled()) {
             throw new IllegalArgumentException("User account is not activated.");
+        }
+
+        if (user.isFirstAccessRequired()) {
+            throw new FirstAccessPasswordRequiredException("You must reset your password before logging in for the first time.");
         }
 
         if (user.isMfaEnabled()) {

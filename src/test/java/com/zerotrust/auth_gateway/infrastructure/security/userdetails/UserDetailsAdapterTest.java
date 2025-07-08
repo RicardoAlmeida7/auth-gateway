@@ -27,7 +27,8 @@ public class UserDetailsAdapterTest {
                 false,
                 "secret",
                 true,
-                List.of("ROLE_USER", "ROLE_ADMIN")  // importante setar roles para testar authorities
+                List.of("ROLE_USER", "ROLE_ADMIN"),
+                true
         );
         userDetails = new UserDetailsAdapter(user);
     }

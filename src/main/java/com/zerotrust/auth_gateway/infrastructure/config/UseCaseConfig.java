@@ -1,12 +1,12 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
-import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
@@ -53,7 +53,16 @@ public class UseCaseConfig {
 
             Optional<User> existingAdmin = userRepository.findByUsername(adminProperties.getUsername());
             if (existingAdmin.isEmpty()) {
-                User admin = new User(UUID.randomUUID(), adminProperties.getUsername(), passwordEncoder.encode(adminProperties.getPassword()), "", false, null, true, List.of(Role.ROLE_ADMIN.name()));
+                User admin = new User(
+                        UUID.randomUUID(),
+                        adminProperties.getUsername(),
+                        passwordEncoder.encode(adminProperties.getPassword()),
+                        "",
+                        false,
+                        null,
+                        true,
+                        List.of(Role.ROLE_ADMIN.name()),
+                        false);
 
                 userRepository.save(admin);
             }

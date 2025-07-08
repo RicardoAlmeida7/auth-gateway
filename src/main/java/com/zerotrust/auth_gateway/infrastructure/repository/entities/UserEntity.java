@@ -27,6 +27,8 @@ public class UserEntity {
     @Column(length = 100)
     private String mfaSecret;
 
+    private boolean firstAccessRequired;
+
     private boolean enabled;
 
     public UserEntity() {
@@ -38,7 +40,7 @@ public class UserEntity {
             String passwordHash,
             String email,
             boolean mfaEnabled,
-            String mfaSecret,
+            String mfaSecret, boolean firstAccessRequired,
             boolean enabled,
             List<RoleEntity> roles) {
         this.id = id;
@@ -47,6 +49,7 @@ public class UserEntity {
         this.email = email;
         this.mfaEnabled = mfaEnabled;
         this.mfaSecret = mfaSecret;
+        this.firstAccessRequired = firstAccessRequired;
         this.enabled = enabled;
         this.roles = roles != null ? roles : new ArrayList<>();
     }
@@ -144,5 +147,13 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isFirstAccessRequired() {
+        return firstAccessRequired;
+    }
+
+    public void setFirstAccessRequired(boolean firstAccessRequired) {
+        this.firstAccessRequired = firstAccessRequired;
     }
 }

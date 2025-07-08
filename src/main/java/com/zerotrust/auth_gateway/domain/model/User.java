@@ -6,7 +6,8 @@ import java.util.UUID;
 
 public class User {
 
-    public User(UUID id, String username, String passwordHash, String email, boolean mfaEnabled, String mfaSecret, boolean enabled, List<String> roles) {
+    public User(UUID id, String username, String passwordHash, String email, boolean mfaEnabled, String mfaSecret, boolean enabled, List<String> roles, boolean firstAccessRequired) {
+        this.firstAccessRequired = firstAccessRequired;
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null.");
         }
@@ -28,6 +29,7 @@ public class User {
     private boolean enabled;
     private List<String> roles;
     private String email;
+    private boolean firstAccessRequired;
 
     public String getUsername() {
         return username;
@@ -113,5 +115,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isFirstAccessRequired() {
+        return firstAccessRequired;
+    }
+
+    public void setFirstAccessRequired(boolean firstAccessRequired) {
+        this.firstAccessRequired = firstAccessRequired;
     }
 }

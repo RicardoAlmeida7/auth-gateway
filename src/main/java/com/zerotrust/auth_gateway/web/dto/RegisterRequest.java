@@ -11,12 +11,16 @@ public class RegisterRequest {
     private String email;
     private List<String> roles;
     private boolean mfaEnabled;
+    private String confirmPassword;
+    private boolean firstAccessRequired;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String password, String email, List<String> roles, boolean mfaEnabled) {
+    public RegisterRequest(String username, String password, String email, List<String> roles, boolean mfaEnabled, String confirmPassword, boolean firstAccessRequired) {
         this.mfaEnabled = mfaEnabled;
+        this.confirmPassword = confirmPassword;
+        this.firstAccessRequired = firstAccessRequired;
         if (roles == null || roles.isEmpty()) {
             roles = List.of(Role.ROLE_USER.name());
         }
@@ -26,16 +30,16 @@ public class RegisterRequest {
         this.roles = roles;
     }
 
-    public RegisterRequest(String username, String password, String email, List<String> roles) {
-        this(username, password, email, roles, false);
+    public RegisterRequest(String username, String password, String email, List<String> roles, String confirmPassword, boolean firstAccessRequired) {
+        this(username, password, email, roles, false, confirmPassword, firstAccessRequired);
     }
 
-    public RegisterRequest(String username, String password, String email, boolean mfaEnabled) {
-        this(username, password, email, List.of(Role.ROLE_USER.name()), mfaEnabled);
+    public RegisterRequest(String username, String password, String email, boolean mfaEnabled, String confirmPassword, boolean firstAccessRequired) {
+        this(username, password, email, List.of(Role.ROLE_USER.name()), mfaEnabled, confirmPassword, firstAccessRequired);
     }
 
-    public RegisterRequest(String username, String password, String email) {
-        this(username, password, email, List.of(Role.ROLE_USER.name()), false);
+    public RegisterRequest(String username, String password, String email, String confirmPassword, boolean firstAccessRequired) {
+        this(username, password, email, List.of(Role.ROLE_USER.name()), false, confirmPassword, firstAccessRequired);
     }
 
     public String getUsername() {
@@ -96,5 +100,21 @@ public class RegisterRequest {
 
     public void setMfaEnabled(boolean mfaEnabled) {
         this.mfaEnabled = mfaEnabled;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public boolean isFirstAccessRequired() {
+        return firstAccessRequired;
+    }
+
+    public void setFirstAccessRequired(boolean firstAccessRequired) {
+        this.firstAccessRequired = firstAccessRequired;
     }
 }

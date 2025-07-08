@@ -22,6 +22,7 @@ public class UserEntityTest {
         user.setMfaEnabled(true);
         user.setMfaSecret("secret");
         user.setEnabled(true);
+        user.setFirstAccessRequired(false);
         user.setRoles(List.of(role));
 
         assertEquals(id, user.getId());
@@ -31,6 +32,7 @@ public class UserEntityTest {
         assertTrue(user.isMfaEnabled());
         assertEquals("secret", user.getMfaSecret());
         assertTrue(user.isEnabled());
+        assertFalse(user.isFirstAccessRequired());
         assertNotNull(user.getRoles());
         assertEquals(1, user.getRoles().size());
         assertEquals("ROLE_USER", user.getRoles().get(0).getName());
@@ -49,6 +51,7 @@ public class UserEntityTest {
                 false,
                 "mfaSecret",
                 true,
+                true,
                 List.of(role)
         );
 
@@ -58,6 +61,7 @@ public class UserEntityTest {
         assertEquals("user@example.com", user.getEmail());
         assertFalse(user.isMfaEnabled());
         assertEquals("mfaSecret", user.getMfaSecret());
+        assertTrue(user.isFirstAccessRequired());
         assertTrue(user.isEnabled());
         assertNotNull(user.getRoles());
         assertEquals(1, user.getRoles().size());
@@ -67,8 +71,8 @@ public class UserEntityTest {
     @Test
     void testEqualsAndHashCode() {
         UUID id = UUID.randomUUID();
-        UserEntity user1 = new UserEntity(id, "user1", "hash1", "a@a.com", false, "", true, List.of());
-        UserEntity user2 = new UserEntity(id, "user2", "hash2", "b@b.com", true, "secret", false, List.of());
+        UserEntity user1 = new UserEntity(id, "user1", "hash1", "a@a.com", false, "", true, true, List.of());
+        UserEntity user2 = new UserEntity(id, "user2", "hash2", "b@b.com", true, "secret", false, false, List.of());
 
         assertEquals(user1, user2);
         assertEquals(user1.hashCode(), user2.hashCode());

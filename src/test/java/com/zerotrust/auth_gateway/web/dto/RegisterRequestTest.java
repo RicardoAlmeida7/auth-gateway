@@ -10,91 +10,78 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RegisterRequestTest {
 
     @Test
-    void shouldCreateRegisterRequestWithNullRolesDefaultsToRoleUser() {
-        String username = "newUser";
-        String password = "newPass";
-        String email = "newuser@example.com";
-
-        RegisterRequest request = new RegisterRequest(username, password, email, null);
-
-        assertEquals(username, request.getUsername());
-        assertEquals(password, request.getPassword());
-        assertEquals(email, request.getEmail());
-        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles()); // default role
+    void shouldDefaultRolesToRoleUserWhenNull() {
+        RegisterRequest request = new RegisterRequest("user", "pass", "email@test.com", null, false, "pass", false);
+        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles());
     }
 
     @Test
-    void shouldCreateRegisterRequestWithEmptyRolesDefaultsToRoleUser() {
-        String username = "emptyRolesUser";
-        String password = "pass";
-        String email = "empty@example.com";
-
-        RegisterRequest request = new RegisterRequest(username, password, email, List.of());
-
-        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles()); // default role
+    void shouldDefaultRolesToRoleUserWhenEmpty() {
+        RegisterRequest request = new RegisterRequest("user", "pass", "email@test.com", List.of(), false, "pass", false);
+        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles());
     }
 
     @Test
-    void shouldCreateRegisterRequestWithExplicitRoles() {
-        String username = "userWithRoles";
-        String password = "passWithRoles";
-        String email = "roles@example.com";
-        List<String> roles = List.of("ROLE_USER", "ROLE_ADMIN");
-
-        RegisterRequest request = new RegisterRequest(username, password, email, roles);
-
+    void shouldUseProvidedRoles() {
+        List<String> roles = List.of("ROLE_ADMIN", "ROLE_USER");
+        RegisterRequest request = new RegisterRequest("user", "pass", "email@test.com", roles, false, "pass", false);
         assertEquals(roles, request.getRoles());
     }
 
     @Test
-    void shouldCreateRegisterRequestWithThreeArgsConstructor() {
-        String username = "basicUser";
-        String password = "basicPass";
-        String email = "basic@example.com";
-
-        RegisterRequest request = new RegisterRequest(username, password, email);
-
-        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles());
-        assertFalse(request.isMfaEnabled());
-    }
-
-    @Test
-    void shouldCreateRegisterRequestWithMfaEnabled() {
-        String username = "mfaUser";
-        String password = "mfaPass";
-        String email = "mfa@example.com";
-        boolean mfaEnabled = true;
-
-        RegisterRequest request = new RegisterRequest(username, password, email, mfaEnabled);
-
-        assertEquals(username, request.getUsername());
-        assertEquals(password, request.getPassword());
-        assertEquals(email, request.getEmail());
-        assertEquals(List.of(Role.ROLE_USER.name()), request.getRoles());
+    void shouldSetMfaEnabledAndFirstAccessRequired() {
+        RegisterRequest request = new RegisterRequest("user", "pass", "email@test.com", List.of(Role.ROLE_USER.name()), true, "pass", true);
         assertTrue(request.isMfaEnabled());
+        assertTrue(request.isFirstAccessRequired());
+        assertEquals("pass", request.getConfirmPassword());
     }
 
     @Test
-    void shouldAllowFieldMutationViaSetters() {
+    void shouldAllowUsingOtherConstructors() {
+        // Constructor with roles, confirmPassword, firstAccessRequired, MFA disabled
+        RegisterRequest r1 = new RegisterRequest("user", "pass", "email@test.com", List.of("ROLE_ADMIN"), "pass", true);
+        assertFalse(r1.isMfaEnabled());
+        assertTrue(r1.isFirstAccessRequired());
+        assertEquals(List.of("ROLE_ADMIN"), r1.getRoles());
+
+        // Constructor with MFA enabled, default role, confirmPassword, firstAccessRequired
+        RegisterRequest r2 = new RegisterRequest("user", "pass", "email@test.com", true, "pass", false);
+        assertTrue(r2.isMfaEnabled());
+        assertFalse(r2.isFirstAccessRequired());
+        assertEquals(List.of(Role.ROLE_USER.name()), r2.getRoles());
+
+        // Constructor with confirmPassword and firstAccessRequired only
+        RegisterRequest r3 = new RegisterRequest("user", "pass", "email@test.com", "pass", false);
+        assertFalse(r3.isMfaEnabled());
+        assertFalse(r3.isFirstAccessRequired());
+        assertEquals(List.of(Role.ROLE_USER.name()), r3.getRoles());
+    }
+
+    @Test
+    void shouldGettersAndSettersWork() {
         RegisterRequest request = new RegisterRequest();
-        request.setUsername("user2");
-        request.setPassword("pass2");
-        request.setEmail("user2@example.com");
-        request.setRoles(List.of("ROLE_USER", "ROLE_ADMIN"));
+        request.setUsername("user");
+        request.setPassword("pass");
+        request.setEmail("email@test.com");
+        request.setRoles(List.of("ROLE_ADMIN"));
         request.setMfaEnabled(true);
+        request.setConfirmPassword("pass");
+        request.setFirstAccessRequired(true);
 
-        assertEquals("user2", request.getUsername());
-        assertEquals("pass2", request.getPassword());
-        assertEquals("user2@example.com", request.getEmail());
-        assertEquals(List.of("ROLE_USER", "ROLE_ADMIN"), request.getRoles());
+        assertEquals("user", request.getUsername());
+        assertEquals("pass", request.getPassword());
+        assertEquals("email@test.com", request.getEmail());
+        assertEquals(List.of("ROLE_ADMIN"), request.getRoles());
         assertTrue(request.isMfaEnabled());
+        assertEquals("pass", request.getConfirmPassword());
+        assertTrue(request.isFirstAccessRequired());
     }
 
     @Test
-    void shouldImplementEqualsAndHashCodeCorrectly() {
-        RegisterRequest r1 = new RegisterRequest("abc", "123", "abc@example.com");
-        RegisterRequest r2 = new RegisterRequest("abc", "123", "abc@example.com");
-        RegisterRequest r3 = new RegisterRequest("def", "456", "def@example.com");
+    void shouldEqualsAndHashCodeBasedOnUsernameAndPassword() {
+        RegisterRequest r1 = new RegisterRequest("user", "pass", "email1@test.com", List.of(Role.ROLE_USER.name()), false, "pass", false);
+        RegisterRequest r2 = new RegisterRequest("user", "pass", "email2@test.com", List.of(Role.ROLE_ADMIN.name()), true, "pass", true);
+        RegisterRequest r3 = new RegisterRequest("user2", "pass", "email1@test.com", null, false, "pass", false);
 
         assertEquals(r1, r2);
         assertNotEquals(r1, r3);
@@ -102,11 +89,10 @@ public class RegisterRequestTest {
     }
 
     @Test
-    void shouldReturnMeaningfulToString() {
-        RegisterRequest request = new RegisterRequest("userX", "passY", "x@example.com");
-        String str = request.toString();
-
-        assertTrue(str.contains("userX"));
-        assertTrue(str.contains("passY"));
+    void shouldToStringContainUsernameAndPassword() {
+        RegisterRequest r = new RegisterRequest("user", "pass", "email@test.com", null, false, "pass", false);
+        String str = r.toString();
+        assertTrue(str.contains("user"));
+        assertTrue(str.contains("pass"));
     }
 }

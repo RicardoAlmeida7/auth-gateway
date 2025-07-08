@@ -38,7 +38,7 @@ public class UserServiceUseCaseImpl implements UserServiceUseCase {
         }
 
         UsernameValidator.validate(request.getUsername());
-        PasswordValidator.validate(request.getPassword());
+        PasswordValidator.validate(request.getPassword(), request.getConfirmPassword());
         EmailValidator.validate(request.getEmail());
         RoleValidator.validate(request.getRoles());
 
@@ -58,7 +58,8 @@ public class UserServiceUseCaseImpl implements UserServiceUseCase {
                 request.isMfaEnabled(),
                 secret,
                 false,
-                request.getRoles()
+                request.getRoles(),
+                request.isFirstAccessRequired()
         );
 
         useRepositoryPort.save(user);

@@ -1,10 +1,10 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
-import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
@@ -94,9 +94,8 @@ public class UseCaseConfigTest {
                                 false,
                                 null,
                                 true,
-                                List.of(
-                                        Role.ROLE_ADMIN.name()
-                                )
+                                List.of(Role.ROLE_ADMIN.name()),
+                                false
                         )
                 )
         );

@@ -1,10 +1,7 @@
 package com.zerotrust.auth_gateway.web.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidRoleException;
-import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
+import com.zerotrust.auth_gateway.domain.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -108,6 +105,7 @@ class GlobalExceptionHandlerTest {
         assertNotNull(body.get("timestamp"));
     }
 
+    @Test
     void shouldHandleInvalidRoleException() {
         String message = "Invalid role: TEST. Valid roles: [ROLE_USER, ROLE_ADMIN]";
         InvalidRoleException ex = new InvalidRoleException(message);
@@ -115,9 +113,45 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<Object> response = handler.handleRoleException(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertInstanceOf(Map.class, response.getBody());
+
         Map<?, ?> body = (Map<?, ?>) response.getBody();
         assertEquals(400, body.get("status"));
         assertEquals("Bad Request", body.get("error"));
+        assertEquals(message, body.get("message"));
+        assertNotNull(body.get("timestamp"));
+    }
+
+    @Test
+    void shouldHandleIllegalArgumentException() {
+        String message = "Illegal argument provided.";
+        IllegalArgumentException ex = new IllegalArgumentException(message);
+
+        ResponseEntity<Object> response = handler.handleIllegalArgumentException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertInstanceOf(Map.class, response.getBody());
+
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(400, body.get("status"));
+        assertEquals("Bad Request", body.get("error"));
+        assertEquals(message, body.get("message"));
+        assertNotNull(body.get("timestamp"));
+    }
+
+    @Test
+    void shouldHandleFirstAccessPasswordRequiredException() {
+        String message = "Password reset required on first access.";
+        FirstAccessPasswordRequiredException ex = new FirstAccessPasswordRequiredException(message);
+
+        ResponseEntity<Object> response = handler.handleFirstAccessPasswordRequiredException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertInstanceOf(Map.class, response.getBody());
+
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(400, body.get("status"));
+        assertEquals("FIRST_TIME_LOGIN", body.get("error"));
         assertEquals(message, body.get("message"));
         assertNotNull(body.get("timestamp"));
     }

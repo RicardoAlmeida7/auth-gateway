@@ -2,14 +2,14 @@ package com.zerotrust.auth_gateway.application.implementations;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
-import com.zerotrust.auth_gateway.domain.enums.Role;
+import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
+import com.zerotrust.auth_gateway.web.dto.PasswordResetRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,41 +30,78 @@ public class ActivateAccountUseCaseImplTest {
     }
 
     @Test
-    void shouldActivateUserSuccessfully() {
-        // Arrange
+    void shouldActivateUserSuccessfully_whenFirstAccessIsFalse() {
         String username = "user";
-        String token = jwtTokenGenerator.generateToken(username, List.of(Role.ROLE_USER.name()));
-
+        String token = "token";
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
+
         when(decodedJWT.getSubject()).thenReturn(username);
         when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
 
-        User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", false, "", false, null);
+        User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", false, "", false, null, false);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        // Act
-        activateAccountUseCase.activate(token);
+        activateAccountUseCase.activate(token, null);
 
-        // Assert
         assertTrue(user.isEnabled());
         verify(userRepository).save(user);
     }
 
     @Test
-    void shouldThrowWhenUserNotFound() {
-        // Arrange
-        String token = "valid.token.here";
-        String username = "nonexistent_user";
-
+    void shouldActivateUserSuccessfully_whenFirstAccessIsTrueWithValidPasswords() {
+        String username = "user";
+        String token = "token";
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
+
+        when(decodedJWT.getSubject()).thenReturn(username);
+        when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
+
+        User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", true, "", false, null, false);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+
+        PasswordResetRequest request = new PasswordResetRequest("NewPassword123", "NewPassword123");
+
+        activateAccountUseCase.activate(token, request);
+
+        assertTrue(user.isEnabled());
+        assertFalse(user.isFirstAccessRequired());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void shouldThrowException_whenFirstAccessIsTrueAndRequestIsNull() {
+        String username = "user";
+        String token = "token";
+        DecodedJWT decodedJWT = mock(DecodedJWT.class);
+
+        when(decodedJWT.getSubject()).thenReturn(username);
+        when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
+
+        User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", true, "", false, null, true);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+
+        FirstAccessPasswordRequiredException exception = assertThrows(FirstAccessPasswordRequiredException.class, () ->
+                activateAccountUseCase.activate(token, null)
+        );
+
+        assertEquals("Password reset is required on first access. Please provide a new password and confirmation.", exception.getMessage());
+        verify(userRepository, never()).save(user);
+    }
+
+    @Test
+    void shouldThrowWhenUserNotFound() {
+        String token = "token";
+        String username = "nonexistent_user";
+        DecodedJWT decodedJWT = mock(DecodedJWT.class);
+
         when(decodedJWT.getSubject()).thenReturn(username);
         when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-        // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                activateAccountUseCase.activate(token)
+                activateAccountUseCase.activate(token, null)
         );
+
         assertEquals("User not found.", exception.getMessage());
     }
 }

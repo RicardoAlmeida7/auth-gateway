@@ -42,6 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
                 user.getEmail(),
                 user.isMfaEnabled(),
                 user.getMfaSecret(),
+                user.isFirstAccessRequired(),
                 user.isEnabled(),
                 roleEntities
         );
@@ -60,7 +61,8 @@ public class UserRepositoryImpl implements UserRepository {
                 userEntity.isMfaEnabled(),
                 userEntity.getMfaSecret(),
                 userEntity.isEnabled(),
-                roleNames
+                roleNames,
+                userEntity.isFirstAccessRequired()
         );
     }
 }

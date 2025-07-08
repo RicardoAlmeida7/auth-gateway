@@ -1,6 +1,5 @@
 package com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementation;
 
-import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.RoleEntity;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.UserEntity;
@@ -22,7 +21,7 @@ public class UserRepositoryImplTest {
 
     private JpaUserRepository jpaUserRepository;
     private JpaRoleRepository jpaRoleRepository;
-    private UserRepository userRepository;
+    private UserRepositoryImpl userRepository;
 
     @BeforeEach
     void setup() {
@@ -36,9 +35,17 @@ public class UserRepositoryImplTest {
         UUID userId = UUID.randomUUID();
         String roleName = "ROLE_USER";
         RoleEntity roleEntity = new RoleEntity(UUID.randomUUID(), roleName);
-        User user = new User(userId, "testuser", "hashedpass", "testuser@example.com", false, "", true, List.of(roleName));
+        User user = new User(
+                userId,
+                "testuser",
+                "hashedpass",
+                "testuser@example.com",
+                false,
+                "",
+                true,
+                List.of(roleName),
+                true);
 
-        // Mock para simular busca da role no banco
         when(jpaRoleRepository.findByName(roleName)).thenReturn(Optional.of(roleEntity));
 
         userRepository.save(user);
@@ -54,7 +61,6 @@ public class UserRepositoryImplTest {
         assertEquals("", savedEntity.getMfaSecret());
         assertTrue(savedEntity.isEnabled());
 
-        // Verifica roles
         assertNotNull(savedEntity.getRoles());
         assertEquals(1, savedEntity.getRoles().size());
         assertEquals(roleName, savedEntity.getRoles().get(0).getName());
@@ -64,7 +70,16 @@ public class UserRepositoryImplTest {
     void findByUsername_shouldReturnMappedUser_whenUserExists() {
         UUID id = UUID.randomUUID();
         RoleEntity role = new RoleEntity(UUID.randomUUID(), "ROLE_USER");
-        UserEntity userEntity = new UserEntity(id, "testuser", "hashedpass", "testuser@example.com", false, "", true, List.of(role));
+        UserEntity userEntity = new UserEntity(
+                id,
+                "testuser",
+                "hashedpass",
+                "testuser@example.com",
+                false,
+                "",
+                true,
+                true,
+                List.of(role));
 
         when(jpaUserRepository.findByUsername("testuser")).thenReturn(Optional.of(userEntity));
 
@@ -95,13 +110,20 @@ public class UserRepositoryImplTest {
     void save_shouldThrowException_whenRoleNotFound() {
         UUID userId = UUID.randomUUID();
         String missingRole = "ROLE_MISSING";
-        User user = new User(userId, "testuser", "hashedpass", "testuser@example.com", false, "", true, List.of(missingRole));
+        User user = new User(
+                userId,
+                "testuser",
+                "hashedpass",
+                "testuser@example.com",
+                false,
+                "",
+                true,
+                List.of(missingRole),
+                true);
 
         when(jpaRoleRepository.findByName(missingRole)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            userRepository.save(user);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userRepository.save(user));
         assertEquals("Role not found: " + missingRole, exception.getMessage());
     }
 }

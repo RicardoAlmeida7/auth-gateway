@@ -1,0 +1,2 @@
+ALTER TABLE users
+ADD COLUMN first_access_required BOOLEAN DEFAULT FALSE NOT NULL;
