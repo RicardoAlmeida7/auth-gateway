@@ -1,7 +1,8 @@
-package com.zerotrust.auth_gateway.web.exception;
+package com.zerotrust.auth_gateway.infrastructure.web.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.zerotrust.auth_gateway.domain.exception.*;
+import com.zerotrust.auth_gateway.infrastructure.web.exception.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

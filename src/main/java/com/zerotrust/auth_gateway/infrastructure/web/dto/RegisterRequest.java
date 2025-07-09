@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.web.dto;
+package com.zerotrust.auth_gateway.infrastructure.web.dto;
 
 import com.zerotrust.auth_gateway.domain.enums.Role;
 

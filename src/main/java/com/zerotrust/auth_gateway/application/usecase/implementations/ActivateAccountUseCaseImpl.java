@@ -7,7 +7,7 @@ import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
-import com.zerotrust.auth_gateway.web.dto.PasswordResetRequest;
+import com.zerotrust.auth_gateway.infrastructure.web.dto.PasswordResetRequest;
 
 public class ActivateAccountUseCaseImpl implements ActivateAccountUseCase {
 

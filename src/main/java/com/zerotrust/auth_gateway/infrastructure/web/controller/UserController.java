@@ -1,9 +1,9 @@
-package com.zerotrust.auth_gateway.web.controller;
+package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
-import com.zerotrust.auth_gateway.web.dto.PasswordResetRequest;
-import com.zerotrust.auth_gateway.web.dto.RegisterRequest;
+import com.zerotrust.auth_gateway.infrastructure.web.dto.PasswordResetRequest;
+import com.zerotrust.auth_gateway.infrastructure.web.dto.RegisterRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
