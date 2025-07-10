@@ -6,7 +6,7 @@ import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredEx
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.dto.PasswordResetRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

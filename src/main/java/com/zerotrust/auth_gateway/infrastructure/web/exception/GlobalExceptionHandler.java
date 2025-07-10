@@ -54,6 +54,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, "FIRST_TIME_LOGIN", ex.getMessage());
     }
 
+    @ExceptionHandler(PasswordResetException.class)
+    public ResponseEntity<Object> handlePasswordResetException(PasswordResetException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     private ResponseEntity<Object> buildResponse(HttpStatus status, String specificErrorCode, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now());

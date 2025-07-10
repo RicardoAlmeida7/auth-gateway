@@ -1,9 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
-import com.zerotrust.auth_gateway.infrastructure.web.controller.AuthController;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.JwtResponse;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.LoginRequest;
+import com.zerotrust.auth_gateway.application.dto.JwtResponse;
+import com.zerotrust.auth_gateway.application.dto.LoginRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;

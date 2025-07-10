@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.infrastructure.web.dto;
+package com.zerotrust.auth_gateway.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

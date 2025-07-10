@@ -10,7 +10,7 @@ import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
 import com.zerotrust.auth_gateway.domain.validation.RoleValidator;
 import com.zerotrust.auth_gateway.domain.validation.UsernameValidator;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;

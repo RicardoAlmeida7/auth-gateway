@@ -1,7 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations;
 
-import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.RoleEntity;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.UserEntity;
 import com.zerotrust.auth_gateway.infrastructure.repository.repositories.interfaces.JpaRoleRepository;
@@ -28,6 +28,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByUsername(String username) {
         return jpaUserRepository.findByUsername(username).map(this::mapToDomain);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jpaUserRepository.findByEmail(email).map(this::mapToDomain);
     }
 
     private UserEntity mapToEntity(User user) {

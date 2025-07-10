@@ -16,4 +16,10 @@ public class MockEmailService implements EmailService {
             logger.info("QR Code URL for MFA: {}", qrCodeUrl);
         }
     }
+
+    @Override
+    public void sendResetPasswordEmail(String to, String resetPasswordLink) {
+        logger.info("Sending reset password email to: {}", to);
+        logger.info("Reset password link: {}", resetPasswordLink);
+    }
 }

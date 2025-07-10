@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.JwtResponse;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.LoginRequest;
+import com.zerotrust.auth_gateway.application.dto.JwtResponse;
+import com.zerotrust.auth_gateway.application.dto.LoginRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

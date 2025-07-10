@@ -10,7 +10,7 @@ import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

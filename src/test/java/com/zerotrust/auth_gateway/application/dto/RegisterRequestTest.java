@@ -1,7 +1,7 @@
-package com.zerotrust.auth_gateway.infrastructure.web.dto;
+package com.zerotrust.auth_gateway.application.dto;
 
 import com.zerotrust.auth_gateway.domain.enums.Role;
-import com.zerotrust.auth_gateway.infrastructure.web.dto.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.RegisterRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

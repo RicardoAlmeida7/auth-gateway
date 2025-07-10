@@ -1,8 +1,10 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.PasswordResetUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
@@ -47,7 +49,22 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public CommandLineRunner createAdminUser(AdminProperties adminProperties, UserRepository userRepository, PasswordEncoder passwordEncoder, RoleSeeder roleSeeder) {
+    public PasswordResetUseCase passwordResetUseCase(
+            UserRepository userRepository,
+            EmailService emailService,
+            JwtTokenGenerator jwtTokenGenerator,
+            PasswordEncoder passwordEncoder
+    ) {
+        return new PasswordResetUseCaseImpl(userRepository, emailService, jwtTokenGenerator, passwordEncoder);
+    }
+
+    @Bean
+    public CommandLineRunner createAdminUser(
+            AdminProperties adminProperties,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            RoleSeeder roleSeeder
+    ) {
         return args -> {
             roleSeeder.run();
 
