@@ -40,7 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
                 .map(roleName -> jpaRoleRepository.findByName(roleName)
                         .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleName)))
                 .toList();
-        return new UserEntity(
+        UserEntity entity = new UserEntity(
                 user.getId(),
                 user.getUsername(),
                 user.getPasswordHash(),
@@ -51,6 +51,9 @@ public class UserRepositoryImpl implements UserRepository {
                 user.isEnabled(),
                 roleEntities
         );
+        entity.setFailedLoginAttempts(user.getFailedLoginAttempts());
+        entity.setLastFailedLoginTime(user.getLastFailedLoginTime());
+        return entity;
     }
 
     private User mapToDomain(UserEntity userEntity) {
@@ -58,7 +61,7 @@ public class UserRepositoryImpl implements UserRepository {
                 .map(RoleEntity::getName)
                 .toList();
 
-        return new User(
+        User user = new User(
                 userEntity.getId(),
                 userEntity.getUsername(),
                 userEntity.getPasswordHash(),
@@ -69,5 +72,8 @@ public class UserRepositoryImpl implements UserRepository {
                 roleNames,
                 userEntity.isFirstAccessRequired()
         );
+        user.setFailedLoginAttempts(userEntity.getFailedLoginAttempts());
+        user.setLastFailedLoginTime(userEntity.getLastFailedLoginTime());
+        return user;
     }
 }

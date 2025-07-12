@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.AuthenticationRequest;
+import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
@@ -24,21 +25,25 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
     private final JwtTokenGenerator jwtTokenGenerator;
     private final UserRepository userRepository;
     private final TOTPService totpService;
+    private final LoginAttemptService loginAttemptService;
 
     public AuthServiceUseCaseImpl(
             AuthenticationManager authenticationManager,
             JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,
-            TOTPService totpService
+            TOTPService totpService,
+            LoginAttemptService loginAttemptService
     ) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.userRepository = userRepository;
         this.totpService = totpService;
+        this.loginAttemptService = loginAttemptService;
     }
 
     public String login(AuthenticationRequest request) {
-        if (request == null) throw new AuthenticationFailedException("");
+        if (request == null)
+            throw new AuthenticationFailedException("Authentication request must include a username or email and a password.");
 
         User user = userRepository
                 .findByUsername(request.username())
@@ -46,9 +51,10 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
                 .orElseThrow(() -> new AuthenticationFailedException("User not found"));
 
         validateFirstAccess(user);
+        loginAttemptService.checkLock(user);
         validateMfa(user, request);
 
-        return authenticateAndGenerateToken(request);
+        return authenticateAndGenerateToken(user, request);
     }
 
     private void validateFirstAccess(User user) {
@@ -66,20 +72,22 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
             boolean validOtp = totpService.verifyCode(user.getMfaSecret(), request.otp());
 
             if (!validOtp) {
-                // TODO: implements errors count to block user or token
+                loginAttemptService.recordFailure(user);
                 throw new AuthenticationFailedException("Invalid OTP code.");
             }
         }
     }
 
-    private String authenticateAndGenerateToken(AuthenticationRequest request) {
+    private String authenticateAndGenerateToken(User user, AuthenticationRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
 
+            loginAttemptService.reset(user);
             return jwtTokenGenerator.generateToken(request.username(), getAuthorities(authentication));
         } catch (Exception exception) {
+            loginAttemptService.recordFailure(user);
             throw new AuthenticationFailedException("Invalid password.");
         }
     }

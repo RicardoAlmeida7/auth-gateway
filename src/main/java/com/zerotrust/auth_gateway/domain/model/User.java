@@ -30,6 +30,8 @@ public class User {
     private List<String> roles;
     private String email;
     private boolean firstAccessRequired;
+    private int failedLoginAttempts = 0;
+    private long lastFailedLoginTime = 0;
 
     public String getUsername() {
         return username;
@@ -123,5 +125,21 @@ public class User {
 
     public void setFirstAccessRequired(boolean firstAccessRequired) {
         this.firstAccessRequired = firstAccessRequired;
+    }
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public long getLastFailedLoginTime() {
+        return lastFailedLoginTime;
+    }
+
+    public void setLastFailedLoginTime(long lastFailedLoginTime) {
+        this.lastFailedLoginTime = lastFailedLoginTime;
     }
 }

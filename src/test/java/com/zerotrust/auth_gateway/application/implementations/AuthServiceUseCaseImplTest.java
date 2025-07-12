@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.AuthenticationRequest;
+import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
@@ -32,6 +33,7 @@ public class AuthServiceUseCaseImplTest {
     private UserRepository userRepository;
     private TOTPService totpService;
     private AuthServiceUseCaseImpl authService;
+    private LoginAttemptService loginAttemptService;
 
     @BeforeEach
     void setUp() {
@@ -39,8 +41,15 @@ public class AuthServiceUseCaseImplTest {
         jwtTokenGenerator = mock(JwtTokenGenerator.class);
         userRepository = mock(UserRepository.class);
         totpService = mock(TOTPService.class);
+        loginAttemptService = mock(LoginAttemptService.class);
 
-        authService = new AuthServiceUseCaseImpl(authenticationManager, jwtTokenGenerator, userRepository, totpService);
+        authService = new AuthServiceUseCaseImpl(
+                authenticationManager,
+                jwtTokenGenerator,
+                userRepository,
+                totpService,
+                loginAttemptService
+        );
     }
 
     @Test

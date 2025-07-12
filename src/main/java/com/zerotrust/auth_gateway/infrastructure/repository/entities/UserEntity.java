@@ -31,6 +31,10 @@ public class UserEntity {
 
     private boolean enabled;
 
+    private int failedLoginAttempts;
+
+    private long lastFailedLoginTime;
+
     public UserEntity() {
     }
 
@@ -155,5 +159,21 @@ public class UserEntity {
 
     public void setFirstAccessRequired(boolean firstAccessRequired) {
         this.firstAccessRequired = firstAccessRequired;
+    }
+
+    public long getLastFailedLoginTime() {
+        return lastFailedLoginTime;
+    }
+
+    public void setLastFailedLoginTime(long lastFailedLoginTime) {
+        this.lastFailedLoginTime = lastFailedLoginTime;
+    }
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
     }
 }

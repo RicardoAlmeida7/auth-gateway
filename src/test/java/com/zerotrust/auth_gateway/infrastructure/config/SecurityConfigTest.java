@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
+import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
@@ -67,8 +68,9 @@ public class SecurityConfigTest {
         JwtTokenGenerator jwtTokenGenerator = mock(JwtTokenGenerator.class);
         UserRepository userRepository = mock(UserRepository.class);
         TOTPService totpService = mock(TOTPService.class);
+        LoginAttemptService loginAttemptService = mock(LoginAttemptService.class);
 
-        assertNotNull(config.authServiceUseCase(authenticationManager, jwtTokenGenerator, userRepository, totpService));
+        assertNotNull(config.authServiceUseCase(authenticationManager, jwtTokenGenerator, userRepository, totpService, loginAttemptService));
     }
 
     @Test
