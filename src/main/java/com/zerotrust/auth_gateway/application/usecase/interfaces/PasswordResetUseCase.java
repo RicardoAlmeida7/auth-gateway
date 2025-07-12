@@ -1,7 +1,7 @@
 package com.zerotrust.auth_gateway.application.usecase.interfaces;
 
-import com.zerotrust.auth_gateway.application.dto.PasswordResetEmailRequest;
-import com.zerotrust.auth_gateway.application.dto.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.dto.request.PasswordResetEmailRequest;
+import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 
 public interface PasswordResetUseCase {
     void sendResetLink(PasswordResetEmailRequest request);

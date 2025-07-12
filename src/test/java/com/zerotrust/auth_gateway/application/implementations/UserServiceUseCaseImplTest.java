@@ -1,6 +1,5 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
@@ -11,7 +10,7 @@ import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
-import com.zerotrust.auth_gateway.application.dto.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

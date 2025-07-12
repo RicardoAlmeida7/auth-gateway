@@ -12,6 +12,7 @@ import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
+import com.zerotrust.auth_gateway.infrastructure.seed.LoginPolicySeeder;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -63,10 +64,12 @@ public class UseCaseConfig {
             AdminProperties adminProperties,
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            RoleSeeder roleSeeder
+            RoleSeeder roleSeeder,
+            LoginPolicySeeder loginPolicySeeder
     ) {
         return args -> {
             roleSeeder.run();
+            loginPolicySeeder.run();
 
             Optional<User> existingAdmin = userRepository.findByUsername(adminProperties.getUsername());
             if (existingAdmin.isEmpty()) {

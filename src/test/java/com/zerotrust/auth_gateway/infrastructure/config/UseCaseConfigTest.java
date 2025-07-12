@@ -8,6 +8,7 @@ import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
+import com.zerotrust.auth_gateway.infrastructure.seed.LoginPolicySeeder;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -51,6 +52,7 @@ public class UseCaseConfigTest {
         UserRepository userRepository = mock(UserRepository.class);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         RoleSeeder roleSeeder = mock(RoleSeeder.class);
+        LoginPolicySeeder loginPolicySeeder = mock(LoginPolicySeeder.class);
 
         when(adminProperties.getUsername()).thenReturn("admin");
         when(adminProperties.getPassword()).thenReturn("pass");
@@ -59,7 +61,7 @@ public class UseCaseConfigTest {
 
         UseCaseConfig config = new UseCaseConfig();
 
-        CommandLineRunner runner = config.createAdminUser(adminProperties, userRepository, passwordEncoder, roleSeeder);
+        CommandLineRunner runner = config.createAdminUser(adminProperties, userRepository, passwordEncoder, roleSeeder, loginPolicySeeder);
         runner.run();
 
         verify(roleSeeder).run();
@@ -82,6 +84,7 @@ public class UseCaseConfigTest {
         UserRepository userRepository = mock(UserRepository.class);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         RoleSeeder roleSeeder = mock(RoleSeeder.class);
+        LoginPolicySeeder loginPolicySeeder = mock(LoginPolicySeeder.class);
 
         when(adminProperties.getUsername()).thenReturn("admin");
         when(userRepository.findByUsername("admin")).thenReturn(
@@ -102,7 +105,7 @@ public class UseCaseConfigTest {
 
         UseCaseConfig config = new UseCaseConfig();
 
-        CommandLineRunner runner = config.createAdminUser(adminProperties, userRepository, passwordEncoder, roleSeeder);
+        CommandLineRunner runner = config.createAdminUser(adminProperties, userRepository, passwordEncoder, roleSeeder, loginPolicySeeder);
         runner.run();
 
         verify(roleSeeder).run();

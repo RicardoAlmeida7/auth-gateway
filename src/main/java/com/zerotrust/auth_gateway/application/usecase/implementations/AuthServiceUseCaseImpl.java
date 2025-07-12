@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.zerotrust.auth_gateway.application.dto.AuthenticationRequest;
+import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;

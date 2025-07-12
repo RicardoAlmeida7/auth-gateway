@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.zerotrust.auth_gateway.application.dto.PasswordResetEmailRequest;
-import com.zerotrust.auth_gateway.application.dto.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.dto.request.PasswordResetEmailRequest;
+import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
 import com.zerotrust.auth_gateway.domain.exception.PasswordResetException;
 import com.zerotrust.auth_gateway.domain.model.User;

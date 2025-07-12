@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.application.dto;
+package com.zerotrust.auth_gateway.application.dto.request;
 
 public class PasswordResetRequest {
 

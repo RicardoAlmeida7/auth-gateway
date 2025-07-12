@@ -7,6 +7,7 @@ import com.zerotrust.auth_gateway.application.service.implementations.LoginAttem
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
+import com.zerotrust.auth_gateway.domain.repository.LoginPolicyRepository;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
@@ -102,7 +103,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public LoginAttemptService loginAttemptService(UserRepository userRepository) {
-        return new LoginAttemptServiceImpl(userRepository);
+    public LoginAttemptService loginAttemptService(UserRepository userRepository, LoginPolicyRepository loginPolicyRepository) {
+        return new LoginAttemptServiceImpl(userRepository, loginPolicyRepository);
     }
 }

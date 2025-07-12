@@ -1,7 +1,7 @@
 package com.zerotrust.auth_gateway.application.usecase.interfaces;
 
-import com.zerotrust.auth_gateway.application.dto.RegisterRequest;
-import com.zerotrust.auth_gateway.application.dto.ResendActivationRequest;
+import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.request.ResendActivationRequest;
 
 public interface UserServiceUseCase {
     void register(RegisterRequest request);

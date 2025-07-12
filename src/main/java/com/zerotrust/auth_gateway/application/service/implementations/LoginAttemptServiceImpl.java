@@ -2,18 +2,20 @@ package com.zerotrust.auth_gateway.application.service.implementations;
 
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
+import com.zerotrust.auth_gateway.domain.model.LoginPolicy;
 import com.zerotrust.auth_gateway.domain.model.User;
+import com.zerotrust.auth_gateway.domain.repository.LoginPolicyRepository;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 
 public class LoginAttemptServiceImpl implements LoginAttemptService {
 
     private final UserRepository userRepository;
 
-    private static final int MAX_ATTEMPTS = 3;
-    private static final long LOCK_TIME_MILLIS = 60_000;
+    private final LoginPolicyRepository loginPolicyRepository;
 
-    public LoginAttemptServiceImpl(UserRepository userRepository) {
+    public LoginAttemptServiceImpl(UserRepository userRepository, LoginPolicyRepository loginPolicyRepository) {
         this.userRepository = userRepository;
+        this.loginPolicyRepository = loginPolicyRepository;
     }
 
     @Override
@@ -21,7 +23,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
         int newAttempts = user.getFailedLoginAttempts() + 1;
         user.setFailedLoginAttempts(newAttempts);
 
-        if (newAttempts >= MAX_ATTEMPTS) {
+        if (newAttempts >= loginPolicyRepository.get().getMaxAttempts()) {
             user.setLastFailedLoginTime(System.currentTimeMillis());
         }
 
@@ -38,8 +40,9 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
     @Override
     public void checkLock(User user) {
         long now = System.currentTimeMillis();
-        if (user.getFailedLoginAttempts() >= MAX_ATTEMPTS) {
-            if ((now - user.getLastFailedLoginTime()) < LOCK_TIME_MILLIS) {
+        LoginPolicy loginPolicy = loginPolicyRepository.get();
+        if (user.getFailedLoginAttempts() >= loginPolicy.getMaxAttempts()) {
+            if ((now - user.getLastFailedLoginTime()) < loginPolicy.getLockTimeMillis()) {
                 throw new AuthenticationFailedException("Account is temporarily locked. Try again later.");
             }
             recordFailure(user);

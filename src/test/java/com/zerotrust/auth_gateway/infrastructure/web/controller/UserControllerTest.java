@@ -2,8 +2,8 @@ package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
-import com.zerotrust.auth_gateway.application.dto.PasswordResetRequest;
-import com.zerotrust.auth_gateway.application.dto.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
