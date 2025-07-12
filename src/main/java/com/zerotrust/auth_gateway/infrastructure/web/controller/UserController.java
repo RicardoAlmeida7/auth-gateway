@@ -1,9 +1,10 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
-import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
 import com.zerotrust.auth_gateway.application.dto.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.dto.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.ResendActivationRequest;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,6 +47,12 @@ public class UserController {
     @PostMapping("/activate")
     public ResponseEntity<Void> activateAccount(@RequestParam String token, @RequestBody(required = false) PasswordResetRequest request) {
         activateAccountUseCase.activate(token, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/resend-activation-email")
+    public ResponseEntity<Void> resendActivation(@RequestBody ResendActivationRequest request) {
+        useServiceUseCase.resendActivationEmail(request);
         return ResponseEntity.ok().build();
     }
 }

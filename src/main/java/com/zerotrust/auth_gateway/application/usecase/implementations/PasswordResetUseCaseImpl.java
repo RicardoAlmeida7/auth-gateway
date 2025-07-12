@@ -34,6 +34,8 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
     public void sendResetLink(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found."));
+        user.setEnabled(false);
+        userRepository.save(user);
 
         String token = jwtTokenGenerator.generateToken(user.getUsername(), user.getRoles());
         String link = "http://localhost:8080/api/v1/user/reset-password?token=" + token;
@@ -54,6 +56,7 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
         PasswordValidator.validate(request.getNewPassword(), request.getConfirmPassword());
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        user.setEnabled(true);
         userRepository.save(user);
     }
 }

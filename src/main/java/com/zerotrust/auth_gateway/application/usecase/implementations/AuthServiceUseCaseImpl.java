@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.model.User;
@@ -57,22 +58,26 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
             boolean validOtp = totpService.verifyCode(user.getMfaSecret(), otp);
 
             if (!validOtp) {
-                // TODO implements errors count to block user or token
-                throw  new IllegalArgumentException("Invalid OTP code.");
+                // TODO: implements errors count to block user or token
+                throw new IllegalArgumentException("Invalid OTP code.");
             }
         }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
 
-        List<String> roles = authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+            List<String> roles = authentication.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
 
-        return jwtTokenGenerator.generateToken(username, roles);
+            return jwtTokenGenerator.generateToken(username, roles);
+        } catch (Exception exception) {
+            throw new JWTDecodeException("Invalid password.");
+        }
 
-        //TODO Refactor to support multi-factor and different authentication flows.
+        //TODO: Refactor to support multi-factor and different authentication flows.
     }
 }

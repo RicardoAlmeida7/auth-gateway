@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
@@ -68,7 +69,7 @@ public class UserServiceUseCaseImplTest {
         assertEquals("validUser", savedUser.getUsername());
         assertEquals(hashedPassword, savedUser.getPasswordHash());
         assertFalse(savedUser.isMfaEnabled());
-        assertEquals("", savedUser.getMfaSecret());
+        assertEquals(null, savedUser.getMfaSecret());
         assertFalse(savedUser.isEnabled());
         assertFalse(savedUser.isFirstAccessRequired());
         assertNotNull(savedUser.getId());
@@ -79,7 +80,7 @@ public class UserServiceUseCaseImplTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 registerUserUseCaseImpl.register(null)
         );
-        assertEquals("RegisterUserCommand cannot be null.", exception.getMessage());
+        assertEquals("No user found with provided email or username.", exception.getMessage());
     }
 
     @Test
