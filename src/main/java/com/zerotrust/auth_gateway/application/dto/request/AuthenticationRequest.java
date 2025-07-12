@@ -1,4 +1,4 @@
 package com.zerotrust.auth_gateway.application.dto.request;
 
-public record AuthenticationRequest(String username, String email, String password, String otp) {
+public record AuthenticationRequest(String userId, String password, String otp) {
 }

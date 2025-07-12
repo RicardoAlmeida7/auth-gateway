@@ -77,7 +77,7 @@ public class UseCaseConfig {
                         UUID.randomUUID(),
                         adminProperties.getUsername(),
                         passwordEncoder.encode(adminProperties.getPassword()),
-                        "",
+                        adminProperties.getEmail(),
                         false,
                         null,
                         true,

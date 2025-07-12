@@ -46,8 +46,8 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
             throw new AuthenticationFailedException("Authentication request must include a username or email and a password.");
 
         User user = userRepository
-                .findByUsername(request.username())
-                .or(() -> userRepository.findByEmail(request.email()))
+                .findByUsername(request.userId())
+                .or(() -> userRepository.findByEmail(request.userId()))
                 .orElseThrow(() -> new AuthenticationFailedException("User not found"));
 
         validateFirstAccess(user);
@@ -81,11 +81,11 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
     private String authenticateAndGenerateToken(User user, AuthenticationRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), request.password())
             );
 
             loginAttemptService.reset(user);
-            return jwtTokenGenerator.generateToken(request.username(), getAuthorities(authentication));
+            return jwtTokenGenerator.generateToken(user.getUsername(), getAuthorities(authentication));
         } catch (Exception exception) {
             loginAttemptService.recordFailure(user);
             throw new AuthenticationFailedException("Invalid password.");
