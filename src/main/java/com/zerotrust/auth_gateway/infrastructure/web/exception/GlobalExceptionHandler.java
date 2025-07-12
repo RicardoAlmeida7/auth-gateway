@@ -1,6 +1,5 @@
 package com.zerotrust.auth_gateway.infrastructure.web.exception;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.zerotrust.auth_gateway.domain.exception.*;
 import org.springframework.http.HttpStatus;
@@ -60,8 +59,8 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(JWTDecodeException.class)
-    public ResponseEntity<Object> handleJWTDecodeException(JWTDecodeException ex) {
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public ResponseEntity<Object> handleAuthenticationFailedException(AuthenticationFailedException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

@@ -1,7 +1,8 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.zerotrust.auth_gateway.application.dto.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
+import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -24,60 +25,69 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
     private final UserRepository userRepository;
     private final TOTPService totpService;
 
-    public AuthServiceUseCaseImpl(AuthenticationManager authenticationManager, JwtTokenGenerator jwtTokenGenerator, UserRepository userRepository, TOTPService totpService) {
+    public AuthServiceUseCaseImpl(
+            AuthenticationManager authenticationManager,
+            JwtTokenGenerator jwtTokenGenerator,
+            UserRepository userRepository,
+            TOTPService totpService
+    ) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.userRepository = userRepository;
         this.totpService = totpService;
     }
 
-    public String login(String username, String password, String otp) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null or blank.");
-        }
+    public String login(AuthenticationRequest request) {
+        if (request == null) throw new AuthenticationFailedException("");
 
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or blank.");
-        }
+        User user = userRepository
+                .findByUsername(request.username())
+                .or(() -> userRepository.findByEmail(request.email()))
+                .orElseThrow(() -> new AuthenticationFailedException("User not found"));
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        validateFirstAccess(user);
+        validateMfa(user, request);
 
-        if (!user.isEnabled()) {
-            throw new IllegalArgumentException("User account is not activated.");
-        }
+        return authenticateAndGenerateToken(request);
+    }
 
-        if (user.isFirstAccessRequired()) {
+    private void validateFirstAccess(User user) {
+        if (!user.isEnabled())
+            throw new AuthenticationFailedException("User account is not activated.");
+        if (user.isFirstAccessRequired())
             throw new FirstAccessPasswordRequiredException("You must reset your password before logging in for the first time.");
-        }
+    }
 
+    private void validateMfa(User user, AuthenticationRequest request) {
         if (user.isMfaEnabled()) {
-            if (otp == null || otp.isBlank()) {
-                throw new IllegalArgumentException("OTP is required for MFA-enabled accounts.");
+            if (request.otp() == null || request.otp().isBlank()) {
+                throw new AuthenticationFailedException("OTP is required for MFA-enabled accounts.");
             }
-
-            boolean validOtp = totpService.verifyCode(user.getMfaSecret(), otp);
+            boolean validOtp = totpService.verifyCode(user.getMfaSecret(), request.otp());
 
             if (!validOtp) {
                 // TODO: implements errors count to block user or token
-                throw new IllegalArgumentException("Invalid OTP code.");
+                throw new AuthenticationFailedException("Invalid OTP code.");
             }
         }
+    }
 
+    private String authenticateAndGenerateToken(AuthenticationRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
 
-            List<String> roles = authentication.getAuthorities()
-                    .stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
-
-            return jwtTokenGenerator.generateToken(username, roles);
+            return jwtTokenGenerator.generateToken(request.username(), getAuthorities(authentication));
         } catch (Exception exception) {
-            throw new JWTDecodeException("Invalid password.");
+            throw new AuthenticationFailedException("Invalid password.");
         }
+    }
 
-        //TODO: Refactor to support multi-factor and different authentication flows.
+    private List<String> getAuthorities(Authentication authentication) {
+        return authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
     }
 }

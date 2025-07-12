@@ -17,8 +17,8 @@ public class PasswordResetController {
     }
 
     @PostMapping("/request-password-reset")
-    public ResponseEntity<Void> requestReset(@RequestBody PasswordResetEmailRequest request) {
-        passwordResetUseCase.sendResetLink(request.email());
+    public ResponseEntity<Void> requestReset(@RequestBody(required = false) PasswordResetEmailRequest request) {
+        passwordResetUseCase.sendResetLink(request);
         return ResponseEntity.ok().build();
     }
 

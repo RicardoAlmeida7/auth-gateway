@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.zerotrust.auth_gateway.application.dto.PasswordResetEmailRequest;
 import com.zerotrust.auth_gateway.application.dto.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
 import com.zerotrust.auth_gateway.domain.exception.PasswordResetException;
@@ -31,15 +32,18 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
     }
 
     @Override
-    public void sendResetLink(String email) {
-        User user = userRepository.findByEmail(email)
+    public void sendResetLink(PasswordResetEmailRequest request) {
+        if (request == null) {
+            throw new PasswordResetException("Email is required for reset.");
+        }
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("User not found."));
         user.setEnabled(false);
         userRepository.save(user);
 
         String token = jwtTokenGenerator.generateToken(user.getUsername(), user.getRoles());
         String link = "http://localhost:8080/api/v1/user/reset-password?token=" + token;
-        emailService.sendResetPasswordEmail(email, link);
+        emailService.sendResetPasswordEmail(request.email(), link);
     }
 
     @Override

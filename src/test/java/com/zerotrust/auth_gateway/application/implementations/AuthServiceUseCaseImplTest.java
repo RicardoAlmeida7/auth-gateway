@@ -1,6 +1,8 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
+import com.zerotrust.auth_gateway.application.dto.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -20,7 +22,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AuthServiceUseCaseImplTest {
 
@@ -47,13 +50,14 @@ public class AuthServiceUseCaseImplTest {
         User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        AuthenticationRequest request = new AuthenticationRequest(username, "user@example.com", password, null);
 
         Authentication auth = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(auth);
         when(auth.getAuthorities()).thenReturn((Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(jwtTokenGenerator.generateToken(username, List.of("ROLE_USER"))).thenReturn("jwt-token");
 
-        String token = authService.login(username, password, null);
+        String token = authService.login(request);
 
         assertEquals("jwt-token", token);
     }
@@ -64,6 +68,7 @@ public class AuthServiceUseCaseImplTest {
         String password = "pass";
         String otp = "123456";
         User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(username, "use@example.com", password, otp);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(totpService.verifyCode("secret", otp)).thenReturn(true);
@@ -73,7 +78,7 @@ public class AuthServiceUseCaseImplTest {
         when(authenticationManager.authenticate(any())).thenReturn(auth);
         when(jwtTokenGenerator.generateToken(username, List.of("ROLE_USER"))).thenReturn("jwt-token");
 
-        String token = authService.login(username, password, otp);
+        String token = authService.login(request);
 
         assertEquals("jwt-token", token);
     }
@@ -83,10 +88,10 @@ public class AuthServiceUseCaseImplTest {
         String username = "mfaUser";
         String password = "pass";
         User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
-
+        AuthenticationRequest request = new AuthenticationRequest(username, "user@example", password, null);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login(username, password, null));
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
         assertEquals("OTP is required for MFA-enabled accounts.", ex.getMessage());
     }
 
@@ -96,49 +101,51 @@ public class AuthServiceUseCaseImplTest {
         String password = "pass";
         String otp = "000000";
         User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(username, "user@example.com", password, otp);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(totpService.verifyCode("secret", otp)).thenReturn(false);
 
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login(username, password, otp));
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
         assertEquals("Invalid OTP code.", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfUserNotFound() {
         when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
+        AuthenticationRequest request = new AuthenticationRequest("user", null, null, null);
 
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login("user", "pass", null));
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
         assertEquals("User not found", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfUserIsNotActivated() {
+        AuthenticationRequest request = new AuthenticationRequest("user", null, "123456", null);
         User user = new User(UUID.randomUUID(), "user", "hash", "email@test.com", false, "", false, List.of("ROLE_USER"), false);
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login("user", "pass", null));
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
         assertEquals("User account is not activated.", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfFirstAccessRequired() {
+        AuthenticationRequest request = new AuthenticationRequest("user", null, "123456", null);
         User user = new User(UUID.randomUUID(), "user", "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), true);
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 
-        Exception ex = assertThrows(FirstAccessPasswordRequiredException.class, () -> authService.login("user", "pass", null));
+        Exception ex = assertThrows(FirstAccessPasswordRequiredException.class, () -> authService.login(request));
         assertEquals("You must reset your password before logging in for the first time.", ex.getMessage());
     }
 
     @Test
-    void shouldThrowIfUsernameBlank() {
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login("  ", "pass", null));
-        assertEquals("Username cannot be null or blank.", ex.getMessage());
-    }
-
-    @Test
     void shouldThrowIfPasswordBlank() {
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login("user", "  ", null));
-        assertEquals("Password cannot be null or blank.", ex.getMessage());
+        AuthenticationRequest request = new AuthenticationRequest("user", null, "   ", null);
+        User user = new User(UUID.randomUUID(), "user", "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
+        assertEquals("Invalid password.", ex.getMessage());
     }
 }

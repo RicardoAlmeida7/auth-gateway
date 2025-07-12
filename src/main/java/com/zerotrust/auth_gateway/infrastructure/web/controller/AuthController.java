@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
+import com.zerotrust.auth_gateway.application.dto.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.application.dto.JwtResponse;
-import com.zerotrust.auth_gateway.application.dto.LoginRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,9 +19,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
-        String token = authServiceUseCase.login(request.getUsername(), request.getPassword(), request.getOtp());
-        // TODO: Add error handling for authentication failures
+    public ResponseEntity<JwtResponse> login(@RequestBody AuthenticationRequest request) {
+        String token = authServiceUseCase.login(request);
         return ResponseEntity.ok(new JwtResponse(token));
     }
 }

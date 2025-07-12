@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
+import com.zerotrust.auth_gateway.application.dto.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.application.dto.JwtResponse;
-import com.zerotrust.auth_gateway.application.dto.LoginRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +24,8 @@ public class AuthControllerTest {
     @Test
     void shouldReturnJwtTokenOnLogin() {
         // Given
-        LoginRequest request = new LoginRequest("username", "password", null);
-        when(authServiceUseCase.login("username", "password", null)).thenReturn("mocked.jwt.token");
+        AuthenticationRequest request = new AuthenticationRequest("username", "password", null, null);
+        when(authServiceUseCase.login(request)).thenReturn("mocked.jwt.token");
 
         // When
         ResponseEntity<JwtResponse> response = authController.login(request);
@@ -36,6 +36,6 @@ public class AuthControllerTest {
         assertNotNull(response.getBody());
         assertEquals("mocked.jwt.token", response.getBody().getToken());
 
-        verify(authServiceUseCase, times(1)).login("username", "password", null);
+        verify(authServiceUseCase, times(1)).login(request);
     }
 }
