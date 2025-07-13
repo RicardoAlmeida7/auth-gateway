@@ -2,7 +2,7 @@ package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserLoginUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
+public class UserLoginUseCaseImpl implements UserLoginUseCase {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenGenerator jwtTokenGenerator;
@@ -28,7 +28,7 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
     private final TOTPService totpService;
     private final LoginAttemptService loginAttemptService;
 
-    public AuthServiceUseCaseImpl(
+    public UserLoginUseCaseImpl(
             AuthenticationManager authenticationManager,
             JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,

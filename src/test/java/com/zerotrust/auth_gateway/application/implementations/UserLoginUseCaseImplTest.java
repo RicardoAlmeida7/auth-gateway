@@ -2,7 +2,7 @@ package com.zerotrust.auth_gateway.application.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
-import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserLoginUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.model.User;
@@ -26,13 +26,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AuthServiceUseCaseImplTest {
+public class UserLoginUseCaseImplTest {
 
     private AuthenticationManager authenticationManager;
     private JwtTokenGenerator jwtTokenGenerator;
     private UserRepository userRepository;
     private TOTPService totpService;
-    private AuthServiceUseCaseImpl authService;
+    private UserLoginUseCaseImpl authService;
     private LoginAttemptService loginAttemptService;
 
     @BeforeEach
@@ -43,7 +43,7 @@ public class AuthServiceUseCaseImplTest {
         totpService = mock(TOTPService.class);
         loginAttemptService = mock(LoginAttemptService.class);
 
-        authService = new AuthServiceUseCaseImpl(
+        authService = new UserLoginUseCaseImpl(
                 authenticationManager,
                 jwtTokenGenerator,
                 userRepository,

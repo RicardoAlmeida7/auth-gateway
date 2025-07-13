@@ -5,8 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.zerotrust.auth_gateway.application.service.implementations.LoginAttemptServiceImpl;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
-import com.zerotrust.auth_gateway.application.usecase.implementations.AuthServiceUseCaseImpl;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserLoginUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserLoginUseCase;
 import com.zerotrust.auth_gateway.domain.repository.LoginPolicyRepository;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
@@ -88,13 +88,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthServiceUseCase authServiceUseCase(
+    public UserLoginUseCase authServiceUseCase(
             AuthenticationManager authenticationManager,
             JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,
             TOTPService totpService,
             LoginAttemptService loginAttemptService) {
-        return new AuthServiceUseCaseImpl(authenticationManager, jwtTokenGenerator, userRepository, totpService, loginAttemptService);
+        return new UserLoginUseCaseImpl(authenticationManager, jwtTokenGenerator, userRepository, totpService, loginAttemptService);
     }
 
     @Bean
