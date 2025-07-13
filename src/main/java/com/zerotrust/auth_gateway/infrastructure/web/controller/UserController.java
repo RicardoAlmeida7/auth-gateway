@@ -4,7 +4,7 @@ import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import com.zerotrust.auth_gateway.application.dto.request.ResendActivationRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    private final UserServiceUseCase useServiceUseCase;
+    private final UserRegistrationUse useServiceUseCase;
     private final ActivateAccountUseCase activateAccountUseCase;
 
-    public UserController(UserServiceUseCase useServiceUseCase, ActivateAccountUseCase activateAccountUseCase) {
+    public UserController(UserRegistrationUse useServiceUseCase, ActivateAccountUseCase activateAccountUseCase) {
         this.useServiceUseCase = useServiceUseCase;
         this.activateAccountUseCase = activateAccountUseCase;
     }

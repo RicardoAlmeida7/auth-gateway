@@ -1,7 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,15 +16,15 @@ import static org.mockito.Mockito.*;
 
 public class UserControllerTest {
 
-    private UserServiceUseCase userServiceUseCase;
+    private UserRegistrationUse userRegistrationUse;
     private ActivateAccountUseCase activateAccountUseCase;
     private UserController userController;
 
     @BeforeEach
     void setUp() {
-        userServiceUseCase = mock(UserServiceUseCase.class);
+        userRegistrationUse = mock(UserRegistrationUse.class);
         activateAccountUseCase = mock(ActivateAccountUseCase.class);
-        userController = new UserController(userServiceUseCase, activateAccountUseCase);
+        userController = new UserController(userRegistrationUse, activateAccountUseCase);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class UserControllerTest {
         ResponseEntity<Void> response = userController.register(request);
 
         ArgumentCaptor<RegisterRequest> captor = ArgumentCaptor.forClass(RegisterRequest.class);
-        verify(userServiceUseCase, times(1)).register(captor.capture());
+        verify(userRegistrationUse, times(1)).register(captor.capture());
 
         RegisterRequest capturedRequest = captor.getValue();
 
@@ -68,7 +68,7 @@ public class UserControllerTest {
         ResponseEntity<Void> response = userController.createUser(request);
 
         ArgumentCaptor<RegisterRequest> captor = ArgumentCaptor.forClass(RegisterRequest.class);
-        verify(userServiceUseCase, times(1)).register(captor.capture());
+        verify(userRegistrationUse, times(1)).register(captor.capture());
 
         RegisterRequest capturedRequest = captor.getValue();
         assertTrue(capturedRequest.isFirstAccessRequired());

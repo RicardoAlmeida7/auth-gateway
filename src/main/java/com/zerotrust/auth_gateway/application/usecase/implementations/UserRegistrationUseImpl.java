@@ -2,7 +2,7 @@ package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import com.zerotrust.auth_gateway.application.dto.request.ResendActivationRequest;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 // TODO: Create use case to handle MFA actions (enable, disable, reset)
-public class UserServiceUseCaseImpl implements UserServiceUseCase {
+public class UserRegistrationUseImpl implements UserRegistrationUse {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -25,7 +25,7 @@ public class UserServiceUseCaseImpl implements UserServiceUseCase {
     private final JwtTokenGenerator jwtTokenGenerator;
     private final EmailService emailService;
 
-    public UserServiceUseCaseImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, TOTPService totpService, JwtTokenGenerator jwtTokenGenerator, EmailService emailService) {
+    public UserRegistrationUseImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, TOTPService totpService, JwtTokenGenerator jwtTokenGenerator, EmailService emailService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.totpService = totpService;

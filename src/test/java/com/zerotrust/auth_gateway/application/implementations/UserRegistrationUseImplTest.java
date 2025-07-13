@@ -5,7 +5,7 @@ import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
@@ -21,14 +21,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UserServiceUseCaseImplTest {
+public class UserRegistrationUseImplTest {
 
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
     private TOTPService totpService;
     private JwtTokenGenerator jwtTokenGenerator;
     private EmailService emailService;
-    private UserServiceUseCaseImpl registerUserUseCaseImpl;
+    private UserRegistrationUseImpl registerUserUseCaseImpl;
 
     @BeforeEach
     void setUp() {
@@ -37,7 +37,7 @@ public class UserServiceUseCaseImplTest {
         totpService = mock(TOTPService.class);
         jwtTokenGenerator = mock(JwtTokenGenerator.class);
         emailService = mock(EmailService.class);
-        registerUserUseCaseImpl = new UserServiceUseCaseImpl(passwordEncoder, userRepository, totpService, jwtTokenGenerator, emailService);
+        registerUserUseCaseImpl = new UserRegistrationUseImpl(passwordEncoder, userRepository, totpService, jwtTokenGenerator, emailService);
     }
 
     @Test

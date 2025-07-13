@@ -1,7 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseImpl;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -34,7 +34,7 @@ public class UseCaseConfigTest {
 
         UseCaseConfig config = new UseCaseConfig();
 
-        UserServiceUseCase useCase = config.registerUserUseCase(
+        UserRegistrationUse useCase = config.registerUserUseCase(
                 passwordEncoder,
                 userRepository,
                 totpService,
@@ -43,7 +43,7 @@ public class UseCaseConfigTest {
         );
 
         assertNotNull(useCase);
-        assertEquals(UserServiceUseCaseImpl.class, useCase.getClass());
+        assertEquals(UserRegistrationUseImpl.class, useCase.getClass());
     }
 
     @Test

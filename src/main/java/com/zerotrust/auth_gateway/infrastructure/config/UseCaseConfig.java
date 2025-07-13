@@ -2,10 +2,10 @@ package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.PasswordResetUseCaseImpl;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserServiceUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -29,14 +29,14 @@ import java.util.UUID;
 public class UseCaseConfig {
 
     @Bean
-    public UserServiceUseCase registerUserUseCase(
+    public UserRegistrationUse registerUserUseCase(
             PasswordEncoder passwordEncoder,
             UserRepository useRepositoryPort,
             TOTPService totpService,
             JwtTokenGenerator jwtTokenGenerator,
             EmailService emailService) {
 
-        return new UserServiceUseCaseImpl(
+        return new UserRegistrationUseImpl(
                 passwordEncoder,
                 useRepositoryPort,
                 totpService,
