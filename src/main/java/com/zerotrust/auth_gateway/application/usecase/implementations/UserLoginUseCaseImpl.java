@@ -1,6 +1,9 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
+import com.zerotrust.auth_gateway.application.dto.request.RefreshTokenRequest;
+import com.zerotrust.auth_gateway.application.dto.response.JwtResponse;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserLoginUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
@@ -42,7 +45,7 @@ public class UserLoginUseCaseImpl implements UserLoginUseCase {
         this.loginAttemptService = loginAttemptService;
     }
 
-    public String login(AuthenticationRequest request) {
+    public JwtResponse login(AuthenticationRequest request) {
         if (request == null)
             throw new AuthenticationFailedException("Authentication request must include a username or email and a password.");
 
@@ -55,7 +58,26 @@ public class UserLoginUseCaseImpl implements UserLoginUseCase {
         loginAttemptService.checkLock(user);
         validateMfa(user, request);
 
-        return authenticateAndGenerateToken(user, request);
+        String accessToken = authenticateAndGenerateToken(user, request);
+        String refreshToken = jwtTokenGenerator.generateRefreshToken(user.getUsername());
+
+        return new JwtResponse(accessToken, refreshToken);
+    }
+
+    @Override
+    public JwtResponse refreshToken(RefreshTokenRequest request) {
+        if (request == null || request.token() == null || request.token().isBlank()) {
+            throw new AuthenticationFailedException("Refresh token must be provided");
+        }
+
+        DecodedJWT decodedJWT = jwtTokenGenerator.verifyRefreshToken(request.token());
+        String username = decodedJWT.getSubject();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        String newAccessToken = jwtTokenGenerator.generateToken(username, user.getRoles());
+        String newRefreshToken = jwtTokenGenerator.generateRefreshToken(username);
+
+        return new JwtResponse(newAccessToken, newRefreshToken);
     }
 
     private void validateFirstAccess(User user) {

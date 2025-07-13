@@ -51,6 +51,7 @@ public class SecurityConfig {
                         headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/v1/auth/login").permitAll()
+                                .requestMatchers("/api/v1/auth/refresh-token").permitAll()
                                 .requestMatchers("/api/v1/user/request-password-reset").permitAll()
                                 .requestMatchers("/api/v1/user/reset-password").permitAll()
                                 .requestMatchers("/api/v1/user/reset-password").permitAll()

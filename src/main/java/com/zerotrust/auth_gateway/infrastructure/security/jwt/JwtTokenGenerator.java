@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 
 import java.time.Instant;
 import java.util.Date;
@@ -39,6 +40,28 @@ public class JwtTokenGenerator {
                 .sign(algorithm);
     }
 
+    public String generateRefreshToken(String username) {
+        Instant now = Instant.now();
+        int refreshTokenExpiration = 604800;
+        Instant expiry = now.plusSeconds(refreshTokenExpiration);
+
+        return JWT.create()
+                .withSubject(username)
+                .withIssuedAt(Date.from(now))
+                .withExpiresAt(Date.from(expiry))
+                .withClaim("type", "refresh")
+                .sign(algorithm);
+    }
+
+    public DecodedJWT verifyRefreshToken(String token) {
+        DecodedJWT decodedJWT = verifyToken(token);
+        String type = decodedJWT.getClaim("type").asString();
+        if (!"refresh".equals(type)) {
+            throw new AuthenticationFailedException("Invalid token type");
+        }
+        return decodedJWT;
+    }
+
     public String generateActivationToken(String username, String email) {
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(EXPIRATION_ONE_HOUR);
@@ -56,7 +79,7 @@ public class JwtTokenGenerator {
         try {
             return verifier.verify(token);
         } catch (JWTVerificationException e) {
-            throw new RuntimeException("Invalid or expired JWT token", e);
+            throw new AuthenticationFailedException("Invalid or expired JWT token");
         }
     }
 }
