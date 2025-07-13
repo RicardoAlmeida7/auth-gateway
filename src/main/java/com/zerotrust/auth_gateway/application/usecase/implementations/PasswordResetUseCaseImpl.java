@@ -5,6 +5,7 @@ import com.zerotrust.auth_gateway.application.dto.request.PasswordResetEmailRequ
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
 import com.zerotrust.auth_gateway.domain.exception.PasswordResetException;
+import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
@@ -37,7 +38,7 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
             throw new PasswordResetException("Email is required for reset.");
         }
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
         user.setEnabled(false);
         userRepository.save(user);
 

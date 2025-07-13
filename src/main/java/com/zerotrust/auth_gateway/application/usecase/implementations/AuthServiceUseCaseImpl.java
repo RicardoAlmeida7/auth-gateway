@@ -5,6 +5,7 @@ import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptSer
 import com.zerotrust.auth_gateway.application.usecase.interfaces.AuthServiceUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
+import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
@@ -48,7 +49,7 @@ public class AuthServiceUseCaseImpl implements AuthServiceUseCase {
         User user = userRepository
                 .findByUsername(request.userId())
                 .or(() -> userRepository.findByEmail(request.userId()))
-                .orElseThrow(() -> new AuthenticationFailedException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         validateFirstAccess(user);
         loginAttemptService.checkLock(user);

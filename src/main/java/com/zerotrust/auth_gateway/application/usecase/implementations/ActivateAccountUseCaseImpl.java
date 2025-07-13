@@ -3,6 +3,7 @@ package com.zerotrust.auth_gateway.application.usecase.implementations;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
+import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
@@ -24,7 +25,7 @@ public class ActivateAccountUseCaseImpl implements ActivateAccountUseCase {
         DecodedJWT decodedJWT = jwtTokenGenerator.verifyToken(token);
         String userName = decodedJWT.getSubject();
 
-        User user = userRepository.findByUsername(userName).orElseThrow(() -> new IllegalArgumentException("User not found."));
+        User user = userRepository.findByUsername(userName).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         if (user.isFirstAccessRequired()) {
             if (request == null) {

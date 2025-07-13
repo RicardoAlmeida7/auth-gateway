@@ -3,6 +3,7 @@ package com.zerotrust.auth_gateway.application.usecase.implementations;
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import com.zerotrust.auth_gateway.application.dto.request.ResendActivationRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserServiceUseCase;
+import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
@@ -57,8 +58,7 @@ public class UserServiceUseCaseImpl implements UserServiceUseCase {
     @Override
     public void resendActivationEmail(ResendActivationRequest request) {
         // TODO: Validate old activation token to prevent reusing expired or previously used tokens for activation
-        // TODO: Create a specific UserNotFoundException
-        if (request == null) throw new IllegalArgumentException("No user found with provided email or username.");
+        if (request == null) throw new UserNotFoundException("No user found with provided email or username.");
         User user = findUserByEmailOrUsername(request);
         String qrCodeUrl = prepareMfaIfEnabled(user);
         user.setEnabled(false);
@@ -67,7 +67,7 @@ public class UserServiceUseCaseImpl implements UserServiceUseCase {
     }
 
     private void validateRegisterRequest(RegisterRequest request) {
-        if (request == null) throw new IllegalArgumentException("No user found with provided email or username.");
+        if (request == null) throw new UserNotFoundException("No user found with provided email or username.");
         UsernameValidator.validate(request.getUsername());
         PasswordValidator.validate(request.getPassword(), request.getConfirmPassword());
         EmailValidator.validate(request.getEmail());
@@ -86,7 +86,7 @@ public class UserServiceUseCaseImpl implements UserServiceUseCase {
     private User findUserByEmailOrUsername(ResendActivationRequest request) {
         return userRepository.findByEmail(request.email())
                 .or(() -> userRepository.findByUsername(request.username()))
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
     private void sendActivationEmail(User user, String qrCodeUrl) {
