@@ -5,10 +5,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.zerotrust.auth_gateway.application.service.implementations.LoginAttemptServiceImpl;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
+import com.zerotrust.auth_gateway.application.usecase.implementations.MfaManagementUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserLoginUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserLoginUseCase;
 import com.zerotrust.auth_gateway.domain.repository.LoginPolicyRepository;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
+import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
@@ -37,7 +40,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity httpSecurity,
+            AuthenticationProvider authenticationProvider,
+            JwtAuthenticationFilter jwtAuthenticationFilter
+    ) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers ->
@@ -88,7 +95,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserLoginUseCase authServiceUseCase(
+    public UserLoginUseCase userLoginUseCase(
             AuthenticationManager authenticationManager,
             JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,
@@ -105,5 +112,10 @@ public class SecurityConfig {
     @Bean
     public LoginAttemptService loginAttemptService(UserRepository userRepository, LoginPolicyRepository loginPolicyRepository) {
         return new LoginAttemptServiceImpl(userRepository, loginPolicyRepository);
+    }
+
+    @Bean
+    public MfaManagementUseCase mfaManagementUseCase(UserRepository userRepository, TOTPService totpService, EmailService emailService) {
+        return new MfaManagementUseCaseImpl(userRepository, totpService, emailService);
     }
 }
