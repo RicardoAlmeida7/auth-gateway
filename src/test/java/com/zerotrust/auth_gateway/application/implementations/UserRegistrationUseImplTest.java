@@ -4,6 +4,7 @@ import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
+import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
@@ -76,7 +77,7 @@ public class UserRegistrationUseImplTest {
 
     @Test
     void shouldThrowExceptionWhenCommandIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
                 registerUserUseCaseImpl.register(null)
         );
         assertEquals("No user found with provided email or username.", exception.getMessage());

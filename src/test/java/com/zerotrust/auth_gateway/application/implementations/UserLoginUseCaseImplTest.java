@@ -1,10 +1,12 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
+import com.zerotrust.auth_gateway.application.dto.response.JwtResponse;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserLoginUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
+import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
@@ -20,11 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserLoginUseCaseImplTest {
 
@@ -32,7 +32,7 @@ public class UserLoginUseCaseImplTest {
     private JwtTokenGenerator jwtTokenGenerator;
     private UserRepository userRepository;
     private TOTPService totpService;
-    private UserLoginUseCaseImpl authService;
+    private UserLoginUseCaseImpl userLoginUseCase;
     private LoginAttemptService loginAttemptService;
 
     @BeforeEach
@@ -43,7 +43,7 @@ public class UserLoginUseCaseImplTest {
         totpService = mock(TOTPService.class);
         loginAttemptService = mock(LoginAttemptService.class);
 
-        authService = new UserLoginUseCaseImpl(
+        userLoginUseCase = new UserLoginUseCaseImpl(
                 authenticationManager,
                 jwtTokenGenerator,
                 userRepository,
@@ -54,107 +54,112 @@ public class UserLoginUseCaseImplTest {
 
     @Test
     void shouldLoginSuccessfullyWithoutMfa() {
-        String username = "user";
+        String userId = "user";
         String password = "pass";
-        User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
+        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        AuthenticationRequest request = new AuthenticationRequest(username, "user@example.com", password, null);
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
+        AuthenticationRequest request = new AuthenticationRequest(userId, password, null);
 
         Authentication auth = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(auth);
         when(auth.getAuthorities()).thenReturn((Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        when(jwtTokenGenerator.generateToken(username, List.of("ROLE_USER"))).thenReturn("jwt-token");
+        when(jwtTokenGenerator.generateToken(userId, List.of("ROLE_USER"))).thenReturn("jwt-token");
 
-        String token = authService.login(request);
+        JwtResponse token = userLoginUseCase.login(request);
 
-        assertEquals("jwt-token", token);
+        assertEquals("jwt-token", token.accessToken());
     }
 
     @Test
     void shouldLoginWithMfaSuccessfully() {
-        String username = "mfaUser";
+        String userId = "mfaUser";
         String password = "pass";
         String otp = "123456";
-        User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
-        AuthenticationRequest request = new AuthenticationRequest(username, "use@example.com", password, otp);
+        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(userId, password, otp);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
         when(totpService.verifyCode("secret", otp)).thenReturn(true);
 
         Authentication auth = mock(Authentication.class);
         when(auth.getAuthorities()).thenReturn((Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(authenticationManager.authenticate(any())).thenReturn(auth);
-        when(jwtTokenGenerator.generateToken(username, List.of("ROLE_USER"))).thenReturn("jwt-token");
+        when(jwtTokenGenerator.generateToken(userId, List.of("ROLE_USER"))).thenReturn("jwt-token");
 
-        String token = authService.login(request);
+        JwtResponse token = userLoginUseCase.login(request);
 
-        assertEquals("jwt-token", token);
+        assertEquals("jwt-token", token.accessToken());
     }
 
     @Test
     void shouldThrowIfOtpMissingWhenMfaEnabled() {
-        String username = "mfaUser";
+        String userId = "mfaUser";
         String password = "pass";
-        User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
-        AuthenticationRequest request = new AuthenticationRequest(username, "user@example", password, null);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(userId, password, null);
 
-        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
+
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> userLoginUseCase.login(request));
         assertEquals("OTP is required for MFA-enabled accounts.", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfOtpInvalid() {
-        String username = "mfaUser";
+        String userId = "mfaUser";
         String password = "pass";
         String otp = "000000";
-        User user = new User(UUID.randomUUID(), username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
-        AuthenticationRequest request = new AuthenticationRequest(username, "user@example.com", password, otp);
+        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(userId, password, otp);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
         when(totpService.verifyCode("secret", otp)).thenReturn(false);
 
-        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> userLoginUseCase.login(request));
         assertEquals("Invalid OTP code.", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfUserNotFound() {
-        when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
-        AuthenticationRequest request = new AuthenticationRequest("user", null, null, null);
+        String userId = "user";
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.empty());
+        AuthenticationRequest request = new AuthenticationRequest(userId, null, null);
 
-        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> userLoginUseCase.login(request));
         assertEquals("User not found", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfUserIsNotActivated() {
-        AuthenticationRequest request = new AuthenticationRequest("user", null, "123456", null);
-        User user = new User(UUID.randomUUID(), "user", "hash", "email@test.com", false, "", false, List.of("ROLE_USER"), false);
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        String userId = "user";
+        AuthenticationRequest request = new AuthenticationRequest(userId, "123456", null);
+        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", false, "", false, List.of("ROLE_USER"), false);
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
 
-        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> userLoginUseCase.login(request));
         assertEquals("User account is not activated.", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfFirstAccessRequired() {
-        AuthenticationRequest request = new AuthenticationRequest("user", null, "123456", null);
-        User user = new User(UUID.randomUUID(), "user", "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), true);
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        String userId = "user";
+        AuthenticationRequest request = new AuthenticationRequest(userId, "123456", null);
+        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), true);
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
 
-        Exception ex = assertThrows(FirstAccessPasswordRequiredException.class, () -> authService.login(request));
+        Exception ex = assertThrows(FirstAccessPasswordRequiredException.class, () -> userLoginUseCase.login(request));
         assertEquals("You must reset your password before logging in for the first time.", ex.getMessage());
     }
 
     @Test
     void shouldThrowIfPasswordBlank() {
-        AuthenticationRequest request = new AuthenticationRequest("user", null, "   ", null);
-        User user = new User(UUID.randomUUID(), "user", "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        String userId = "user";
+        AuthenticationRequest request = new AuthenticationRequest(userId, "   ", null);
+        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
+        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
 
-        Exception ex = assertThrows(AuthenticationFailedException.class, () -> authService.login(request));
+        Exception ex = assertThrows(AuthenticationFailedException.class, () -> userLoginUseCase.login(request));
         assertEquals("Invalid password.", ex.getMessage());
     }
 }
