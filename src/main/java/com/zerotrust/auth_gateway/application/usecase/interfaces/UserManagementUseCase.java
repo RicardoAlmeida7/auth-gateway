@@ -1,7 +1,5 @@
 package com.zerotrust.auth_gateway.application.usecase.interfaces;
 
-import com.zerotrust.auth_gateway.application.dto.request.DeleteUserRequest;
-
 public interface UserManagementUseCase {
-    void deleteUser(DeleteUserRequest request);
+    void deleteUser(String id);
 }

@@ -1,10 +1,11 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.zerotrust.auth_gateway.application.dto.request.DeleteUserRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserManagementUseCase;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
+
+import java.util.UUID;
 
 public class UserManagementUseCaseImpl implements UserManagementUseCase {
 
@@ -15,11 +16,16 @@ public class UserManagementUseCaseImpl implements UserManagementUseCase {
     }
 
     @Override
-    public void deleteUser(DeleteUserRequest request) {
-        User user = userRepository.findByUsername(request.userId()).or(() ->
-                userRepository.findByEmail(request.userId()))
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
+    public void deleteUser(String id) {
+        try {
+            UUID userId = UUID.fromString(id);
 
-        userRepository.delete(user);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+            userRepository.delete(user);
+        } catch (IllegalArgumentException e) {
+            throw new UserNotFoundException("Invalid user id.");
+        }
     }
 }

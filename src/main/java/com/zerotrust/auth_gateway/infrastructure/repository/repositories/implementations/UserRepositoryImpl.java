@@ -9,8 +9,10 @@ import com.zerotrust.auth_gateway.infrastructure.repository.repositories.interfa
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class UserRepositoryImpl implements UserRepository {
+
     private final JpaUserRepository jpaUserRepository;
     private final JpaRoleRepository jpaRoleRepository;
 
@@ -33,6 +35,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         return jpaUserRepository.findByEmail(email).map(this::mapToDomain);
+    }
+
+    @Override
+    public Optional<User> findById(UUID id) {
+        return jpaUserRepository.findById(id).map(this::mapToDomain);
     }
 
     @Override

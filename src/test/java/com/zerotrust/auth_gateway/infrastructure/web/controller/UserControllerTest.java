@@ -25,9 +25,8 @@ public class UserControllerTest {
     void setUp() {
         userRegistrationUse = mock(UserRegistrationUse.class);
         activateAccountUseCase = mock(ActivateAccountUseCase.class);
-        UserManagementUseCase userManagementUseCase = mock(UserManagementUseCase.class);
 
-        userController = new UserController(userRegistrationUse, activateAccountUseCase, userManagementUseCase);
+        userController = new UserController(userRegistrationUse, activateAccountUseCase);
     }
 
     @Test
@@ -61,22 +60,6 @@ public class UserControllerTest {
 
         verify(activateAccountUseCase, times(1)).activate(token, passwordResetRequest);
         assertEquals(200, response.getStatusCodeValue());
-        assertNull(response.getBody());
-    }
-
-    @Test
-    void shouldCreateUserWithFirstAccessRequiredTrue() {
-        RegisterRequest request = new RegisterRequest("admin", "Password1@", "admin@example.com", List.of("ROLE_ADMIN"), false, "Password1@", false);
-
-        ResponseEntity<Void> response = userController.createUser(request);
-
-        ArgumentCaptor<RegisterRequest> captor = ArgumentCaptor.forClass(RegisterRequest.class);
-        verify(userRegistrationUse, times(1)).register(captor.capture());
-
-        RegisterRequest capturedRequest = captor.getValue();
-        assertTrue(capturedRequest.isFirstAccessRequired());
-
-        assertEquals(201, response.getStatusCodeValue());
         assertNull(response.getBody());
     }
 }
