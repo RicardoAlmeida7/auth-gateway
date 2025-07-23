@@ -1,9 +1,11 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
+import com.zerotrust.auth_gateway.application.dto.request.DeleteUserRequest;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import com.zerotrust.auth_gateway.application.dto.request.ResendActivationRequest;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    private final UserRegistrationUse useServiceUseCase;
+    private final UserRegistrationUse userRegistrationUse;
     private final ActivateAccountUseCase activateAccountUseCase;
+    private final UserManagementUseCase userManagementUseCase;
 
-    public UserController(UserRegistrationUse useServiceUseCase, ActivateAccountUseCase activateAccountUseCase) {
-        this.useServiceUseCase = useServiceUseCase;
+    public UserController(
+            UserRegistrationUse userRegistrationUse,
+            ActivateAccountUseCase activateAccountUseCase,
+            UserManagementUseCase userManagementUseCase
+    ) {
+        this.userRegistrationUse = userRegistrationUse;
         this.activateAccountUseCase = activateAccountUseCase;
+        this.userManagementUseCase = userManagementUseCase;
     }
 
     @PostMapping("/register")
@@ -32,7 +40,7 @@ public class UserController {
                 request.getConfirmPassword(),
                 false
         );
-        useServiceUseCase.register(safeRequest);
+        userRegistrationUse.register(safeRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -40,7 +48,7 @@ public class UserController {
     @PostMapping("/create-user")
     public ResponseEntity<Void> createUser(@RequestBody RegisterRequest request) {
         request.setFirstAccessRequired(true);
-        useServiceUseCase.register(request);
+        userRegistrationUse.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -52,7 +60,14 @@ public class UserController {
 
     @PostMapping("/resend-activation-email")
     public ResponseEntity<Void> resendActivation(@RequestBody ResendActivationRequest request) {
-        useServiceUseCase.resendActivationEmail(request);
+        userRegistrationUse.resendActivationEmail(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUser(@RequestBody DeleteUserRequest request) {
+        userManagementUseCase.deleteUser(request);
+        return ResponseEntity.noContent().build();
     }
 }

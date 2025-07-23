@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
@@ -24,7 +25,9 @@ public class UserControllerTest {
     void setUp() {
         userRegistrationUse = mock(UserRegistrationUse.class);
         activateAccountUseCase = mock(ActivateAccountUseCase.class);
-        userController = new UserController(userRegistrationUse, activateAccountUseCase);
+        UserManagementUseCase userManagementUseCase = mock(UserManagementUseCase.class);
+
+        userController = new UserController(userRegistrationUse, activateAccountUseCase, userManagementUseCase);
     }
 
     @Test

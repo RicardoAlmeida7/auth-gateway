@@ -2,9 +2,11 @@ package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.PasswordResetUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserManagementUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
@@ -87,5 +89,10 @@ public class UseCaseConfig {
                 userRepository.save(admin);
             }
         };
+    }
+
+    @Bean
+    public UserManagementUseCase userManagementUseCase(UserRepository repository) {
+        return new UserManagementUseCaseImpl(repository);
     }
 }
