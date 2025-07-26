@@ -1,0 +1,346 @@
+{
+	"info": {
+		"_postman_id": "385bca54-28de-402d-a6cd-58f83489b23d",
+		"name": "auth-gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28918222"
+	},
+	"item": [
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "get-policy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaWNhcmRvIiwiaWF0IjoxNzUyMzQzMDY5LCJleHAiOjE3NTIzNDY2NjksInJvbGVzIjpbIlJPTEVfVVNFUiJdfQ.jFDCdP1yfoyX-M3CbF5pIOBJrXFPWqYJFFrd-oebsiywc6scL3JaaHYnsGZKOPo0KuLyETYpmY71Z4i_HEBhFqNOoNf48Xvk0iOpoNiyexx7s2RWu3bGi8IyWveiiS__sweEFQZDUa3cU3aiZjR5wxrnFL5xxObXZfkU-IMRCPC_TiEO4VovDgNmMFCLlCxyoYDlVsgY1agTUtmkUddg45x5JOdSH7B350gaIMRI6EQmeDm6E2vFZGwgFvwfZ6RA9AqDSMNBOA_y3b-1eXhmLjp3tohSp4XuC2LRHPOmw9197nKENxRqHDjh1-LmMlvTyhAp7oYs-h-C94Ky2Bkqkg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/policy",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-policy",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maxAttempts\": 3,\n    \"lockTimeMillis\": 60000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/policy",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1MzUzNDIyMCwiZXhwIjoxNzUzNTM3ODIwLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.oPN2mq04NklapoXZ4XYxvsWL3fpJuVypp4gkir0VIOth09_-5BNekMR9RbhxJaXBlRuOM8i3LYHeHA9xxsfD5t-lS_H5Inhzm3UgCDt11jG5E3zEbWTOD2vG1fd2KjTyU6dy3uA_mZbb_0TqJ7H6103tYNOCAsmfKchcvE9EtzDm6sbBti7kockl_ok9-wI1Y1E13DPP2iIM64RTWE7lMD6DcXk8ajC5ZddHtYhYIYTT7j3QKcWcov4HLqCPcclsRuZ1PA4NQIflvtxvNt3O5vbqGSQGT0Njvec_HK3cDWCa9bwdr8vhlpFvG5-TWXZHAhSdN0BUkAyhMsX48KaK0w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/admin",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1MzUzNzg0MCwiZXhwIjoxNzUzNTQxNDQwLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.PZznQ8JK12flkvJ_G0OcsqNwAweKVKjRmu1g394Gd4F4Jgc1jiA0iwBB7z-UHSG3u4Q7aOBpO8c7k6V6WDDUcGg6Bxm0MOFqFOgtHze8-eLDOTJTJzOvAaYg98axHbY_O6E4BcxID464VmChjva6a31Yv6z9dgLRBPqOLVnwWrp2c9eJZ5mJFwWb73dQcmFhNHR43LCk8CckM9esqoMp78bh5VhoDQWyI9LpuNBoleApbA2VZP_wiuITMMkw1QjOT5p9eyH13KzgYq6x4vQ7Yp4CDZqoXV1FS-7Bm4UzdlmVDdADhVDErZvAAhF-po9IWLT329IJJdNH4TXkfVbQ4w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test\",\n    \"email\": \"test@example.com\",\n    \"roles\": [\n        \"ROLE_USER\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/admin/create-user",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"create-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/admin?id=c61de43f-763b-4f1c-92dc-c0a0afb8702e",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "c61de43f-763b-4f1c-92dc-c0a0afb8702e"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "refresh-token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1MjQxNzU2OCwiZXhwIjoxNzUzMDIyMzY4LCJ0eXBlIjoicmVmcmVzaCJ9.gvIJjJ-4crjY2EXHZgH8JQTyeVGAevIywJHlW9Js0SLQKVmq6kMlAuIMEbtQ8Igq2X36seR2aWYTysAl9mYrJue_GZLrYb6Q8aUrAqKtrFectliIdFB-2v2cbuX-3vYeiK_7JhqCVpNz5_n2HtlXkEpGJCc3cQmuTwB1yYiHy_4feNQzPjjKQjVcEGzVLSG9_5epxKVmYgaXY2qHYqg-EIrZTdKVD8TWwZHln4qEWkdKdc2MHZSfwaxsQNhW1I7Hyex8tOtveE6LD5_DesJEVFKzrxcyDID6e8QiyewEShpPW-WtTyYnzviAKmFVqPoIXmScaGotwBU02Vz8_mZYIQ\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/v1/auth/refresh-token",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"refresh-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"ricardo\",\n    \"password\": \"Test@1234\",\n    \"confirmPassword\": \"Test@1234\",\n    \"email\": \"test@example.com.br\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/v1/user/register",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "request-password-reset",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"test@example.com.br\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/v1/user/request-password-reset",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"request-password-reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "request-password-reset",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"test@example.com.br\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/v1/user/request-password-reset",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"request-password-reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"test\",\n    \"password\": \"Test@1234\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/v1/auth/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:8080",
+			"type": "default"
+		}
+	]
+}
