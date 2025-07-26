@@ -39,10 +39,9 @@ public class JwtConfigTest {
     @Test
     void shouldCreateJwtTokenGenerator() {
         Algorithm algorithm = mock(Algorithm.class);
-        JWTVerifier verifier = mock(JWTVerifier.class);
 
         JwtConfig config = new JwtConfig();
-        JwtTokenGenerator generator = config.jwtTokenGenerator(algorithm, verifier);
+        JwtTokenGenerator generator = config.jwtTokenGenerator(algorithm);
 
         assertNotNull(generator);
     }

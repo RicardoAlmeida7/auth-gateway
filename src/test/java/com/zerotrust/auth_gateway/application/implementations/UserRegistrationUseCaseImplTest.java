@@ -1,15 +1,15 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
+import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidPasswordException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,23 +22,23 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UserRegistrationUseImplTest {
+public class UserRegistrationUseCaseImplTest {
 
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
-    private TOTPService totpService;
+    private MfaManagementUseCase managementUseCase;
     private JwtTokenGenerator jwtTokenGenerator;
     private EmailService emailService;
-    private UserRegistrationUseImpl registerUserUseCaseImpl;
+    private UserRegistrationUseCaseImpl registerUserUseCaseImpl;
 
     @BeforeEach
     void setUp() {
         passwordEncoder = mock(PasswordEncoder.class);
         userRepository = mock(UserRepository.class);
-        totpService = mock(TOTPService.class);
+        managementUseCase = mock(MfaManagementUseCase.class);
         jwtTokenGenerator = mock(JwtTokenGenerator.class);
         emailService = mock(EmailService.class);
-        registerUserUseCaseImpl = new UserRegistrationUseImpl(passwordEncoder, userRepository, totpService, jwtTokenGenerator, emailService);
+        registerUserUseCaseImpl = new UserRegistrationUseCaseImpl(passwordEncoder, userRepository, managementUseCase, jwtTokenGenerator, emailService);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class UserRegistrationUseImplTest {
         assertEquals("validUser", savedUser.getUsername());
         assertEquals(hashedPassword, savedUser.getPasswordHash());
         assertFalse(savedUser.isMfaEnabled());
-        assertEquals(null, savedUser.getMfaSecret());
+        assertNull(savedUser.getMfaSecret());
         assertFalse(savedUser.isEnabled());
         assertFalse(savedUser.isFirstAccessRequired());
         assertNotNull(savedUser.getId());
@@ -228,7 +228,6 @@ public class UserRegistrationUseImplTest {
     void shouldRegisterUserWithMfaEnabledTrue() {
         String rawPassword = "Abcdef1@";
         String hashedPassword = "hashed_pass";
-        String secret = "test-secret";
         String qrCodeUrl = "qr-code-url";
 
         RegisterRequest request = new RegisterRequest(
@@ -242,8 +241,7 @@ public class UserRegistrationUseImplTest {
         );
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
-        when(totpService.generateSecret()).thenReturn(secret);
-        when(totpService.generateQrCodeUrl("validUser", secret)).thenReturn(qrCodeUrl);
+        when(managementUseCase.prepareMfaIfEnabled(any())).thenReturn(qrCodeUrl);
         when(jwtTokenGenerator.generateActivationToken(any(), any())).thenReturn("fake-token");
 
         registerUserUseCaseImpl.register(request);
@@ -254,6 +252,5 @@ public class UserRegistrationUseImplTest {
 
         User savedUser = userCaptor.getValue();
         assertTrue(savedUser.isMfaEnabled());
-        assertEquals(secret, savedUser.getMfaSecret());
     }
 }

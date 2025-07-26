@@ -9,15 +9,22 @@ import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ActivateAccountUseCaseImpl implements ActivateAccountUseCase {
 
     private final JwtTokenGenerator jwtTokenGenerator;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ActivateAccountUseCaseImpl(JwtTokenGenerator jwtTokenGenerator, UserRepository userRepository) {
+    public ActivateAccountUseCaseImpl(
+            JwtTokenGenerator jwtTokenGenerator,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,6 +39,8 @@ public class ActivateAccountUseCaseImpl implements ActivateAccountUseCase {
                 throw new FirstAccessPasswordRequiredException("Password reset is required on first access. Please provide a new password and confirmation.");
             }
             PasswordValidator.validate(request.getNewPassword(), request.getConfirmPassword());
+            String newPassword = passwordEncoder.encode(request.getNewPassword());
+            user.setPasswordHash(newPassword);
             user.setFirstAccessRequired(false);
         }
 

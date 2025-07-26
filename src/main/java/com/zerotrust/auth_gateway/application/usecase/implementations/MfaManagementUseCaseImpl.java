@@ -45,4 +45,14 @@ public class MfaManagementUseCaseImpl implements MfaManagementUseCase {
         user.setMfaSecret("");
         userRepository.save(user);
     }
+
+    @Override
+    public String prepareMfaIfEnabled(User user) {
+        if (!user.isMfaEnabled()) return null;
+
+        String secret = totpService.generateSecret();
+        String qrCodeUrl = totpService.generateQrCodeUrl(user.getUsername(), secret);
+        user.setMfaSecret(secret);
+        return qrCodeUrl;
+    }
 }

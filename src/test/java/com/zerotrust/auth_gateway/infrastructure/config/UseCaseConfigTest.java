@@ -1,12 +1,12 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUseCase;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.seed.LoginPolicySeeder;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
@@ -28,22 +28,22 @@ public class UseCaseConfigTest {
     void shouldCreateRegisterUserUseCaseBean() {
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         UserRepository userRepository = mock(UserRepository.class);
-        TOTPService totpService = mock(TOTPService.class);
+        MfaManagementUseCase mfaManagementUseCase = mock(MfaManagementUseCase.class);
         JwtTokenGenerator jwtTokenGenerator = mock(JwtTokenGenerator.class);
         EmailService emailService = mock(EmailService.class);
 
         UseCaseConfig config = new UseCaseConfig();
 
-        UserRegistrationUse useCase = config.registerUserUseCase(
+        UserRegistrationUseCase useCase = config.registerUserUseCase(
                 passwordEncoder,
                 userRepository,
-                totpService,
+                mfaManagementUseCase,
                 jwtTokenGenerator,
                 emailService
         );
 
         assertNotNull(useCase);
-        assertEquals(UserRegistrationUseImpl.class, useCase.getClass());
+        assertEquals(UserRegistrationUseCaseImpl.class, useCase.getClass());
     }
 
     @Test

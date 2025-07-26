@@ -14,13 +14,11 @@ import static org.mockito.Mockito.*;
 public class JwtTokenGeneratorTest {
 
     private JwtTokenGenerator generator;
-    private JWTVerifier verifier;
 
     @BeforeEach
     void setUp() {
         Algorithm algorithm = Algorithm.HMAC256("test-secret");
-        verifier = mock(JWTVerifier.class);
-        generator = new JwtTokenGenerator(algorithm, verifier);
+        generator = new JwtTokenGenerator(algorithm);
     }
 
     @Test
@@ -69,8 +67,6 @@ public class JwtTokenGeneratorTest {
     @Test
     void shouldThrowRuntimeExceptionWhenVerifyFails() {
         String token = "invalid.token";
-
-        when(verifier.verify(token)).thenThrow(new com.auth0.jwt.exceptions.JWTVerificationException("fail"));
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> generator.verifyToken(token));
         assertEquals("Invalid or expired JWT token", ex.getMessage());

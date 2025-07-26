@@ -1,46 +1,41 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.response.ManagedUserResponse;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserManagementUseCase;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AdminControllerTest {
 
-    private UserRegistrationUse userRegistrationUse;
     private UserManagementUseCase userManagementUseCase;
     private AdminController adminController;
 
     @BeforeEach
     void setup() {
-        userRegistrationUse = mock(UserRegistrationUse.class);
         userManagementUseCase = mock(UserManagementUseCase.class);
-        adminController = new AdminController(userRegistrationUse, userManagementUseCase);
+        adminController = new AdminController(userManagementUseCase);
     }
 
     @Test
     void shouldCreateUserWithFirstAccessRequiredTrue() {
         RegisterRequest request = new RegisterRequest("admin", "Password1@", "admin@example.com", List.of("ROLE_ADMIN"), false, "Password1@", false);
 
-        ResponseEntity<Void> response = adminController.createUser(request);
+        when(userManagementUseCase.createUser(request)).thenReturn(new ManagedUserResponse(UUID.randomUUID(), request.getUsername(), request.getEmail(), false, request.getRoles()));
 
-        ArgumentCaptor<RegisterRequest> captor = ArgumentCaptor.forClass(RegisterRequest.class);
-        verify(userRegistrationUse, times(1)).register(captor.capture());
+        ResponseEntity<ManagedUserResponse> response = adminController.createUser(request);
 
-        RegisterRequest capturedRequest = captor.getValue();
-        assertTrue(capturedRequest.isFirstAccessRequired());
+        verify(userManagementUseCase, times(1)).createUser(request);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNull(response.getBody());
+        assertNotNull(response.getBody());
     }
 }

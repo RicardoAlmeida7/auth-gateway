@@ -2,12 +2,12 @@ package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import com.zerotrust.auth_gateway.application.dto.request.ResendActivationRequest;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUseCase;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
 import com.zerotrust.auth_gateway.domain.validation.EmailValidator;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
 import com.zerotrust.auth_gateway.domain.validation.RoleValidator;
@@ -16,19 +16,25 @@ import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
-// TODO: Create use case to handle MFA actions (enable, disable, reset)
-public class UserRegistrationUseImpl implements UserRegistrationUse {
+
+public class UserRegistrationUseCaseImpl implements UserRegistrationUseCase {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final TOTPService totpService;
+    private final MfaManagementUseCase mfaManagementUseCase;
     private final JwtTokenGenerator jwtTokenGenerator;
     private final EmailService emailService;
 
-    public UserRegistrationUseImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, TOTPService totpService, JwtTokenGenerator jwtTokenGenerator, EmailService emailService) {
+    public UserRegistrationUseCaseImpl(
+            PasswordEncoder passwordEncoder,
+            UserRepository userRepository,
+            MfaManagementUseCase mfaManagementUseCase,
+            JwtTokenGenerator jwtTokenGenerator,
+            EmailService emailService
+    ) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
-        this.totpService = totpService;
+        this.mfaManagementUseCase = mfaManagementUseCase;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.emailService = emailService;
     }
@@ -47,10 +53,10 @@ public class UserRegistrationUseImpl implements UserRegistrationUse {
                 null,
                 false,
                 request.getRoles(),
-                request.isFirstAccessRequired()
+                false
         );
 
-        String qrCodeUrl = prepareMfaIfEnabled(user);
+        String qrCodeUrl = mfaManagementUseCase.prepareMfaIfEnabled(user);
         userRepository.save(user);
         sendActivationEmail(user, qrCodeUrl);
     }
@@ -60,7 +66,7 @@ public class UserRegistrationUseImpl implements UserRegistrationUse {
         // TODO: Validate old activation token to prevent reusing expired or previously used tokens for activation
         if (request == null) throw new UserNotFoundException("No user found with provided email or username.");
         User user = findUserByEmailOrUsername(request);
-        String qrCodeUrl = prepareMfaIfEnabled(user);
+        String qrCodeUrl = mfaManagementUseCase.prepareMfaIfEnabled(user);
         user.setEnabled(false);
         userRepository.save(user);
         sendActivationEmail(user, qrCodeUrl);
@@ -72,15 +78,6 @@ public class UserRegistrationUseImpl implements UserRegistrationUse {
         PasswordValidator.validate(request.getPassword(), request.getConfirmPassword());
         EmailValidator.validate(request.getEmail());
         RoleValidator.validate(request.getRoles());
-    }
-
-    private String prepareMfaIfEnabled(User user) {
-        if (!user.isMfaEnabled()) return null;
-
-        String secret = totpService.generateSecret();
-        String qrCodeUrl = totpService.generateQrCodeUrl(user.getUsername(), secret);
-        user.setMfaSecret(secret);
-        return qrCodeUrl;
     }
 
     private User findUserByEmailOrUsername(ResendActivationRequest request) {

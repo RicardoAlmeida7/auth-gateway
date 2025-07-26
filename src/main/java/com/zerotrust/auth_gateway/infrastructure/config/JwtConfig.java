@@ -30,8 +30,8 @@ public class JwtConfig {
     }
 
     @Bean
-    public JwtTokenGenerator jwtTokenGenerator(Algorithm algorithm, JWTVerifier verifier) {
-        return new JwtTokenGenerator(algorithm, verifier);
+    public JwtTokenGenerator jwtTokenGenerator(Algorithm algorithm) {
+        return new JwtTokenGenerator(algorithm);
     }
 
     RSAPrivateKey loadPrivateKey() {

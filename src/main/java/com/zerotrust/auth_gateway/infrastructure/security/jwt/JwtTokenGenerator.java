@@ -16,7 +16,7 @@ public class JwtTokenGenerator {
     private final JWTVerifier verifier;
     private final int EXPIRATION_ONE_HOUR = 3600;
 
-    public JwtTokenGenerator(Algorithm algorithm, JWTVerifier verifier) {
+    public JwtTokenGenerator(Algorithm algorithm) {
         this.algorithm = algorithm;
         this.verifier = JWT.require(algorithm).build();
     }

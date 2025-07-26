@@ -1,15 +1,16 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
-import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +28,8 @@ public class ActivateAccountUseCaseImplTest {
     void setUp() {
         jwtTokenGenerator = mock(JwtTokenGenerator.class);
         userRepository = mock(UserRepository.class);
-        activateAccountUseCase = new ActivateAccountUseCaseImpl(jwtTokenGenerator, userRepository);
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+        activateAccountUseCase = new ActivateAccountUseCaseImpl(jwtTokenGenerator, userRepository, passwordEncoder);
     }
 
     @Test
