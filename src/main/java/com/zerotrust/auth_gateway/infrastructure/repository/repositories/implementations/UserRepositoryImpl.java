@@ -47,6 +47,11 @@ public class UserRepositoryImpl implements UserRepository {
         jpaUserRepository.delete(mapToEntity(user));
     }
 
+    @Override
+    public List<User> getAll() {
+        return jpaUserRepository.findAll().stream().map(this::mapToDomain).toList();
+    }
+
     private UserEntity mapToEntity(User user) {
         List<RoleEntity> roleEntities = user.getRoles().stream()
                 .map(roleName -> jpaRoleRepository.findByName(roleName)

@@ -1,12 +1,15 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.response.AdminUserListResponse;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
@@ -35,5 +38,10 @@ public class AdminController {
     public ResponseEntity<Void> deleteUser(@RequestParam String id) {
         userManagementUseCase.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AdminUserListResponse>> getUsers() {
+        return ResponseEntity.ok(userManagementUseCase.getUsers());
     }
 }
