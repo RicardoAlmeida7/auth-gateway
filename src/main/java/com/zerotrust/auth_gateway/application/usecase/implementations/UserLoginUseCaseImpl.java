@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.dto.request.RefreshTokenRequest;
 import com.zerotrust.auth_gateway.application.dto.response.JwtResponse;
+import com.zerotrust.auth_gateway.application.dto.response.UserLoginInfoResponse;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserLoginUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
@@ -78,6 +79,15 @@ public class UserLoginUseCaseImpl implements UserLoginUseCase {
         String newRefreshToken = jwtTokenGenerator.generateRefreshToken(username);
 
         return new JwtResponse(newAccessToken, newRefreshToken);
+    }
+
+    @Override
+    public UserLoginInfoResponse getUserStatusInfo(String userId) {
+        User user = userRepository.findByUsername(userId)
+                .or(() -> userRepository.findByEmail(userId))
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return new UserLoginInfoResponse(userId, user.isMfaEnabled(), user.isEnabled());
     }
 
     private void validateFirstAccess(User user) {
