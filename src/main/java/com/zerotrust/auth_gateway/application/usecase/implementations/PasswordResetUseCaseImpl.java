@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetEmailRequest;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
 import com.zerotrust.auth_gateway.domain.exception.PasswordResetException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
@@ -10,26 +10,24 @@ import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
 
     private final UserRepository userRepository;
     private final EmailService emailService;
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenService jwtTokenService;
 
     public PasswordResetUseCaseImpl(
             UserRepository userRepository,
             EmailService emailService,
-            JwtTokenGenerator jwtTokenGenerator,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder, JwtTokenService jwtTokenService) {
 
         this.userRepository = userRepository;
         this.emailService = emailService;
-        this.jwtTokenGenerator = jwtTokenGenerator;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @Override
@@ -42,15 +40,14 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
         user.setEnabled(false);
         userRepository.save(user);
 
-        String token = jwtTokenGenerator.generateToken(user.getUsername(), user.getRoles());
+        String token = jwtTokenService.generateResetPasswordToken(user);
         String link = "http://localhost:8080/api/v1/user/reset-password?token=" + token;
         emailService.sendResetPasswordEmail(request.email(), link);
     }
 
     @Override
     public void resetPassword(String token, PasswordResetRequest request) {
-        DecodedJWT decodedJWT = jwtTokenGenerator.verifyToken(token);
-        String username = decodedJWT.getSubject();
+        String username = jwtTokenService.validateResetPasswordToken(token);
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new PasswordResetException("User not found for password reset."));
@@ -63,5 +60,6 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         user.setEnabled(true);
         userRepository.save(user);
+        jwtTokenService.blacklistResetPasswordToken(token);
     }
 }

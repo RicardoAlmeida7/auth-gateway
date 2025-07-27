@@ -2,19 +2,20 @@ package com.zerotrust.auth_gateway.application.usecase.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import com.zerotrust.auth_gateway.application.dto.request.ResendActivationRequest;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUseCase;
+import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.domain.validation.EmailValidator;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
-import com.zerotrust.auth_gateway.domain.validation.RoleValidator;
 import com.zerotrust.auth_gateway.domain.validation.UsernameValidator;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.UUID;
 
 public class UserRegistrationUseCaseImpl implements UserRegistrationUseCase {
@@ -22,21 +23,20 @@ public class UserRegistrationUseCaseImpl implements UserRegistrationUseCase {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final MfaManagementUseCase mfaManagementUseCase;
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final EmailService emailService;
+    private final JwtTokenService jwtTokenService;
 
     public UserRegistrationUseCaseImpl(
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             MfaManagementUseCase mfaManagementUseCase,
-            JwtTokenGenerator jwtTokenGenerator,
-            EmailService emailService
+            EmailService emailService, JwtTokenService jwtTokenService
     ) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.mfaManagementUseCase = mfaManagementUseCase;
-        this.jwtTokenGenerator = jwtTokenGenerator;
         this.emailService = emailService;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class UserRegistrationUseCaseImpl implements UserRegistrationUseCase {
                 request.isMfaEnabled(),
                 null,
                 false,
-                request.getRoles(),
+                 List.of(Role.ROLE_USER.name()),
                 false
         );
 
@@ -63,7 +63,6 @@ public class UserRegistrationUseCaseImpl implements UserRegistrationUseCase {
 
     @Override
     public void resendActivationEmail(ResendActivationRequest request) {
-        // TODO: Validate old activation token to prevent reusing expired or previously used tokens for activation
         if (request == null) throw new UserNotFoundException("No user found with provided email or username.");
         User user = findUserByEmailOrUsername(request);
         String qrCodeUrl = mfaManagementUseCase.prepareMfaIfEnabled(user);
@@ -77,7 +76,6 @@ public class UserRegistrationUseCaseImpl implements UserRegistrationUseCase {
         UsernameValidator.validate(request.getUsername());
         PasswordValidator.validate(request.getPassword(), request.getConfirmPassword());
         EmailValidator.validate(request.getEmail());
-        RoleValidator.validate(request.getRoles());
     }
 
     private User findUserByEmailOrUsername(ResendActivationRequest request) {
@@ -87,7 +85,7 @@ public class UserRegistrationUseCaseImpl implements UserRegistrationUseCase {
     }
 
     private void sendActivationEmail(User user, String qrCodeUrl) {
-        String activationToken = jwtTokenGenerator.generateActivationToken(user.getUsername(), user.getEmail());
+        String activationToken = jwtTokenService.generateActivationToken(user);
         // TODO: Move base URL to an environment variable or configuration file
         String activationLink = "http://localhost:8080/api/v1/user/activate?token=" + activationToken;
         emailService.sendActivationEmail(user.getEmail(), activationToken, activationLink, qrCodeUrl);

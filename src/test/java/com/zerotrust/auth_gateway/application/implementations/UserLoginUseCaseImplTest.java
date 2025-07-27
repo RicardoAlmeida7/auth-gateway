@@ -2,6 +2,7 @@ package com.zerotrust.auth_gateway.application.implementations;
 
 import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.dto.response.JwtResponse;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserLoginUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
@@ -10,14 +11,11 @@ import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,26 +27,26 @@ import static org.mockito.Mockito.*;
 public class UserLoginUseCaseImplTest {
 
     private AuthenticationManager authenticationManager;
-    private JwtTokenGenerator jwtTokenGenerator;
     private UserRepository userRepository;
     private TOTPService totpService;
     private UserLoginUseCaseImpl userLoginUseCase;
     private LoginAttemptService loginAttemptService;
+    private JwtTokenService jwtTokenService;
 
     @BeforeEach
     void setUp() {
         authenticationManager = mock(AuthenticationManager.class);
-        jwtTokenGenerator = mock(JwtTokenGenerator.class);
         userRepository = mock(UserRepository.class);
         totpService = mock(TOTPService.class);
         loginAttemptService = mock(LoginAttemptService.class);
+        jwtTokenService = mock(JwtTokenService.class);
 
         userLoginUseCase = new UserLoginUseCaseImpl(
                 authenticationManager,
-                jwtTokenGenerator,
                 userRepository,
                 totpService,
-                loginAttemptService
+                loginAttemptService,
+                jwtTokenService
         );
     }
 
@@ -63,12 +61,11 @@ public class UserLoginUseCaseImplTest {
 
         Authentication auth = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(auth);
-        when(auth.getAuthorities()).thenReturn((Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        when(jwtTokenGenerator.generateToken(userId, List.of("ROLE_USER"))).thenReturn("jwt-token");
+        when(jwtTokenService.generateAuthToken(user)).thenReturn(new JwtResponse("jwt-access-token", "jwt-refresh-token"));
 
         JwtResponse token = userLoginUseCase.login(request);
 
-        assertEquals("jwt-token", token.accessToken());
+        assertEquals("jwt-access-token", token.accessToken());
     }
 
     @Test
@@ -83,13 +80,12 @@ public class UserLoginUseCaseImplTest {
         when(totpService.verifyCode("secret", otp)).thenReturn(true);
 
         Authentication auth = mock(Authentication.class);
-        when(auth.getAuthorities()).thenReturn((Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(authenticationManager.authenticate(any())).thenReturn(auth);
-        when(jwtTokenGenerator.generateToken(userId, List.of("ROLE_USER"))).thenReturn("jwt-token");
+        when(jwtTokenService.generateAuthToken(user)).thenReturn(new JwtResponse("jwt-access-token", "jwt-refresh-token"));
 
         JwtResponse token = userLoginUseCase.login(request);
 
-        assertEquals("jwt-token", token.accessToken());
+        assertEquals("jwt-access-token", token.accessToken());
     }
 
     @Test

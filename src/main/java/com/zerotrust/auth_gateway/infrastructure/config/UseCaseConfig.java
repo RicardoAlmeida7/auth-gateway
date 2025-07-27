@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.PasswordResetUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserManagementUseCaseImpl;
@@ -9,7 +10,6 @@ import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.seed.LoginPolicySeeder;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.springframework.boot.CommandLineRunner;
@@ -31,34 +31,36 @@ public class UseCaseConfig {
             PasswordEncoder passwordEncoder,
             UserRepository useRepositoryPort,
             MfaManagementUseCase mfaManagementUseCase,
-            JwtTokenGenerator jwtTokenGenerator,
-            EmailService emailService) {
+            EmailService emailService,
+            JwtTokenService jwtTokenService
+    ) {
 
         return new UserRegistrationUseCaseImpl(
                 passwordEncoder,
                 useRepositoryPort,
                 mfaManagementUseCase,
-                jwtTokenGenerator,
-                emailService);
+                emailService,
+                jwtTokenService
+        );
     }
 
     @Bean
     public ActivateAccountUseCase activateAccountUseCase(
-            JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            JwtTokenService jwtTokenService
     ) {
-        return new ActivateAccountUseCaseImpl(jwtTokenGenerator, userRepository, passwordEncoder);
+        return new ActivateAccountUseCaseImpl(userRepository, passwordEncoder, jwtTokenService);
     }
 
     @Bean
     public PasswordResetUseCase passwordResetUseCase(
             UserRepository userRepository,
             EmailService emailService,
-            JwtTokenGenerator jwtTokenGenerator,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            JwtTokenService jwtTokenService
     ) {
-        return new PasswordResetUseCaseImpl(userRepository, emailService, jwtTokenGenerator, passwordEncoder);
+        return new PasswordResetUseCaseImpl(userRepository, emailService, passwordEncoder, jwtTokenService);
     }
 
     @Bean
@@ -94,17 +96,15 @@ public class UseCaseConfig {
     @Bean
     public UserManagementUseCase userManagementUseCase(
             UserRepository repository,
-            PasswordEncoder passwordEncoder,
             MfaManagementUseCase mfaManagementUseCase,
             EmailService emailService,
-            JwtTokenGenerator jwtTokenGenerator
+            JwtTokenService jwtTokenService
     ) {
         return new UserManagementUseCaseImpl(
                 repository,
-                passwordEncoder,
                 mfaManagementUseCase,
                 emailService,
-                jwtTokenGenerator
+                jwtTokenService
         );
     }
 }

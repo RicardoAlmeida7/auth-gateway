@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.application.implementations;
 
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
@@ -10,7 +11,6 @@ import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,18 +28,18 @@ public class UserRegistrationUseCaseImplTest {
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
     private MfaManagementUseCase managementUseCase;
-    private JwtTokenGenerator jwtTokenGenerator;
     private EmailService emailService;
     private UserRegistrationUseCaseImpl registerUserUseCaseImpl;
+    private JwtTokenService jwtTokenService;
 
     @BeforeEach
     void setUp() {
         passwordEncoder = mock(PasswordEncoder.class);
         userRepository = mock(UserRepository.class);
         managementUseCase = mock(MfaManagementUseCase.class);
-        jwtTokenGenerator = mock(JwtTokenGenerator.class);
         emailService = mock(EmailService.class);
-        registerUserUseCaseImpl = new UserRegistrationUseCaseImpl(passwordEncoder, userRepository, managementUseCase, jwtTokenGenerator, emailService);
+        jwtTokenService = mock(JwtTokenService.class);
+        registerUserUseCaseImpl = new UserRegistrationUseCaseImpl(passwordEncoder, userRepository, managementUseCase, emailService, jwtTokenService);
     }
 
     @Test
@@ -57,7 +58,16 @@ public class UserRegistrationUseCaseImplTest {
         );
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
-        when(jwtTokenGenerator.generateActivationToken(any(), any())).thenReturn("fake-token");
+        when(jwtTokenService.generateActivationToken(new User(
+                UUID.randomUUID(),
+                request.getUsername(),
+                rawPassword,
+                request.getEmail(),
+                false,
+                "",
+                true,
+                request.getRoles(),
+                request.isFirstAccessRequired()))).thenReturn("fake-token");
 
         assertDoesNotThrow(() -> registerUserUseCaseImpl.register(request));
 
@@ -212,7 +222,16 @@ public class UserRegistrationUseCaseImplTest {
         );
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
-        when(jwtTokenGenerator.generateActivationToken(any(), any())).thenReturn("fake-token");
+        when(jwtTokenService.generateActivationToken(new User(
+                UUID.randomUUID(),
+                request.getUsername(),
+                rawPassword,
+                request.getEmail(),
+                false,
+                "",
+                true,
+                request.getRoles(),
+                request.isFirstAccessRequired()))).thenReturn("fake-token");
 
         registerUserUseCaseImpl.register(request);
 
@@ -242,7 +261,16 @@ public class UserRegistrationUseCaseImplTest {
 
         when(passwordEncoder.encode(rawPassword)).thenReturn(hashedPassword);
         when(managementUseCase.prepareMfaIfEnabled(any())).thenReturn(qrCodeUrl);
-        when(jwtTokenGenerator.generateActivationToken(any(), any())).thenReturn("fake-token");
+        when(jwtTokenService.generateActivationToken(new User(
+                UUID.randomUUID(),
+                request.getUsername(),
+                rawPassword,
+                request.getEmail(),
+                false,
+                "",
+                true,
+                request.getRoles(),
+                request.isFirstAccessRequired()))).thenReturn("fake-token");
 
         registerUserUseCaseImpl.register(request);
 

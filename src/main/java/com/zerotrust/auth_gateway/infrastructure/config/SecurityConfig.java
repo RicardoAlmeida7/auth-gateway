@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.zerotrust.auth_gateway.application.service.implementations.LoginAttemptServiceImpl;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.MfaManagementUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.UserLoginUseCaseImpl;
@@ -98,11 +99,12 @@ public class SecurityConfig {
     @Bean
     public UserLoginUseCase userLoginUseCase(
             AuthenticationManager authenticationManager,
-            JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,
             TOTPService totpService,
-            LoginAttemptService loginAttemptService) {
-        return new UserLoginUseCaseImpl(authenticationManager, jwtTokenGenerator, userRepository, totpService, loginAttemptService);
+            LoginAttemptService loginAttemptService,
+            JwtTokenService jwtTokenService
+    ) {
+        return new UserLoginUseCaseImpl(authenticationManager, userRepository, totpService, loginAttemptService, jwtTokenService);
     }
 
     @Bean

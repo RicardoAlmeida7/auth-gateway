@@ -3,6 +3,9 @@ package com.zerotrust.auth_gateway.infrastructure.config;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.zerotrust.auth_gateway.application.service.implementations.JwtTokenServiceImpl;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
+import com.zerotrust.auth_gateway.domain.service.TokenBlacklistService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +35,11 @@ public class JwtConfig {
     @Bean
     public JwtTokenGenerator jwtTokenGenerator(Algorithm algorithm) {
         return new JwtTokenGenerator(algorithm);
+    }
+
+    @Bean
+    public JwtTokenService jwtTokenService(JwtTokenGenerator jwtTokenGenerator, TokenBlacklistService tokenBlacklistService) {
+        return new JwtTokenServiceImpl(jwtTokenGenerator, tokenBlacklistService);
     }
 
     RSAPrivateKey loadPrivateKey() {

@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
@@ -65,12 +66,12 @@ public class SecurityConfigTest {
     @Test
     void shouldCreateAuthServiceUseCase() {
         AuthenticationManager authenticationManager = mock(AuthenticationManager.class);
-        JwtTokenGenerator jwtTokenGenerator = mock(JwtTokenGenerator.class);
         UserRepository userRepository = mock(UserRepository.class);
         TOTPService totpService = mock(TOTPService.class);
         LoginAttemptService loginAttemptService = mock(LoginAttemptService.class);
+        JwtTokenService jwtTokenService = mock(JwtTokenService.class);
 
-        assertNotNull(config.userLoginUseCase(authenticationManager, jwtTokenGenerator, userRepository, totpService, loginAttemptService));
+        assertNotNull(config.userLoginUseCase(authenticationManager, userRepository, totpService, loginAttemptService, jwtTokenService));
     }
 
     @Test

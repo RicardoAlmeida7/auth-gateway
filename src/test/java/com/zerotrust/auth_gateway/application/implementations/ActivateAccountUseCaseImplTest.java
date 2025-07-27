@@ -2,12 +2,12 @@ package com.zerotrust.auth_gateway.application.implementations;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,16 +20,16 @@ import static org.mockito.Mockito.*;
 
 public class ActivateAccountUseCaseImplTest {
 
-    private JwtTokenGenerator jwtTokenGenerator;
     private UserRepository userRepository;
     private ActivateAccountUseCaseImpl activateAccountUseCase;
+    private JwtTokenService jwtTokenService;
 
     @BeforeEach
     void setUp() {
-        jwtTokenGenerator = mock(JwtTokenGenerator.class);
         userRepository = mock(UserRepository.class);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-        activateAccountUseCase = new ActivateAccountUseCaseImpl(jwtTokenGenerator, userRepository, passwordEncoder);
+        jwtTokenService = mock(JwtTokenService.class);
+        activateAccountUseCase = new ActivateAccountUseCaseImpl(userRepository, passwordEncoder, jwtTokenService);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ActivateAccountUseCaseImplTest {
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
         when(decodedJWT.getSubject()).thenReturn(username);
-        when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
+        when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
 
         User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", false, "", false, null, false);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
@@ -57,7 +57,7 @@ public class ActivateAccountUseCaseImplTest {
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
         when(decodedJWT.getSubject()).thenReturn(username);
-        when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
+        when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
 
         User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", true, "", false, null, false);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
@@ -78,7 +78,7 @@ public class ActivateAccountUseCaseImplTest {
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
         when(decodedJWT.getSubject()).thenReturn(username);
-        when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
+        when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
 
         User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", true, "", false, null, true);
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
@@ -98,7 +98,7 @@ public class ActivateAccountUseCaseImplTest {
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
         when(decodedJWT.getSubject()).thenReturn(username);
-        when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
+        when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->

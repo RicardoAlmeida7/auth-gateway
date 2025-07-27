@@ -1,10 +1,10 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
 import com.zerotrust.auth_gateway.application.dto.request.RefreshTokenRequest;
 import com.zerotrust.auth_gateway.application.dto.response.JwtResponse;
 import com.zerotrust.auth_gateway.application.dto.response.UserLoginInfoResponse;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserLoginUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
@@ -13,37 +13,30 @@ import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserLoginUseCaseImpl implements UserLoginUseCase {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final UserRepository userRepository;
     private final TOTPService totpService;
     private final LoginAttemptService loginAttemptService;
+    private final JwtTokenService jwtTokenService;
 
     public UserLoginUseCaseImpl(
             AuthenticationManager authenticationManager,
-            JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,
             TOTPService totpService,
-            LoginAttemptService loginAttemptService
+            LoginAttemptService loginAttemptService, JwtTokenService jwtTokenService
     ) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenGenerator = jwtTokenGenerator;
         this.userRepository = userRepository;
         this.totpService = totpService;
         this.loginAttemptService = loginAttemptService;
+        this.jwtTokenService = jwtTokenService;
     }
 
     public JwtResponse login(AuthenticationRequest request) {
@@ -59,10 +52,7 @@ public class UserLoginUseCaseImpl implements UserLoginUseCase {
         loginAttemptService.checkLock(user);
         validateMfa(user, request);
 
-        String accessToken = authenticateAndGenerateToken(user, request);
-        String refreshToken = jwtTokenGenerator.generateRefreshToken(user.getUsername());
-
-        return new JwtResponse(accessToken, refreshToken);
+        return authenticateAndGenerateToken(user, request);
     }
 
     @Override
@@ -71,14 +61,10 @@ public class UserLoginUseCaseImpl implements UserLoginUseCase {
             throw new AuthenticationFailedException("Refresh token must be provided");
         }
 
-        DecodedJWT decodedJWT = jwtTokenGenerator.verifyRefreshToken(request.token());
-        String username = decodedJWT.getSubject();
+        String username = jwtTokenService.validateRefreshToken(request.token());
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
 
-        String newAccessToken = jwtTokenGenerator.generateToken(username, user.getRoles());
-        String newRefreshToken = jwtTokenGenerator.generateRefreshToken(username);
-
-        return new JwtResponse(newAccessToken, newRefreshToken);
+        return jwtTokenService.generateAuthToken(user);
     }
 
     @Override
@@ -111,24 +97,17 @@ public class UserLoginUseCaseImpl implements UserLoginUseCase {
         }
     }
 
-    private String authenticateAndGenerateToken(User user, AuthenticationRequest request) {
+    private JwtResponse authenticateAndGenerateToken(User user, AuthenticationRequest request) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), request.password())
             );
 
             loginAttemptService.reset(user);
-            return jwtTokenGenerator.generateToken(user.getUsername(), getAuthorities(authentication));
+            return jwtTokenService.generateAuthToken(user);
         } catch (Exception exception) {
             loginAttemptService.recordFailure(user);
             throw new AuthenticationFailedException("Invalid password.");
         }
-    }
-
-    private List<String> getAuthorities(Authentication authentication) {
-        return authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
     }
 }

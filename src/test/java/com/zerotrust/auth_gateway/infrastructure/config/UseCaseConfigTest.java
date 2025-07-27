@@ -1,13 +1,13 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
+import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUseCase;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.seed.LoginPolicySeeder;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ public class UseCaseConfigTest {
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         UserRepository userRepository = mock(UserRepository.class);
         MfaManagementUseCase mfaManagementUseCase = mock(MfaManagementUseCase.class);
-        JwtTokenGenerator jwtTokenGenerator = mock(JwtTokenGenerator.class);
         EmailService emailService = mock(EmailService.class);
+        JwtTokenService jwtTokenService = mock(JwtTokenService.class);
 
         UseCaseConfig config = new UseCaseConfig();
 
@@ -38,8 +38,8 @@ public class UseCaseConfigTest {
                 passwordEncoder,
                 userRepository,
                 mfaManagementUseCase,
-                jwtTokenGenerator,
-                emailService
+                emailService,
+                jwtTokenService
         );
 
         assertNotNull(useCase);

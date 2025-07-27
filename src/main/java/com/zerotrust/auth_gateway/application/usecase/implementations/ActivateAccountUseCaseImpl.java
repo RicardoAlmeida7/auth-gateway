@@ -1,36 +1,33 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ActivateAccountUseCaseImpl implements ActivateAccountUseCase {
 
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenService jwtTokenService;
 
     public ActivateAccountUseCaseImpl(
-            JwtTokenGenerator jwtTokenGenerator,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder, JwtTokenService jwtTokenService
     ) {
-        this.jwtTokenGenerator = jwtTokenGenerator;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @Override
     public void activate(String token, PasswordResetRequest request) {
-        DecodedJWT decodedJWT = jwtTokenGenerator.verifyToken(token);
-        String userName = decodedJWT.getSubject();
+        String userName = jwtTokenService.validateActivationToken(token);
 
         User user = userRepository.findByUsername(userName).orElseThrow(() -> new UserNotFoundException("User not found."));
 
@@ -46,5 +43,6 @@ public class ActivateAccountUseCaseImpl implements ActivateAccountUseCase {
 
         user.setEnabled(true);
         userRepository.save(user);
+        jwtTokenService.blacklistActivationToken(token);
     }
 }

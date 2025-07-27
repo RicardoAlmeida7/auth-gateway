@@ -40,6 +40,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.eatthepath/java-otp
 	implementation("com.eatthepath:java-otp:0.4.0")
 
+	// redis
+	implementation("org.springframework.boot:spring-boot-starter-cache:3.5.4")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis:3.5.4")
+
 	// Tests
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.2")
 	testImplementation("org.mockito:mockito-core:5.18.0")

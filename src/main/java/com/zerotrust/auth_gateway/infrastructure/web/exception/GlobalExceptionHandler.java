@@ -83,6 +83,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, "The request body is missing.");
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public  ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Object> handleNotFound(NoHandlerFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, "The requested resource was not found.");
