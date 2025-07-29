@@ -97,7 +97,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationUseCase userLoginUseCase(
+    public AuthenticationUseCase authenticationUseCase(
             AuthenticationManager authenticationManager,
             UserRepository userRepository,
             TOTPService totpService,

@@ -71,7 +71,7 @@ public class SecurityConfigTest {
         LoginAttemptService loginAttemptService = mock(LoginAttemptService.class);
         JwtTokenService jwtTokenService = mock(JwtTokenService.class);
 
-        assertNotNull(config.userLoginUseCase(authenticationManager, userRepository, totpService, loginAttemptService, jwtTokenService));
+        assertNotNull(config.authenticationUseCase(authenticationManager, userRepository, totpService, loginAttemptService, jwtTokenService));
     }
 
     @Test
