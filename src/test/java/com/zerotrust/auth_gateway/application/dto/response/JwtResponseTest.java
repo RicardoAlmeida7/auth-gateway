@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.application.dto.response;
 
+import com.zerotrust.auth_gateway.application.dto.response.auth.JwtResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,0 +1,12 @@
+package com.zerotrust.auth_gateway.application.usecase.interfaces.admin;
+
+import com.zerotrust.auth_gateway.application.dto.request.registration.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.response.user.ManagedUserResponse;
+
+import java.util.List;
+
+public interface AdminUserManagementUseCase {
+    void deleteUser(String id);
+    List<ManagedUserResponse> getUsers();
+    ManagedUserResponse createUser(RegisterRequest request);
+}

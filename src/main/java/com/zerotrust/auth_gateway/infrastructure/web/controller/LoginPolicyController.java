@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
-import com.zerotrust.auth_gateway.application.dto.request.UpdateLoginPolicyRequest;
-import com.zerotrust.auth_gateway.application.dto.response.LoginPolicyResponse;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.LoginPolicyUseCase;
+import com.zerotrust.auth_gateway.application.dto.request.policy.UpdateLoginPolicyRequest;
+import com.zerotrust.auth_gateway.application.dto.response.policy.LoginPolicyResponse;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.LoginPolicyUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

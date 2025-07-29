@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.application.dto.request;
 
+import com.zerotrust.auth_gateway.application.dto.request.password.PasswordResetRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

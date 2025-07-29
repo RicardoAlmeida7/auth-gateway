@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.application.service.interfaces;
 
-import com.zerotrust.auth_gateway.application.dto.response.JwtResponse;
+import com.zerotrust.auth_gateway.application.dto.response.auth.JwtResponse;
 import com.zerotrust.auth_gateway.domain.model.User;
 
 public interface JwtTokenService {

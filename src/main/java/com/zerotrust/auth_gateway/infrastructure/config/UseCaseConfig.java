@@ -1,11 +1,15 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
-import com.zerotrust.auth_gateway.application.usecase.implementations.ActivateAccountUseCaseImpl;
-import com.zerotrust.auth_gateway.application.usecase.implementations.PasswordResetUseCaseImpl;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserManagementUseCaseImpl;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseCaseImpl;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.*;
+import com.zerotrust.auth_gateway.application.usecase.implementations.activation.AccountActivationUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.auth.PasswordResetUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.admin.AdminUserManagementUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.registration.PublicRegistrationUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.activation.AccountActivationUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.admin.AdminUserManagementUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagementUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.PasswordResetUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.registration.PublicRegistrationUseCase;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -27,7 +31,7 @@ import java.util.UUID;
 public class UseCaseConfig {
 
     @Bean
-    public UserRegistrationUseCase registerUserUseCase(
+    public PublicRegistrationUseCase registerUserUseCase(
             PasswordEncoder passwordEncoder,
             UserRepository useRepositoryPort,
             MfaManagementUseCase mfaManagementUseCase,
@@ -35,7 +39,7 @@ public class UseCaseConfig {
             JwtTokenService jwtTokenService
     ) {
 
-        return new UserRegistrationUseCaseImpl(
+        return new PublicRegistrationUseCaseImpl(
                 passwordEncoder,
                 useRepositoryPort,
                 mfaManagementUseCase,
@@ -45,12 +49,12 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public ActivateAccountUseCase activateAccountUseCase(
+    public AccountActivationUseCase activateAccountUseCase(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtTokenService jwtTokenService
     ) {
-        return new ActivateAccountUseCaseImpl(userRepository, passwordEncoder, jwtTokenService);
+        return new AccountActivationUseCaseImpl(userRepository, passwordEncoder, jwtTokenService);
     }
 
     @Bean
@@ -94,13 +98,13 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public UserManagementUseCase userManagementUseCase(
+    public AdminUserManagementUseCase userManagementUseCase(
             UserRepository repository,
             MfaManagementUseCase mfaManagementUseCase,
             EmailService emailService,
             JwtTokenService jwtTokenService
     ) {
-        return new UserManagementUseCaseImpl(
+        return new AdminUserManagementUseCaseImpl(
                 repository,
                 mfaManagementUseCase,
                 emailService,

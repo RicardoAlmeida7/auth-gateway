@@ -1,9 +1,9 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
-import com.zerotrust.auth_gateway.application.usecase.interfaces.ActivateAccountUseCase;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUseCase;
-import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
-import com.zerotrust.auth_gateway.application.dto.request.RegisterRequest;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.activation.AccountActivationUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.registration.PublicRegistrationUseCase;
+import com.zerotrust.auth_gateway.application.dto.request.password.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.dto.request.registration.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,16 +16,16 @@ import static org.mockito.Mockito.*;
 
 public class UserControllerTest {
 
-    private UserRegistrationUseCase userRegistrationUseCase;
-    private ActivateAccountUseCase activateAccountUseCase;
+    private PublicRegistrationUseCase publicRegistrationUseCase;
+    private AccountActivationUseCase accountActivationUseCase;
     private UserController userController;
 
     @BeforeEach
     void setUp() {
-        userRegistrationUseCase = mock(UserRegistrationUseCase.class);
-        activateAccountUseCase = mock(ActivateAccountUseCase.class);
+        publicRegistrationUseCase = mock(PublicRegistrationUseCase.class);
+        accountActivationUseCase = mock(AccountActivationUseCase.class);
 
-        userController = new UserController(userRegistrationUseCase, activateAccountUseCase);
+        userController = new UserController(publicRegistrationUseCase, accountActivationUseCase);
     }
 
     @Test
@@ -35,7 +35,7 @@ public class UserControllerTest {
         ResponseEntity<Void> response = userController.register(request);
 
         ArgumentCaptor<RegisterRequest> captor = ArgumentCaptor.forClass(RegisterRequest.class);
-        verify(userRegistrationUseCase, times(1)).register(captor.capture());
+        verify(publicRegistrationUseCase, times(1)).register(captor.capture());
 
         RegisterRequest capturedRequest = captor.getValue();
 
@@ -57,7 +57,7 @@ public class UserControllerTest {
 
         ResponseEntity<Void> response = userController.activateAccount(token, passwordResetRequest);
 
-        verify(activateAccountUseCase, times(1)).activate(token, passwordResetRequest);
+        verify(accountActivationUseCase, times(1)).activate(token, passwordResetRequest);
         assertEquals(200, response.getStatusCodeValue());
         assertNull(response.getBody());
     }

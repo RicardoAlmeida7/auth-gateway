@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
-import com.zerotrust.auth_gateway.application.dto.request.PasswordResetEmailRequest;
-import com.zerotrust.auth_gateway.application.dto.request.PasswordResetRequest;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.PasswordResetUseCase;
+import com.zerotrust.auth_gateway.application.dto.request.password.PasswordResetEmailRequest;
+import com.zerotrust.auth_gateway.application.dto.request.password.PasswordResetRequest;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.PasswordResetUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

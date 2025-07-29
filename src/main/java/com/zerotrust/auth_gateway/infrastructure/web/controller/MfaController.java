@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
-import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagementUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;

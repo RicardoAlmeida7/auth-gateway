@@ -1,9 +1,9 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
-import com.zerotrust.auth_gateway.application.usecase.implementations.UserRegistrationUseCaseImpl;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.MfaManagementUseCase;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserRegistrationUseCase;
+import com.zerotrust.auth_gateway.application.usecase.implementations.registration.PublicRegistrationUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagementUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.registration.PublicRegistrationUseCase;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -34,7 +34,7 @@ public class UseCaseConfigTest {
 
         UseCaseConfig config = new UseCaseConfig();
 
-        UserRegistrationUseCase useCase = config.registerUserUseCase(
+        PublicRegistrationUseCase useCase = config.registerUserUseCase(
                 passwordEncoder,
                 userRepository,
                 mfaManagementUseCase,
@@ -43,7 +43,7 @@ public class UseCaseConfigTest {
         );
 
         assertNotNull(useCase);
-        assertEquals(UserRegistrationUseCaseImpl.class, useCase.getClass());
+        assertEquals(PublicRegistrationUseCaseImpl.class, useCase.getClass());
     }
 
     @Test

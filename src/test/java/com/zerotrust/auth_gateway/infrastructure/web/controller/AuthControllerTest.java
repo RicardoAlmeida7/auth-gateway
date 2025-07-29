@@ -1,8 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
-import com.zerotrust.auth_gateway.application.dto.request.AuthenticationRequest;
-import com.zerotrust.auth_gateway.application.dto.response.JwtResponse;
-import com.zerotrust.auth_gateway.application.usecase.interfaces.UserLoginUseCase;
+import com.zerotrust.auth_gateway.application.dto.request.auth.AuthenticationRequest;
+import com.zerotrust.auth_gateway.application.dto.response.auth.JwtResponse;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.AuthenticationUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +12,13 @@ import static org.mockito.Mockito.*;
 
 public class AuthControllerTest {
 
-    private UserLoginUseCase userLoginUseCase;
+    private AuthenticationUseCase authenticationUseCase;
     private AuthController authController;
 
     @BeforeEach
     void setUp() {
-        userLoginUseCase = mock(UserLoginUseCase.class);
-        authController = new AuthController(userLoginUseCase);
+        authenticationUseCase = mock(AuthenticationUseCase.class);
+        authController = new AuthController(authenticationUseCase);
     }
 
     @Test
@@ -27,7 +27,7 @@ public class AuthControllerTest {
         AuthenticationRequest request = new AuthenticationRequest("username", "password", "123456");
         JwtResponse jwtResponse = new JwtResponse("mocked.access.token", "mocked.refresh.token");
 
-        when(userLoginUseCase.login(request)).thenReturn(jwtResponse);
+        when(authenticationUseCase.login(request)).thenReturn(jwtResponse);
 
         // When
         ResponseEntity<JwtResponse> response = authController.login(request);
@@ -41,6 +41,6 @@ public class AuthControllerTest {
         assertEquals("mocked.access.token", body.accessToken());
         assertEquals("mocked.refresh.token", body.refreshToken());
 
-        verify(userLoginUseCase, times(1)).login(request);
+        verify(authenticationUseCase, times(1)).login(request);
     }
 }
