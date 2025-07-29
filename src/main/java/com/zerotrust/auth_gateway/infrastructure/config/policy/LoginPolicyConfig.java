@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.infrastructure.config;
+package com.zerotrust.auth_gateway.infrastructure.config.policy;
 
 import com.zerotrust.auth_gateway.application.usecase.implementations.auth.LoginPolicyUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.LoginPolicyUseCase;

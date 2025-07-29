@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.infrastructure.config;
+package com.zerotrust.auth_gateway.infrastructure.config.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

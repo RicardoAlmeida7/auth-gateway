@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.infrastructure.config;
+package com.zerotrust.auth_gateway.infrastructure.config.persistence;
 
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations.UserRepositoryImpl;

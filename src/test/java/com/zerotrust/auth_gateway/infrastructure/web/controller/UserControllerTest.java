@@ -2,11 +2,12 @@ package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.usecase.interfaces.activation.AccountActivationUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.registration.PublicRegistrationUseCase;
-import com.zerotrust.auth_gateway.application.dto.request.password.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.dto.request.registration.RegisterRequest;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.user.UserProfileUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -24,8 +25,9 @@ public class UserControllerTest {
     void setUp() {
         publicRegistrationUseCase = mock(PublicRegistrationUseCase.class);
         accountActivationUseCase = mock(AccountActivationUseCase.class);
+        UserProfileUseCase userProfileUseCase = mock(UserProfileUseCase.class);
 
-        userController = new UserController(publicRegistrationUseCase, accountActivationUseCase);
+        userController = new UserController(publicRegistrationUseCase, accountActivationUseCase, userProfileUseCase);
     }
 
     @Test
@@ -46,19 +48,18 @@ public class UserControllerTest {
         assertEquals(request.isMfaEnabled(), capturedRequest.isMfaEnabled());
         assertEquals(request.getConfirmPassword(), capturedRequest.getConfirmPassword());
 
-        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNull(response.getBody());
     }
 
     @Test
     void shouldActivateAccountAndReturnOkStatus() {
         String token = "some-valid-token";
-        PasswordResetRequest passwordResetRequest = null; // teste com null
 
-        ResponseEntity<Void> response = userController.activateAccount(token, passwordResetRequest);
+        ResponseEntity<Void> response = userController.activateAccount(token, null);
 
-        verify(accountActivationUseCase, times(1)).activate(token, passwordResetRequest);
-        assertEquals(200, response.getStatusCodeValue());
+        verify(accountActivationUseCase, times(1)).activate(token, null);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNull(response.getBody());
     }
 }

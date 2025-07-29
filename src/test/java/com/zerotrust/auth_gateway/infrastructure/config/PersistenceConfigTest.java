@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
+import com.zerotrust.auth_gateway.infrastructure.config.persistence.PersistenceConfig;
 import com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations.UserRepositoryImpl;
 import com.zerotrust.auth_gateway.infrastructure.repository.repositories.interfaces.JpaRoleRepository;
 import com.zerotrust.auth_gateway.infrastructure.repository.repositories.interfaces.JpaUserRepository;

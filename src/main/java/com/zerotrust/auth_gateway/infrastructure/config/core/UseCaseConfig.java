@@ -1,15 +1,17 @@
-package com.zerotrust.auth_gateway.infrastructure.config;
+package com.zerotrust.auth_gateway.infrastructure.config.core;
 
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.implementations.activation.AccountActivationUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.auth.PasswordResetUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.admin.AdminUserManagementUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.implementations.registration.PublicRegistrationUseCaseImpl;
+import com.zerotrust.auth_gateway.application.usecase.implementations.user.UserProfileUseCaseImpl;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.activation.AccountActivationUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.admin.AdminUserManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.PasswordResetUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.registration.PublicRegistrationUseCase;
+import com.zerotrust.auth_gateway.application.usecase.interfaces.user.UserProfileUseCase;
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -110,5 +112,10 @@ public class UseCaseConfig {
                 emailService,
                 jwtTokenService
         );
+    }
+
+    @Bean
+    public UserProfileUseCase userProfileUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return new UserProfileUseCaseImpl(userRepository, passwordEncoder);
     }
 }

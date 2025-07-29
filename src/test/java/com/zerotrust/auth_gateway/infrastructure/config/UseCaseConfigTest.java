@@ -8,6 +8,8 @@ import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.infrastructure.config.core.AdminProperties;
+import com.zerotrust.auth_gateway.infrastructure.config.core.UseCaseConfig;
 import com.zerotrust.auth_gateway.infrastructure.seed.LoginPolicySeeder;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.infrastructure.config;
+package com.zerotrust.auth_gateway.infrastructure.config.persistence;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

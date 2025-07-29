@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.config;
 
+import com.zerotrust.auth_gateway.infrastructure.config.core.AdminProperties;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

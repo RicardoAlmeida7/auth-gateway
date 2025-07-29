@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.infrastructure.config;
+package com.zerotrust.auth_gateway.infrastructure.config.messaging;
 
 import com.zerotrust.auth_gateway.domain.service.EmailService;
 import com.zerotrust.auth_gateway.infrastructure.email.MockEmailService;

@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.infrastructure.config;
+package com.zerotrust.auth_gateway.infrastructure.config.core;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

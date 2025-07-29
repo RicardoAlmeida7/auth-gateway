@@ -4,6 +4,7 @@ import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService
 import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptService;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.infrastructure.config.security.SecurityConfig;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.security.providers.CustomAuthenticationProvider;
