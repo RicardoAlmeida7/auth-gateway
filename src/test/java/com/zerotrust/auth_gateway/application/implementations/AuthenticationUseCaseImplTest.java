@@ -10,7 +10,7 @@ import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredEx
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TOTPService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;

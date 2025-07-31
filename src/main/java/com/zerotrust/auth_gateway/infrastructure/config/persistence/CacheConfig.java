@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.config.persistence;
 
-import com.zerotrust.auth_gateway.domain.service.TokenBlacklistService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TokenBlacklistService;
 import com.zerotrust.auth_gateway.infrastructure.cache.RedisTokenBlacklistServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

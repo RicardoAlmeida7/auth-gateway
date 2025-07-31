@@ -12,8 +12,8 @@ import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagem
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.AuthenticationUseCase;
 import com.zerotrust.auth_gateway.domain.repository.LoginPolicyRepository;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TOTPService;
 import com.zerotrust.auth_gateway.infrastructure.security.filter.JwtAuthenticationFilter;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import com.zerotrust.auth_gateway.infrastructure.security.providers.CustomAuthenticationProvider;

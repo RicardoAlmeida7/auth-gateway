@@ -10,7 +10,7 @@ import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.application.usecase.implementations.registration.PublicRegistrationUseCaseImpl;
 import com.zerotrust.auth_gateway.domain.model.User;
-import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
 import com.zerotrust.auth_gateway.application.dto.request.registration.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.email;
 
-import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

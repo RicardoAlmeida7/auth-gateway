@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.security.totp;
 
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TOTPService;
 import org.apache.commons.codec.binary.Base32;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

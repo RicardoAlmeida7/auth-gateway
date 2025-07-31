@@ -4,8 +4,8 @@ import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagem
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.domain.service.EmailService;
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TOTPService;
 
 public class MfaManagementUseCaseImpl implements MfaManagementUseCase {
 

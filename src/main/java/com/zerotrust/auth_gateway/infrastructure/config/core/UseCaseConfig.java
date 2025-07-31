@@ -15,7 +15,9 @@ import com.zerotrust.auth_gateway.application.usecase.interfaces.user.UserProfil
 import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.domain.service.implementation.UserUpdateValidatorImpl;
+import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.UserUpdateValidator;
 import com.zerotrust.auth_gateway.infrastructure.seed.LoginPolicySeeder;
 import com.zerotrust.auth_gateway.infrastructure.seed.RoleSeeder;
 import org.springframework.boot.CommandLineRunner;
@@ -104,18 +106,25 @@ public class UseCaseConfig {
             UserRepository repository,
             MfaManagementUseCase mfaManagementUseCase,
             EmailService emailService,
-            JwtTokenService jwtTokenService
+            JwtTokenService jwtTokenService,
+            UserUpdateValidator userUpdateValidator
     ) {
         return new AdminUserManagementUseCaseImpl(
                 repository,
                 mfaManagementUseCase,
                 emailService,
-                jwtTokenService
+                jwtTokenService,
+                userUpdateValidator
         );
     }
 
     @Bean
-    public UserProfileUseCase userProfileUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return new UserProfileUseCaseImpl(userRepository, passwordEncoder);
+    public UserProfileUseCase userProfileUseCase(UserRepository userRepository, UserUpdateValidator userUpdateValidator) {
+        return new UserProfileUseCaseImpl(userRepository, userUpdateValidator);
+    }
+
+    @Bean
+    public UserUpdateValidator userUpdateValidator(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return new UserUpdateValidatorImpl(userRepository, passwordEncoder);
     }
 }

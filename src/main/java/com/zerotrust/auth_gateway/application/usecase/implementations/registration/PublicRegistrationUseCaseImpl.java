@@ -9,7 +9,7 @@ import com.zerotrust.auth_gateway.domain.enums.Role;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
 import com.zerotrust.auth_gateway.domain.validation.EmailValidator;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
 import com.zerotrust.auth_gateway.domain.validation.UsernameValidator;

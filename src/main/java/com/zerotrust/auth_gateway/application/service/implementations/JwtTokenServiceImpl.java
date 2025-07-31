@@ -5,7 +5,7 @@ import com.zerotrust.auth_gateway.application.dto.response.auth.JwtResponse;
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.domain.exception.InvalidTokenException;
 import com.zerotrust.auth_gateway.domain.model.User;
-import com.zerotrust.auth_gateway.domain.service.TokenBlacklistService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TokenBlacklistService;
 import com.zerotrust.auth_gateway.domain.utils.Constants;
 import com.zerotrust.auth_gateway.domain.utils.HashUtil;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;

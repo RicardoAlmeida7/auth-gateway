@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.dto.request.registration.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.request.user.AdminUpdateUserRequest;
 import com.zerotrust.auth_gateway.application.dto.response.user.ManagedUserResponse;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.admin.AdminUserManagementUseCase;
 import org.springframework.http.HttpStatus;
@@ -37,5 +38,10 @@ public class AdminController {
     @GetMapping
     public ResponseEntity<List<ManagedUserResponse>> getUsers() {
         return ResponseEntity.ok(adminUserManagementUseCase.getUsers());
+    }
+
+    @PutMapping("/update-user")
+    public ResponseEntity<ManagedUserResponse> updateUser(@RequestParam String userId, @RequestBody AdminUpdateUserRequest request) {
+        return ResponseEntity.ok(adminUserManagementUseCase.updateUser(userId, request));
     }
 }

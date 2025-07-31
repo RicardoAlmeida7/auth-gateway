@@ -1,6 +1,7 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations.admin;
 
 import com.zerotrust.auth_gateway.application.dto.request.registration.RegisterRequest;
+import com.zerotrust.auth_gateway.application.dto.request.user.AdminUpdateUserRequest;
 import com.zerotrust.auth_gateway.application.dto.response.user.ManagedUserResponse;
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagementUseCase;
@@ -10,7 +11,8 @@ import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
-import com.zerotrust.auth_gateway.domain.service.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.UserUpdateValidator;
 import com.zerotrust.auth_gateway.domain.validation.EmailValidator;
 import com.zerotrust.auth_gateway.domain.validation.RoleValidator;
 import com.zerotrust.auth_gateway.domain.validation.UsernameValidator;
@@ -25,17 +27,20 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
     private final MfaManagementUseCase mfaManagementUseCase;
     private final EmailService emailService;
     private final JwtTokenService jwtTokenService;
+    private final UserUpdateValidator userUpdateValidator;
 
     public AdminUserManagementUseCaseImpl(
             UserRepository userRepository,
             MfaManagementUseCase mfaManagementUseCase,
             EmailService emailService,
-            JwtTokenService jwtTokenService
-            ) {
+            JwtTokenService jwtTokenService,
+            UserUpdateValidator userUpdateValidator
+    ) {
         this.userRepository = userRepository;
         this.mfaManagementUseCase = mfaManagementUseCase;
         this.emailService = emailService;
         this.jwtTokenService = jwtTokenService;
+        this.userUpdateValidator = userUpdateValidator;
     }
 
     @Override
@@ -87,6 +92,24 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
         String qrCodeUrl = mfaManagementUseCase.generateMfaSetupIfEnabled(user);
         userRepository.save(user);
         sendActivationEmail(user, qrCodeUrl);
+        return new ManagedUserResponse(user.getId(), user.getUsername(), user.getEmail(), user.isEnabled(), user.getRoles());
+    }
+
+    @Override
+    public ManagedUserResponse updateUser(String userId, AdminUpdateUserRequest request) {
+        User user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        userUpdateValidator.updateUsernameIfNeeded(user, request.username());
+        userUpdateValidator.updateEmailIfNeeded(user, request.email());
+
+        if (!request.roles().isEmpty()) {
+            RoleValidator.validate(request.roles());
+            user.setRoles(request.roles());
+        }
+
+        userRepository.save(user);
+
         return new ManagedUserResponse(user.getId(), user.getUsername(), user.getEmail(), user.isEnabled(), user.getRoles());
     }
 

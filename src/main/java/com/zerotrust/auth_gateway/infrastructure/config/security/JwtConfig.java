@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.zerotrust.auth_gateway.application.service.implementations.JwtTokenServiceImpl;
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
-import com.zerotrust.auth_gateway.domain.service.TokenBlacklistService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TokenBlacklistService;
 import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.zerotrust.auth_gateway.domain.service;
+package com.zerotrust.auth_gateway.domain.service.interfaces;
 
 public interface TOTPService {
 

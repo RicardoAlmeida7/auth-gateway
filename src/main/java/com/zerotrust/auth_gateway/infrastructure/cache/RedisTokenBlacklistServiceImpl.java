@@ -1,6 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.cache;
 
-import com.zerotrust.auth_gateway.domain.service.TokenBlacklistService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TokenBlacklistService;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Duration;

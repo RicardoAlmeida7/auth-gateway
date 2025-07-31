@@ -1,7 +1,7 @@
 package com.zerotrust.auth_gateway.infrastructure.security.totp;
 
 import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
-import com.zerotrust.auth_gateway.domain.service.TOTPService;
+import com.zerotrust.auth_gateway.domain.service.interfaces.TOTPService;
 import org.apache.commons.codec.binary.Base32;
 
 import javax.crypto.KeyGenerator;
