@@ -14,7 +14,9 @@ import com.zerotrust.auth_gateway.domain.service.interfaces.TOTPService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,12 +54,14 @@ public class AuthenticationUseCaseImplTest {
 
     @Test
     void shouldLoginSuccessfullyWithoutMfa() {
-        String userId = "user";
+        UUID userId = UUID.randomUUID();
+        String username = "user";
         String password = "pass";
-        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
+        User user = new User(userId, username, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
 
-        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
-        AuthenticationRequest request = new AuthenticationRequest(userId, password, null);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        AuthenticationRequest request = new AuthenticationRequest(username, password, null);
 
         Authentication auth = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(auth);
@@ -70,13 +74,15 @@ public class AuthenticationUseCaseImplTest {
 
     @Test
     void shouldLoginWithMfaSuccessfully() {
-        String userId = "mfaUser";
+        UUID userId = UUID.randomUUID();
+        String username = "mfaUser";
         String password = "pass";
         String otp = "123456";
-        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
-        AuthenticationRequest request = new AuthenticationRequest(userId, password, otp);
+        User user = new User(userId, username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(username, password, otp);
 
-        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(totpService.verifyCode("secret", otp)).thenReturn(true);
 
         Authentication auth = mock(Authentication.class);
@@ -90,12 +96,14 @@ public class AuthenticationUseCaseImplTest {
 
     @Test
     void shouldThrowIfOtpMissingWhenMfaEnabled() {
-        String userId = "mfaUser";
+        UUID userId = UUID.randomUUID();
+        String username = "mfaUser";
         String password = "pass";
-        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
-        AuthenticationRequest request = new AuthenticationRequest(userId, password, null);
+        User user = new User(userId, username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(username, password, null);
 
-        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         Exception ex = assertThrows(AuthenticationFailedException.class, () -> userLoginUseCase.login(request));
         assertEquals("OTP is required for MFA-enabled accounts.", ex.getMessage());
@@ -103,13 +111,15 @@ public class AuthenticationUseCaseImplTest {
 
     @Test
     void shouldThrowIfOtpInvalid() {
-        String userId = "mfaUser";
+        UUID userId = UUID.randomUUID();
+        String username = "mfaUser";
         String password = "pass";
         String otp = "000000";
-        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
-        AuthenticationRequest request = new AuthenticationRequest(userId, password, otp);
+        User user = new User(userId, username, "hash", "email@test.com", true, "secret", true, List.of("ROLE_USER"), false);
+        AuthenticationRequest request = new AuthenticationRequest(username, password, otp);
 
-        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(totpService.verifyCode("secret", otp)).thenReturn(false);
 
         Exception ex = assertThrows(AuthenticationFailedException.class, () -> userLoginUseCase.login(request));
@@ -150,10 +160,23 @@ public class AuthenticationUseCaseImplTest {
 
     @Test
     void shouldThrowIfPasswordBlank() {
-        String userId = "user";
-        AuthenticationRequest request = new AuthenticationRequest(userId, "   ", null);
-        User user = new User(UUID.randomUUID(), userId, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
-        when(userRepository.findByUsername(userId)).thenReturn(Optional.of(user));
+        UUID userId = UUID.randomUUID();
+        String username = "user";
+        AuthenticationRequest request = new AuthenticationRequest(username, "   ", null);
+        User user = new User(userId, username, "hash", "email@test.com", false, "", true, List.of("ROLE_USER"), false);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(user.getUsername(), request.password()))).thenThrow(new AuthenticationException("") {
+            @Override
+            public Authentication getAuthenticationRequest() {
+                return super.getAuthenticationRequest();
+            }
+
+            @Override
+            public void setAuthenticationRequest(Authentication authenticationRequest) {
+                super.setAuthenticationRequest(authenticationRequest);
+            }
+        });
 
         Exception ex = assertThrows(AuthenticationFailedException.class, () -> userLoginUseCase.login(request));
         assertEquals("Invalid password.", ex.getMessage());

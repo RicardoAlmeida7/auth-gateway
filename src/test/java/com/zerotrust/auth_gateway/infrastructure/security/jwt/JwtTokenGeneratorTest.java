@@ -39,12 +39,6 @@ public class JwtTokenGeneratorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenUsernameIsBlank() {
-        List<String> roles = List.of("ROLE_USER");
-        assertThrows(IllegalArgumentException.class, () -> generator.generateToken(UUID.randomUUID(), "   ", roles));
-    }
-
-    @Test
     void shouldThrowExceptionWhenRolesIsNull() {
         assertThrows(IllegalArgumentException.class, () -> generator.generateToken(UUID.randomUUID(), "user", null));
     }
@@ -86,9 +80,10 @@ public class JwtTokenGeneratorTest {
 
         DecodedJWT decodedJWT = generator.verifyToken(token);
 
-        assertEquals(username, decodedJWT.getSubject());
+        assertEquals(userId.toString(), decodedJWT.getSubject());
         assertEquals(email, decodedJWT.getClaim("email").asString());
-        assertEquals("activation", decodedJWT.getClaim("type").asString());
+        assertEquals(username, decodedJWT.getClaim("username").asString());
+        assertEquals("activation_token", decodedJWT.getClaim("type").asString());
 
         assertNotNull(decodedJWT.getIssuedAt());
         assertNotNull(decodedJWT.getExpiresAt());

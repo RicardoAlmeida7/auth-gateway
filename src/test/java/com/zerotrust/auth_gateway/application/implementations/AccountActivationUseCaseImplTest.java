@@ -34,15 +34,16 @@ public class AccountActivationUseCaseImplTest {
 
     @Test
     void shouldActivateUserSuccessfully_whenFirstAccessIsFalse() {
+        UUID userId = UUID.randomUUID();
         String username = "user";
         String token = "token";
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
-        when(decodedJWT.getSubject()).thenReturn(username);
-        when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
+        when(decodedJWT.getSubject()).thenReturn(userId.toString());
+        when(jwtTokenService.validateActivationToken(token)).thenReturn(userId.toString());
 
-        User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", false, "", false, null, false);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        User user = new User(userId, username, "hashed", "email@example.com", false, "", false, null, false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         activateAccountUseCase.activate(token, null);
 
@@ -52,15 +53,16 @@ public class AccountActivationUseCaseImplTest {
 
     @Test
     void shouldActivateUserSuccessfully_whenFirstAccessIsTrueWithValidPasswords() {
+        UUID userId = UUID.randomUUID();
         String username = "user";
         String token = "token";
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
-        when(decodedJWT.getSubject()).thenReturn(username);
-        when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
+        when(decodedJWT.getSubject()).thenReturn(userId.toString());
+        when(jwtTokenService.validateActivationToken(token)).thenReturn(userId.toString());
 
-        User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", true, "", false, null, false);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        User user = new User(userId, username, "hashed", "email@example.com", true, "", false, null, false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         PasswordResetRequest request = new PasswordResetRequest("NewPassword123", "NewPassword123");
 
@@ -73,15 +75,16 @@ public class AccountActivationUseCaseImplTest {
 
     @Test
     void shouldThrowException_whenFirstAccessIsTrueAndRequestIsNull() {
+        UUID userId = UUID.randomUUID();
         String username = "user";
         String token = "token";
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
-        when(decodedJWT.getSubject()).thenReturn(username);
-        when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
+        when(decodedJWT.getSubject()).thenReturn(userId.toString());
+        when(jwtTokenService.validateActivationToken(token)).thenReturn(userId.toString());
 
-        User user = new User(UUID.randomUUID(), username, "hashed", "email@example.com", true, "", false, null, true);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        User user = new User(userId, username, "hashed", "email@example.com", true, "", false, null, true);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         FirstAccessPasswordRequiredException exception = assertThrows(FirstAccessPasswordRequiredException.class, () ->
                 activateAccountUseCase.activate(token, null)
@@ -93,13 +96,14 @@ public class AccountActivationUseCaseImplTest {
 
     @Test
     void shouldThrowWhenUserNotFound() {
+        UUID userId = UUID.randomUUID();
         String token = "token";
         String username = "nonexistent_user";
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
 
-        when(decodedJWT.getSubject()).thenReturn(username);
+        when(decodedJWT.getSubject()).thenReturn(userId.toString());
         when(jwtTokenService.validateActivationToken(token)).thenReturn(username);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
                 activateAccountUseCase.activate(token, null)

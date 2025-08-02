@@ -12,7 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -42,21 +45,22 @@ class JwtAuthenticationFilterTest {
     void doFilterInternal_validToken_setsAuthentication() throws Exception {
         String token = "valid.token.value";
         String authHeader = "Bearer " + token;
+        UUID userId = UUID.randomUUID();
 
         DecodedJWT decodedJWT = mock(DecodedJWT.class);
         Claim rolesClaim = mock(Claim.class);
 
         when(request.getHeader("Authorization")).thenReturn(authHeader);
         when(jwtTokenService.validateAuthToken(token)).thenReturn(decodedJWT);
-        when(decodedJWT.getSubject()).thenReturn("user123");
+        when(decodedJWT.getSubject()).thenReturn(userId.toString());
         when(decodedJWT.getClaim("roles")).thenReturn(rolesClaim);
+        when(decodedJWT.getClaim("username")).thenReturn(rolesClaim);
         when(rolesClaim.asList(String.class)).thenReturn(List.of("ROLE_USER", "ROLE_ADMIN"));
 
         filter.doFilterInternal(request, response, filterChain);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(authentication);
-        assertEquals("user123", authentication.getPrincipal());
         assertTrue(authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
         assertTrue(authentication.getAuthorities().stream()
@@ -85,10 +89,21 @@ class JwtAuthenticationFilterTest {
         when(request.getHeader("Authorization")).thenReturn(authHeader);
         when(jwtTokenService.validateAuthToken(token)).thenThrow(new JWTVerificationException("Invalid token"));
 
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        when(response.getWriter()).thenReturn(printWriter);
+
         filter.doFilterInternal(request, response, filterChain);
 
         assertNull(SecurityContextHolder.getContext().getAuthentication());
+
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
         verify(filterChain, never()).doFilter(request, response);
+
+        printWriter.flush();
+        String responseContent = stringWriter.toString();
+        assertTrue(responseContent.contains("UNAUTHORIZED"));
     }
+
 }

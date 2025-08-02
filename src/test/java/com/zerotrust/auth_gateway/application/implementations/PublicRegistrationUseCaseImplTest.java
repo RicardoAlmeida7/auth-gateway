@@ -240,7 +240,7 @@ public class PublicRegistrationUseCaseImplTest {
         verify(emailService).sendActivationEmail(eq("user@example.com"), any(), any(), isNull());
 
         User savedUser = userCaptor.getValue();
-        assertEquals(roles, savedUser.getRoles());
+        assertEquals(List.of(Role.ROLE_USER.name()), savedUser.getRoles());
     }
 
     @Test
