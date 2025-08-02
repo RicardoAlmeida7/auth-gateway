@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/v1/policy")
 public class LoginPolicyController {
 
@@ -17,13 +18,11 @@ public class LoginPolicyController {
         this.loginPolicyUseCase = loginPolicyUseCase;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<LoginPolicyResponse> getPolicy() {
         return ResponseEntity.ok(loginPolicyUseCase.getPolicy());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<Void> updatePolicy(@RequestBody(required = false)UpdateLoginPolicyRequest request) {
         loginPolicyUseCase.updatePolicy(request);

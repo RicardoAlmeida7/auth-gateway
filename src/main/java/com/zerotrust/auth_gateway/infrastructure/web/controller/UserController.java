@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final PublicRegistrationUseCase publicRegistrationUseCase;
@@ -30,25 +30,25 @@ public class UserController {
         this.userProfileUseCase = userProfileUseCase;
     }
 
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
         publicRegistrationUseCase.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/activate")
+    @PostMapping("/activation")
     public ResponseEntity<Void> activateAccount(@RequestParam String token, @RequestBody(required = false) PasswordResetRequest request) {
         accountActivationUseCase.activate(token, request);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/resend-activation-email")
+    @PostMapping("/activation/resend")
     public ResponseEntity<Void> resendActivation(@RequestBody ResendActivationRequest request) {
         publicRegistrationUseCase.resendActivationEmail(request);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping
+    @PutMapping("/me")
     public ResponseEntity<Void> updateProfile(@RequestBody UpdateProfileRequest request, Authentication authentication) {
         userProfileUseCase.updateProfile(authentication.getName(), request);
         return ResponseEntity.noContent().build();

@@ -16,17 +16,17 @@ public class AuthController {
         this.authenticationUseCase = authenticationUseCase;
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<UserLoginInfoResponse> getUserLoginInfo(@RequestParam String userId) {
+    @GetMapping("/status/{userId}")
+    public ResponseEntity<UserLoginInfoResponse> getUserLoginInfo(@PathVariable String userId) {
         return ResponseEntity.ok(authenticationUseCase.getUserStatusInfo(userId));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/token")
     public ResponseEntity<JwtResponse> login(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationUseCase.login(request));
     }
 
-    @PostMapping("/logout")
+    @DeleteMapping("/token")
     public ResponseEntity<Void> logout(
             @RequestHeader("Authorization") String accessTokenHeader,
             @RequestHeader("Refresh-Token") String refreshToken) {
@@ -36,7 +36,7 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/token/refresh")
     public ResponseEntity<JwtResponse> refreshToken(@RequestHeader("Refresh-Token") String refreshToken) {
         return ResponseEntity.ok(authenticationUseCase.refreshToken(refreshToken));
     }

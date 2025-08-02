@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users/password-reset")
 public class PasswordResetController {
 
     private final PasswordResetUseCase passwordResetUseCase;
@@ -16,15 +16,15 @@ public class PasswordResetController {
         this.passwordResetUseCase = passwordResetUseCase;
     }
 
-    @PostMapping("/request-password-reset")
+    @PostMapping("/request")
     public ResponseEntity<Void> requestReset(@RequestBody(required = false) PasswordResetEmailRequest request) {
         passwordResetUseCase.sendResetLink(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping
     public ResponseEntity<Void> resetPassword(@RequestParam String token, @RequestBody(required = false) PasswordResetRequest request) {
         passwordResetUseCase.resetPassword(token, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/admin/users")
 public class AdminController {
 
     private final AdminUserManagementUseCase adminUserManagementUseCase;
@@ -24,13 +24,13 @@ public class AdminController {
         this.adminUserManagementUseCase = adminUserManagementUseCase;
     }
 
-    @PostMapping("/create-user")
+    @PostMapping
     public ResponseEntity<ManagedUserResponse> createUser(@RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminUserManagementUseCase.createUser(request));
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteUser(@RequestParam String id) {
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         adminUserManagementUseCase.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
@@ -40,8 +40,8 @@ public class AdminController {
         return ResponseEntity.ok(adminUserManagementUseCase.getUsers());
     }
 
-    @PutMapping("/update-user")
-    public ResponseEntity<ManagedUserResponse> updateUser(@RequestParam String userId, @RequestBody AdminUpdateUserRequest request) {
+    @PutMapping("/{userId}")
+    public ResponseEntity<ManagedUserResponse> updateUser(@PathVariable String userId, @RequestBody AdminUpdateUserRequest request) {
         return ResponseEntity.ok(adminUserManagementUseCase.updateUser(userId, request));
     }
 }
