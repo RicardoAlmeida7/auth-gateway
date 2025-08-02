@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations;
 
+import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.RoleEntity;
@@ -43,13 +44,32 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(User user) {
-        jpaUserRepository.delete(mapToEntity(user));
+    public void delete(UUID uuid) {
+        int deletedCount = jpaUserRepository.deleteUserById(uuid);
+        if (deletedCount == 0) {
+            throw new UserNotFoundException("User not found with id: " + uuid);
+        }
     }
 
     @Override
     public List<User> getAll() {
         return jpaUserRepository.findAll().stream().map(this::mapToDomain).toList();
+    }
+
+    @Override
+    public void blockUser(UUID userId) {
+        int updated = jpaUserRepository.blockUserById(userId);
+        if (updated == 0) {
+            throw new UserNotFoundException("User not found: " + userId);
+        }
+    }
+
+    @Override
+    public void unblockUser(UUID userId) {
+        int updated = jpaUserRepository.unblockUserById(userId);
+        if (updated == 0) {
+            throw new UserNotFoundException("User not found: " + userId);
+        }
     }
 
     private UserEntity mapToEntity(User user) {
@@ -70,6 +90,7 @@ public class UserRepositoryImpl implements UserRepository {
         );
         entity.setFailedLoginAttempts(user.getFailedLoginAttempts());
         entity.setLastFailedLoginTime(user.getLastFailedLoginTime());
+        entity.setBlocked(user.isBlocked());
         return entity;
     }
 
@@ -91,6 +112,7 @@ public class UserRepositoryImpl implements UserRepository {
         );
         user.setFailedLoginAttempts(userEntity.getFailedLoginAttempts());
         user.setLastFailedLoginTime(userEntity.getLastFailedLoginTime());
+        user.setBlocked(userEntity.isBlocked());
         return user;
     }
 }

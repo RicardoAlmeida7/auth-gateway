@@ -30,8 +30,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-        adminUserManagementUseCase.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+        adminUserManagementUseCase.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -43,5 +43,17 @@ public class AdminController {
     @PutMapping("/{userId}")
     public ResponseEntity<ManagedUserResponse> updateUser(@PathVariable String userId, @RequestBody AdminUpdateUserRequest request) {
         return ResponseEntity.ok(adminUserManagementUseCase.updateUser(userId, request));
+    }
+
+    @PutMapping("/{userId}/block")
+    public ResponseEntity<Void> blockUser(@PathVariable String userId) {
+        adminUserManagementUseCase.blockUser(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{userId}/block")
+    public ResponseEntity<Void> unblockUser(@PathVariable String userId) {
+        adminUserManagementUseCase.unblockUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }

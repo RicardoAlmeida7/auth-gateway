@@ -47,11 +47,27 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
     public void deleteUser(String id) {
         try {
             UUID userId = UUID.fromString(id);
+            userRepository.delete(userId);
+        } catch (IllegalArgumentException e) {
+            throw new UserNotFoundException("Invalid user id.");
+        }
+    }
 
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found."));
+    @Override
+    public void blockUser(String id) {
+        try {
+            UUID userId = UUID.fromString(id);
+            userRepository.blockUser(userId);
+        } catch (IllegalArgumentException e) {
+            throw new UserNotFoundException("Invalid user id.");
+        }
+    }
 
-            userRepository.delete(user);
+    @Override
+    public void unblockUser(String id) {
+        try {
+            UUID userId = UUID.fromString(id);
+            userRepository.unblockUser(userId);
         } catch (IllegalArgumentException e) {
             throw new UserNotFoundException("Invalid user id.");
         }
@@ -131,7 +147,7 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
     private void sendActivationEmail(User user, String qrCodeUrl) {
         String activationToken = jwtTokenService.generateActivationToken(user);
         // TODO: Move base URL to an environment variable or configuration file
-        String activationLink = "http://localhost:8080/api/v1/user/activate?token=" + activationToken;
+        String activationLink = "http://localhost:8080/api/v1/users/activation?token=" + activationToken;
         emailService.sendActivationEmail(user.getEmail(), activationToken, activationLink, qrCodeUrl);
     }
 }

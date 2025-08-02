@@ -80,12 +80,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public  ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, "The request body is missing.");
     }
 
     @ExceptionHandler(InvalidTokenException.class)
-    public  ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
+    public ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
@@ -102,6 +102,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<Object> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, "Required request header 'Refresh-Token' for method parameter type String is not present.");
+    }
+
+    @ExceptionHandler(UserBlockedException.class)
+    public ResponseEntity<Object> handleUserBlockedException(UserBlockedException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(UserAlreadyActivatedException.class)
+    public ResponseEntity<Object> handleUserAlreadyActivatedException(UserAlreadyActivatedException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     private ResponseEntity<Object> buildResponse(HttpStatus status, String specificErrorCode, String message) {

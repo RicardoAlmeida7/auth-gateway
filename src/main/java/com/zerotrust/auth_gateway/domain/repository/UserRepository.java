@@ -11,6 +11,8 @@ public interface UserRepository {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     Optional<User> findById(UUID id);
-    void delete(User user);
+    void delete(UUID userId);
     List<User> getAll();
+    void blockUser(UUID userId);
+    void unblockUser(UUID userId);
 }

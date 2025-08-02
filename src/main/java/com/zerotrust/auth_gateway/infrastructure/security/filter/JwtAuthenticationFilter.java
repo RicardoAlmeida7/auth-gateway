@@ -3,6 +3,7 @@ package com.zerotrust.auth_gateway.infrastructure.security.filter;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
+import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-            } catch (InvalidTokenException | JWTVerificationException ex) {
+            } catch (AuthenticationFailedException | InvalidTokenException | JWTVerificationException ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 response.getWriter().write("""

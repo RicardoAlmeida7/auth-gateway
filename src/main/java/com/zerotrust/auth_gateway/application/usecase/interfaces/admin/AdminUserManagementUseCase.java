@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface AdminUserManagementUseCase {
     void deleteUser(String id);
+    void blockUser(String id);
+    void unblockUser(String id);
     List<ManagedUserResponse> getUsers();
     ManagedUserResponse createUser(RegisterRequest request);
     ManagedUserResponse updateUser(String userId, AdminUpdateUserRequest request);

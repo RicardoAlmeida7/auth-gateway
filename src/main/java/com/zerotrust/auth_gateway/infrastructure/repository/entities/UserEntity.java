@@ -35,6 +35,9 @@ public class UserEntity {
 
     private long lastFailedLoginTime;
 
+    @Column(nullable = false)
+    private boolean blocked = false;
+
     public UserEntity() {
     }
 
@@ -134,6 +137,7 @@ public class UserEntity {
                 ", email='" + email + '\'' +
                 ", mfaEnabled=" + mfaEnabled +
                 ", enabled=" + enabled +
+                ", blocked=" + blocked +
                 '}';
     }
 
@@ -175,5 +179,13 @@ public class UserEntity {
 
     public void setFailedLoginAttempts(int failedLoginAttempts) {
         this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

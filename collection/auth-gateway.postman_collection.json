@@ -10,36 +10,448 @@
 			"name": "admin",
 			"item": [
 				{
-					"name": "get-policy",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaWNhcmRvIiwiaWF0IjoxNzUyMzQzMDY5LCJleHAiOjE3NTIzNDY2NjksInJvbGVzIjpbIlJPTEVfVVNFUiJdfQ.jFDCdP1yfoyX-M3CbF5pIOBJrXFPWqYJFFrd-oebsiywc6scL3JaaHYnsGZKOPo0KuLyETYpmY71Z4i_HEBhFqNOoNf48Xvk0iOpoNiyexx7s2RWu3bGi8IyWveiiS__sweEFQZDUa3cU3aiZjR5wxrnFL5xxObXZfkU-IMRCPC_TiEO4VovDgNmMFCLlCxyoYDlVsgY1agTUtmkUddg45x5JOdSH7B350gaIMRI6EQmeDm6E2vFZGwgFvwfZ6RA9AqDSMNBOA_y3b-1eXhmLjp3tohSp4XuC2LRHPOmw9197nKENxRqHDjh1-LmMlvTyhAp7oYs-h-C94Ky2Bkqkg",
-									"type": "string"
+					"name": "policy",
+					"item": [
+						{
+							"name": "get-policy",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE3MTEzNCwiZXhwIjoxNzU0MTcxNzM0LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.Zz9Ka2QZH_y6_iDbC4H5AibSJmABdGSg4GvNYQpJstndLwlH69fqeTetXVa8xIZ4fJ601E3oeQayOLEi7DuXSgx3RbJE5f2WqIIrGaw5TEgLTQkW3Wi7iml99csbNCMflivnuUubfjCl3ar6FhpeHCeLVfmg2LOZyUlmcaaUbEKa6CvnnTJFRIPCeiUqOG0ktmuOMErZJFbiHCdN2Th75vLhlBbYaeRf7tJK44QECueKljrVC6IbeNcuGeRDJL6-rquZL4UQNiqmKcefFkGceNOU88z6rYzFFxgiMEBR4bylPI0Wom3UsYJwBBEP5M7wZJDcCZIZZlyH1Bpoz-lBsQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/policy",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"policy"
+									]
 								}
-							]
+							},
+							"response": []
 						},
-						"method": "GET",
-						"header": [],
+						{
+							"name": "update-policy",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "headerPrefix",
+											"value": "Bearer",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"maxAttempts\": 3,\n    \"lockTimeMillis\": 60000\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/v1/policy",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"policy"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "get-users",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE3MTMzMSwiZXhwIjoxNzU0MTcxOTMxLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.c-Nf9fhpHciWvg70Nxhtf-g_TmisMcOR4p-rOD7oTy51QFBKnJdRv6eZdIVw5gx29vXprkCm7Zl1thj0cg_2UEFIQEWlU8i3EbI8_BtfM53XBIaInuh14O91Djx6JkKuEYnGUSJ_4PbcvonGUUHraEUvFH7kbx9Md2u1rT8BLZw30zx5udI4cet8T8BDWY7eXsTgLeg2r_iR40AVL1prAiwD7_PekgeHbV38gs83g_6JpF13vOon4vNODgHFCESki8-viCS5d0541ZV29rRz24M9et1ou4eOO0sdBkjRQ1NMSixvtxh5_H7ERR9d2fPpPbC8f4DbVe9S0n6Y-4UtTw",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/admin/users",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE3Mjg5NiwiZXhwIjoxNzU0MTczNDk2LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.Nmws9Q0jLKOm3NEgSAfCLAT2DgzwAL-59vBzkZZr04nq2iYMLpfW1TnSxPNRy3qOniuQ-Gi_eSuAgZQVfNTf9FEWSmdcEbnzxdFa1rczTYwLK1Xfj8ohi_4Nomj2y9a0H3bKa6XVyXuZWy5XIi_UFMu7C3KQRVI6xX8h3DKsSTvQVLGJ15lIOELK5xJLAvbTFonsXThtO_72h84mM1fglIE5vB4OxrXJjtTBcFrFpZXGaXkNhxnfT1wYNWeXUM13yV54SxW9GlCS6ubKckZNmym5BaVOZR_QQNejsAOVLf3LAJnngXdRB2twhe-4AjnWCX6KXEMB3BuG52izHoNzhQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"test\",\n    \"email\": \"test@example.com\",\n    \"roles\": [\n        \"ROLE_USER\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/v1/admin/users",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-user",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/admin/users/1a4e77a2-334b-495f-af80-7e9bec72f4a4",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"users",
+										"1a4e77a2-334b-495f-af80-7e9bec72f4a4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "block-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE3MjAzMSwiZXhwIjoxNzU0MTcyNjMxLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.OYso0_D0Hpqj88b1HGk0Ayq2p8hVC4LsdL4Ed23wlDuUtTQKNclgmX_oiM-TqWMLM5tD9VAKNtSlc_cUeRbcVL2J-XFznE-cXyK9RHLhBlYrt1hq6aN90KBtspHfZCLlxVlACjtY7oVd3kjkINGoXklg16TP7J7dkBds3C1QViZNMFO8iDwzt07WhSTaWrn8cduzp372uH_8TcMX6rYl56dvVBcjmI1a27N-GqyOXpnnRcHbp3HvWvlKYmcTaVDUOI61PYBTEBMmaWOd6avdydKlDPLmIdl6x1qBPWbT2ix_mfpvB1xBHLPnBtCwTQQBq0FfVj82Mtj6k7RrbsfZ9A",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/admin/users/79d5e75e-1b94-40a3-80a5-8f97406c2fe5/block",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"users",
+										"79d5e75e-1b94-40a3-80a5-8f97406c2fe5",
+										"block"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "unblock-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE3MjAzMSwiZXhwIjoxNzU0MTcyNjMxLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.OYso0_D0Hpqj88b1HGk0Ayq2p8hVC4LsdL4Ed23wlDuUtTQKNclgmX_oiM-TqWMLM5tD9VAKNtSlc_cUeRbcVL2J-XFznE-cXyK9RHLhBlYrt1hq6aN90KBtspHfZCLlxVlACjtY7oVd3kjkINGoXklg16TP7J7dkBds3C1QViZNMFO8iDwzt07WhSTaWrn8cduzp372uH_8TcMX6rYl56dvVBcjmI1a27N-GqyOXpnnRcHbp3HvWvlKYmcTaVDUOI61PYBTEBMmaWOd6avdydKlDPLmIdl6x1qBPWbT2ix_mfpvB1xBHLPnBtCwTQQBq0FfVj82Mtj6k7RrbsfZ9A",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/admin/users/79d5e75e-1b94-40a3-80a5-8f97406c2fe5/block",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"users",
+										"79d5e75e-1b94-40a3-80a5-8f97406c2fe5",
+										"block"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "login/logout",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Refresh-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE2OTI3NCwiZXhwIjoxNzU0MjU1Njc0LCJ0eXBlIjoicmVmcmVzaF90b2tlbiJ9.qCx9ns8bEuDz1J3BxVkO_i6zgqV5z2fZrlQ9x69uBMioXzSUpzBBHr8h0sRxipJVWzq3YR7V2D9x8nZxUdVT47sxkFFnhgsiuwlxS0PzySOTZ-QpxneVvrDdF-cU-nrp3LSxsuQQPpIm6wfhyMon32wq7yzdT52KHW97joGqLKCAqEUTDOPfSDXsKACX4gdNzWBbDY8M01sxAVs84778ke3BIfyVE5Op_pH4a5F2TrLsl9XY4-YKNywHpjpzy4DKFffvmsejX1BuxFWtknnAQjh_kxyRjFqFnZlo-JWorNTkDnucfSDmWiIXtWYunmK1Ih_-0nJFBGGcWbHZHzddOQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"admin\",\n    \"password\": \"admin123\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{baseURL}}/api/v1/policy",
+							"raw": "{{baseURL}}/api/v1/auth/token",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"policy"
+								"auth",
+								"token"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "update-policy",
+					"name": "refresh-token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Refresh-Token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJSaWNhcmRvIiwiaWF0IjoxNzU0MTcwODY2LCJleHAiOjE3NTQyNTcyNjYsInR5cGUiOiJyZWZyZXNoX3Rva2VuIn0.kg6xpPIyHt4zoDmoPqHHqu3RyMIl8i2PvrjSs0EokKgxBUHcKBjRhQ-0kv3T4p3MOzZW1YmjE7vmBPRYehrY7Xroi1uVVqudL0aAcqibHmNIDNFijqyuJ7_ja0jmrXkVmWDJUYnqi3MfjPEHwrEowzU2btSERBpJdDUzNzWs_Quap9nqUc1M_IilNtG8oZL2m7m9UJU--wQUGYn4xh_zkBGGq83gB39cEQNXkUMym-vJQM0keA_7cNE0bA4hiCx3yNb1oNr9Wz_vWN1r6Ndxsc9X0YSx7q6htafYXwUKCCzNX680rCRoMc2qDowm_cGNlJUEHlsZURYzOUsOg2B1qg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/token/refresh",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"token",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Refresh-Token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE2OTI3NCwiZXhwIjoxNzU0MjU1Njc0LCJ0eXBlIjoicmVmcmVzaF90b2tlbiJ9.qCx9ns8bEuDz1J3BxVkO_i6zgqV5z2fZrlQ9x69uBMioXzSUpzBBHr8h0sRxipJVWzq3YR7V2D9x8nZxUdVT47sxkFFnhgsiuwlxS0PzySOTZ-QpxneVvrDdF-cU-nrp3LSxsuQQPpIm6wfhyMon32wq7yzdT52KHW97joGqLKCAqEUTDOPfSDXsKACX4gdNzWBbDY8M01sxAVs84778ke3BIfyVE5Op_pH4a5F2TrLsl9XY4-YKNywHpjpzy4DKFffvmsejX1BuxFWtknnAQjh_kxyRjFqFnZlo-JWorNTkDnucfSDmWiIXtWYunmK1Ih_-0nJFBGGcWbHZHzddOQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/token",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-login-info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/status/admin",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"status",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "register/activation",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"ricardo\",\n    \"password\": \"Test@1234\",\n    \"confirmPassword\": \"Test@1234\",\n    \"email\": \"test@example.com.br\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "activation-resend",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"ricardo\",\n    \"email\": \"test@example.com.br\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users/activation/resend",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"activation",
+								"resend"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "user-update",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -55,7 +467,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"maxAttempts\": 3,\n    \"lockTimeMillis\": 60000\n}",
+							"raw": "{\n    \"username\": \"ricardo\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -63,96 +475,60 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/v1/policy",
+							"raw": "{{baseURL}}/api/v1/users/me",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"policy"
+								"users",
+								"me"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "get-users",
+					"name": "enable-mfa",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1MzUzNDIyMCwiZXhwIjoxNzUzNTM3ODIwLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.oPN2mq04NklapoXZ4XYxvsWL3fpJuVypp4gkir0VIOth09_-5BNekMR9RbhxJaXBlRuOM8i3LYHeHA9xxsfD5t-lS_H5Inhzm3UgCDt11jG5E3zEbWTOD2vG1fd2KjTyU6dy3uA_mZbb_0TqJ7H6103tYNOCAsmfKchcvE9EtzDm6sbBti7kockl_ok9-wI1Y1E13DPP2iIM64RTWE7lMD6DcXk8ajC5ZddHtYhYIYTT7j3QKcWcov4HLqCPcclsRuZ1PA4NQIflvtxvNt3O5vbqGSQGT0Njvec_HK3cDWCa9bwdr8vhlpFvG5-TWXZHAhSdN0BUkAyhMsX48KaK0w",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiaWF0IjoxNzU0MTcyMzA0LCJleHAiOjE3NTQxNzI5MDQsInJvbGVzIjpbIlJPTEVfVVNFUiJdfQ.POo8G3DejQtFD7xT1CsvJ3d2hSzEQfowexyHLknR6IKtdd0PTZKjItJAAbM0cvlvzJ-JiBlEheLUIngqX2o7xxJJnhKcozT8FQfapPtIcway7wsR3YaBnIIoluDJVLYlo5jd2f2uFeZyQF_2ijYLVOm5LRJ3clEVHmlWJRlaJhgTANjJbjdnYqJKVy33vnjuiSol36g3O7hA-WO0l0nh3IngdnYQ60YFUSc4vjSffHEK9S9HYqyAHAceCefNR713gCPQ3pQ-B9G9gCxzwS6Qe3y8r7F6pd-rSJQ8_h-efPxZmFJujvg-jxXG1AsJDFXWZBk5mHsVx7HlAcoevC9C-g",
 									"type": "string"
 								}
 							]
 						},
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/api/v1/admin",
+							"raw": "{{baseURL}}/api/v1/users/me/mfa",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"admin"
+								"users",
+								"me",
+								"mfa"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "create-user",
+					"name": "disable-mfa",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1MzUzNzg0MCwiZXhwIjoxNzUzNTQxNDQwLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.PZznQ8JK12flkvJ_G0OcsqNwAweKVKjRmu1g394Gd4F4Jgc1jiA0iwBB7z-UHSG3u4Q7aOBpO8c7k6V6WDDUcGg6Bxm0MOFqFOgtHze8-eLDOTJTJzOvAaYg98axHbY_O6E4BcxID464VmChjva6a31Yv6z9dgLRBPqOLVnwWrp2c9eJZ5mJFwWb73dQcmFhNHR43LCk8CckM9esqoMp78bh5VhoDQWyI9LpuNBoleApbA2VZP_wiuITMMkw1QjOT5p9eyH13KzgYq6x4vQ7Yp4CDZqoXV1FS-7Bm4UzdlmVDdADhVDErZvAAhF-po9IWLT329IJJdNH4TXkfVbQ4w",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"test\",\n    \"email\": \"test@example.com\",\n    \"roles\": [\n        \"ROLE_USER\"\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/v1/admin/create-user",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"create-user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete-user",
-					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "addTokenTo",
-									"value": "header",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiaWF0IjoxNzU0MTcyMzA0LCJleHAiOjE3NTQxNzI5MDQsInJvbGVzIjpbIlJPTEVfVVNFUiJdfQ.POo8G3DejQtFD7xT1CsvJ3d2hSzEQfowexyHLknR6IKtdd0PTZKjItJAAbM0cvlvzJ-JiBlEheLUIngqX2o7xxJJnhKcozT8FQfapPtIcway7wsR3YaBnIIoluDJVLYlo5jd2f2uFeZyQF_2ijYLVOm5LRJ3clEVHmlWJRlaJhgTANjJbjdnYqJKVy33vnjuiSol36g3O7hA-WO0l0nh3IngdnYQ60YFUSc4vjSffHEK9S9HYqyAHAceCefNR713gCPQ3pQ-B9G9gCxzwS6Qe3y8r7F6pd-rSJQ8_h-efPxZmFJujvg-jxXG1AsJDFXWZBk5mHsVx7HlAcoevC9C-g",
 									"type": "string"
 								}
 							]
@@ -160,20 +536,16 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/api/v1/admin?id=c61de43f-763b-4f1c-92dc-c0a0afb8702e",
+							"raw": "{{baseURL}}/api/v1/users/me/mfa",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"admin"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "c61de43f-763b-4f1c-92dc-c0a0afb8702e"
-								}
+								"users",
+								"me",
+								"mfa"
 							]
 						}
 					},
@@ -182,158 +554,42 @@
 			]
 		},
 		{
-			"name": "refresh-token",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1MjQxNzU2OCwiZXhwIjoxNzUzMDIyMzY4LCJ0eXBlIjoicmVmcmVzaCJ9.gvIJjJ-4crjY2EXHZgH8JQTyeVGAevIywJHlW9Js0SLQKVmq6kMlAuIMEbtQ8Igq2X36seR2aWYTysAl9mYrJue_GZLrYb6Q8aUrAqKtrFectliIdFB-2v2cbuX-3vYeiK_7JhqCVpNz5_n2HtlXkEpGJCc3cQmuTwB1yYiHy_4feNQzPjjKQjVcEGzVLSG9_5epxKVmYgaXY2qHYqg-EIrZTdKVD8TWwZHln4qEWkdKdc2MHZSfwaxsQNhW1I7Hyex8tOtveE6LD5_DesJEVFKzrxcyDID6e8QiyewEShpPW-WtTyYnzviAKmFVqPoIXmScaGotwBU02Vz8_mZYIQ\"\n}\n",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "reset-password",
+			"item": [
+				{
+					"name": "request-password-reset",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users/password-reset/request",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"password-reset",
+								"request"
+							]
 						}
-					}
-				},
-				"url": {
-					"raw": "{{baseURL}}/api/v1/auth/refresh-token",
-					"host": [
-						"{{baseURL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"refresh-token"
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "register",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"ricardo\",\n    \"password\": \"Test@1234\",\n    \"confirmPassword\": \"Test@1234\",\n    \"email\": \"test@example.com.br\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseURL}}/api/v1/user/register",
-					"host": [
-						"{{baseURL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"user",
-						"register"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "request-password-reset",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\": \"test@example.com.br\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseURL}}/api/v1/user/request-password-reset",
-					"host": [
-						"{{baseURL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"user",
-						"request-password-reset"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "request-password-reset",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\": \"test@example.com.br\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseURL}}/api/v1/user/request-password-reset",
-					"host": [
-						"{{baseURL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"user",
-						"request-password-reset"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "login",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"userId\": \"test\",\n    \"password\": \"Test@1234\"\n}\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseURL}}/api/v1/auth/login",
-					"host": [
-						"{{baseURL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": []
+			]
 		}
 	],
 	"variable": [

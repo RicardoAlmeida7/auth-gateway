@@ -8,6 +8,7 @@ import com.zerotrust.auth_gateway.application.service.interfaces.LoginAttemptSer
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.AuthenticationUseCase;
 import com.zerotrust.auth_gateway.domain.exception.AuthenticationFailedException;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
+import com.zerotrust.auth_gateway.domain.exception.UserBlockedException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -47,6 +48,8 @@ public class AuthenticationUseCaseImpl implements AuthenticationUseCase {
                 .or(() -> userRepository.findByEmail(request.userId()))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        if (user.isBlocked()) throw new UserBlockedException("User account is blocked.");
+
         validateFirstAccess(user);
         loginAttemptService.checkLock(user);
         validateMfa(user, request);
@@ -62,6 +65,8 @@ public class AuthenticationUseCaseImpl implements AuthenticationUseCase {
 
         String username = jwtTokenService.validateRefreshToken(refreshToken);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        if (user.isBlocked()) throw new UserBlockedException("User account is blocked.");
 
         return jwtTokenService.generateAuthToken(user);
     }

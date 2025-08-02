@@ -41,7 +41,7 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
         userRepository.save(user);
 
         String token = jwtTokenService.generateResetPasswordToken(user);
-        String link = "http://localhost:8080/api/v1/user/reset-password?token=" + token;
+        String link = "http://localhost:8080/api/v1/users/password-reset?token=" + token;
         emailService.sendResetPasswordEmail(request.email(), link);
     }
 

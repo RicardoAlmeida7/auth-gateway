@@ -21,6 +21,7 @@ import com.zerotrust.auth_gateway.infrastructure.security.totp.TOTPServiceImpl;
 import com.zerotrust.auth_gateway.infrastructure.security.userdetails.UserDetailsServiceAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -51,16 +52,17 @@ public class SecurityConfig {
                 .headers(headers ->
                         headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/v1/auth/login").permitAll()
-                                .requestMatchers("/api/v1/auth/refresh-token").permitAll()
-                                .requestMatchers("/api/v1/user/request-password-reset").permitAll()
-                                .requestMatchers("/api/v1/user/reset-password").permitAll()
-                                .requestMatchers("/api/v1/user/reset-password").permitAll()
-                                .requestMatchers("/api/v1/user/activate").permitAll()
-                                .requestMatchers("/api/v1/user/register").permitAll()
-                                .requestMatchers("/api/v1/user/resend-activation-email").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
-                                .anyRequest().authenticated())
+                    auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/token").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/token/refresh").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/status/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/auth/token").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/users/activation").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/users/activation/resend").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/users/me").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/password-reset/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session ->

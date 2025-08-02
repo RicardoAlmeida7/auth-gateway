@@ -3,11 +3,26 @@ package com.zerotrust.auth_gateway.domain.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 
 public class User {
 
-    public User(UUID id, String username, String passwordHash, String email, boolean mfaEnabled, String mfaSecret, boolean enabled, List<String> roles, boolean firstAccessRequired) {
-        this.firstAccessRequired = firstAccessRequired;
+    private final UUID id;
+    private String username;
+    private String passwordHash;
+    private boolean mfaEnabled;
+    private String mfaSecret;
+    private boolean enabled;
+    private List<String> roles;
+    private String email;
+    private boolean firstAccessRequired;
+    private int failedLoginAttempts;
+    private long lastFailedLoginTime;
+    private boolean blocked;
+
+    public User(UUID id, String username, String passwordHash, String email,
+                boolean mfaEnabled, String mfaSecret, boolean enabled,
+                List<String> roles, boolean firstAccessRequired) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null.");
         }
@@ -19,19 +34,13 @@ public class User {
         this.mfaSecret = mfaSecret;
         this.enabled = enabled;
         this.roles = roles != null ? roles : Collections.emptyList();
+        this.firstAccessRequired = firstAccessRequired;
+        this.blocked = false;
     }
 
-    private UUID id;
-    private String username;
-    private String passwordHash;
-    private boolean mfaEnabled;
-    private String mfaSecret;
-    private boolean enabled;
-    private List<String> roles;
-    private String email;
-    private boolean firstAccessRequired;
-    private int failedLoginAttempts = 0;
-    private long lastFailedLoginTime = 0;
+    public UUID getId() {
+        return id;
+    }
 
     public String getUsername() {
         return username;
@@ -73,42 +82,12 @@ public class User {
         this.enabled = enabled;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id.equals(user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
     public List<String> getRoles() {
         return roles;
     }
 
     public void setRoles(List<String> roles) {
         this.roles = roles != null ? roles : Collections.emptyList();
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", roles=" + roles +
-                '}';
     }
 
     public String getEmail() {
@@ -141,5 +120,35 @@ public class User {
 
     public void setLastFailedLoginTime(long lastFailedLoginTime) {
         this.lastFailedLoginTime = lastFailedLoginTime;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getId(), user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

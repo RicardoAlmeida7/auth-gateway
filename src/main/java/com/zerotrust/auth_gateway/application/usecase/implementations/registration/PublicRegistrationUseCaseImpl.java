@@ -6,6 +6,7 @@ import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagementUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.registration.PublicRegistrationUseCase;
 import com.zerotrust.auth_gateway.domain.enums.Role;
+import com.zerotrust.auth_gateway.domain.exception.UserAlreadyActivatedException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
@@ -65,8 +66,8 @@ public class PublicRegistrationUseCaseImpl implements PublicRegistrationUseCase 
     public void resendActivationEmail(ResendActivationRequest request) {
         if (request == null) throw new UserNotFoundException("No user found with provided email or username.");
         User user = findUserByEmailOrUsername(request);
+        if (user.isEnabled()) throw new UserAlreadyActivatedException("User is already active.");
         String qrCodeUrl = mfaManagementUseCase.generateMfaSetupIfEnabled(user);
-        user.setEnabled(false);
         userRepository.save(user);
         sendActivationEmail(user, qrCodeUrl);
     }
@@ -87,7 +88,7 @@ public class PublicRegistrationUseCaseImpl implements PublicRegistrationUseCase 
     private void sendActivationEmail(User user, String qrCodeUrl) {
         String activationToken = jwtTokenService.generateActivationToken(user);
         // TODO: Move base URL to an environment variable or configuration file
-        String activationLink = "http://localhost:8080/api/v1/user/activate?token=" + activationToken;
+        String activationLink = "http://localhost:8080/api/v1/users/activation?token=" + activationToken;
         emailService.sendActivationEmail(user.getEmail(), activationToken, activationLink, qrCodeUrl);
     }
 }

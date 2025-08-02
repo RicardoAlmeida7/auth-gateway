@@ -60,8 +60,8 @@ public class SecurityConfigTest {
 
     @Test
     void shouldCreateJwtAuthenticationFilter() {
-        JwtTokenGenerator generator = mock(JwtTokenGenerator.class);
-        assertNotNull(config.jwtAuthenticationFilter(generator));
+        JwtTokenService jwtTokenService = mock(JwtTokenService.class);
+        assertNotNull(config.jwtAuthenticationFilter(jwtTokenService));
     }
 
     @Test
