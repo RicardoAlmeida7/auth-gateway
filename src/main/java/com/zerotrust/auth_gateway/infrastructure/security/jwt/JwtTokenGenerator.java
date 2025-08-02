@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public class JwtTokenGenerator {
+
     private final Algorithm algorithm;
     private final JWTVerifier verifier;
 

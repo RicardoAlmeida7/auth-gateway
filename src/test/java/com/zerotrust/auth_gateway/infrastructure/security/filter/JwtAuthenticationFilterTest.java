@@ -3,7 +3,7 @@ package com.zerotrust.auth_gateway.infrastructure.security.filter;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 class JwtAuthenticationFilterTest {
 
-    private JwtTokenGenerator jwtTokenGenerator;
+    private JwtTokenService jwtTokenService;
     private JwtAuthenticationFilter filter;
 
     private HttpServletRequest request;
@@ -28,14 +28,13 @@ class JwtAuthenticationFilterTest {
 
     @BeforeEach
     void setUp() {
-        jwtTokenGenerator = mock(JwtTokenGenerator.class);
-        filter = new JwtAuthenticationFilter(jwtTokenGenerator);
+        jwtTokenService = mock(JwtTokenService.class);
+        filter = new JwtAuthenticationFilter(jwtTokenService);
 
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
         filterChain = mock(FilterChain.class);
 
-        // Limpa o contexto de segurança antes de cada teste
         SecurityContextHolder.clearContext();
     }
 
@@ -48,7 +47,7 @@ class JwtAuthenticationFilterTest {
         Claim rolesClaim = mock(Claim.class);
 
         when(request.getHeader("Authorization")).thenReturn(authHeader);
-        when(jwtTokenGenerator.verifyToken(token)).thenReturn(decodedJWT);
+        when(jwtTokenService.validateAuthToken(token)).thenReturn(decodedJWT);
         when(decodedJWT.getSubject()).thenReturn("user123");
         when(decodedJWT.getClaim("roles")).thenReturn(rolesClaim);
         when(rolesClaim.asList(String.class)).thenReturn(List.of("ROLE_USER", "ROLE_ADMIN"));
@@ -84,7 +83,7 @@ class JwtAuthenticationFilterTest {
         String authHeader = "Bearer " + token;
 
         when(request.getHeader("Authorization")).thenReturn(authHeader);
-        when(jwtTokenGenerator.verifyToken(token)).thenThrow(new JWTVerificationException("Invalid token"));
+        when(jwtTokenService.validateAuthToken(token)).thenThrow(new JWTVerificationException("Invalid token"));
 
         filter.doFilterInternal(request, response, filterChain);
 

@@ -60,27 +60,33 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     @Override
     public String validateActivationToken(String token) {
         DecodedJWT decodedJWT = jwtTokenGenerator.verifyActivationToken(token);
-        return verifyTokenNotRevoked(token, decodedJWT);
+        return verifyTokenNotRevoked(token, decodedJWT).getSubject();
     }
 
     @Override
     public String validateRefreshToken(String token) {
         DecodedJWT decodedJWT = jwtTokenGenerator.verifyRefreshToken(token);
-        return verifyTokenNotRevoked(token, decodedJWT);
+        return verifyTokenNotRevoked(token, decodedJWT).getSubject();
     }
 
     @Override
     public String validateResetPasswordToken(String token) {
         DecodedJWT decodedJWT = jwtTokenGenerator.verifyResetPasswordToken(token);
+        return verifyTokenNotRevoked(token, decodedJWT).getSubject();
+    }
+
+    @Override
+    public DecodedJWT validateAuthToken(String token) {
+        DecodedJWT decodedJWT = jwtTokenGenerator.verifyToken(token);
         return verifyTokenNotRevoked(token, decodedJWT);
     }
 
-    private String verifyTokenNotRevoked(String token, DecodedJWT decodedJWT) {
+    private DecodedJWT verifyTokenNotRevoked(String token, DecodedJWT decodedJWT) {
         String tokenHash = HashUtil.sha256(token);
         if (tokenBlacklistService.isTokenBlacklisted(tokenHash)) {
             throw new InvalidTokenException("Token revoked.");
         }
 
-        return decodedJWT.getSubject();
+        return decodedJWT;
     }
 }

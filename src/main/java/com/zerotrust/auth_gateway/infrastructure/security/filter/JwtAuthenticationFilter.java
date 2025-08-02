@@ -2,7 +2,8 @@ package com.zerotrust.auth_gateway.infrastructure.security.filter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.zerotrust.auth_gateway.infrastructure.security.jwt.JwtTokenGenerator;
+import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
+import com.zerotrust.auth_gateway.domain.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,10 +17,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtTokenGenerator jwtTokenGenerator;
+    private final JwtTokenService jwtTokenService;
 
-    public JwtAuthenticationFilter(JwtTokenGenerator jwtTokenGenerator) {
-        this.jwtTokenGenerator = jwtTokenGenerator;
+    public JwtAuthenticationFilter(JwtTokenService jwtTokenService) {
+        this.jwtTokenService = jwtTokenService;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                DecodedJWT decodedJWT = jwtTokenGenerator.verifyToken(token);
+                DecodedJWT decodedJWT = jwtTokenService.validateAuthToken(token);
 
                 String username = decodedJWT.getSubject();
                 List<SimpleGrantedAuthority> authorities = decodedJWT.getClaim("roles").asList(String.class)
@@ -45,8 +46,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-            } catch (JWTVerificationException ex) {
+            } catch (InvalidTokenException | JWTVerificationException ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("""
+                {
+                  "timestamp": "%s",
+                  "status": 401,
+                  "error": "UNAUTHORIZED",
+                  "message": "Token revoked."
+                }
+                """.formatted(java.time.Instant.now()));
                 return;
             }
         }

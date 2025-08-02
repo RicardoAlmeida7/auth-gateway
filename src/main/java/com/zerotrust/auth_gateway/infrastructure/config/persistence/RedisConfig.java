@@ -18,7 +18,7 @@ public class RedisConfig {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName("localhost");
         config.setPort(6379);
-        config.setPassword(RedisPassword.of("devAuth"));
+        config.setPassword(RedisPassword.of("authDev"));
 
         return new LettuceConnectionFactory(config);
     }

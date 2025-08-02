@@ -1,7 +1,6 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations.auth;
 
 import com.zerotrust.auth_gateway.application.dto.request.auth.AuthenticationRequest;
-import com.zerotrust.auth_gateway.application.dto.request.auth.RefreshTokenRequest;
 import com.zerotrust.auth_gateway.application.dto.response.auth.JwtResponse;
 import com.zerotrust.auth_gateway.application.dto.response.auth.UserLoginInfoResponse;
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
@@ -56,12 +55,12 @@ public class AuthenticationUseCaseImpl implements AuthenticationUseCase {
     }
 
     @Override
-    public JwtResponse refreshToken(RefreshTokenRequest request) {
-        if (request == null || request.token() == null || request.token().isBlank()) {
+    public JwtResponse refreshToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
             throw new AuthenticationFailedException("Refresh token must be provided");
         }
 
-        String username = jwtTokenService.validateRefreshToken(request.token());
+        String username = jwtTokenService.validateRefreshToken(refreshToken);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         return jwtTokenService.generateAuthToken(user);
@@ -74,6 +73,16 @@ public class AuthenticationUseCaseImpl implements AuthenticationUseCase {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return new UserLoginInfoResponse(userId, user.isMfaEnabled(), user.isEnabled());
+    }
+
+    @Override
+    public void logout(String accessTokenHeader, String refreshToken) {
+        String accessToken = accessTokenHeader.replace("Bearer ", "");
+
+        jwtTokenService.validateAuthToken(accessToken);
+        jwtTokenService.validateRefreshToken(refreshToken);
+
+        jwtTokenService.blacklistAuthTokens(accessToken, refreshToken);
     }
 
     private void validateFirstAccess(User user) {

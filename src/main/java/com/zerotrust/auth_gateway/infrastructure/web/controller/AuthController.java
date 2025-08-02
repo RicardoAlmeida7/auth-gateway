@@ -1,7 +1,6 @@
 package com.zerotrust.auth_gateway.infrastructure.web.controller;
 
 import com.zerotrust.auth_gateway.application.dto.request.auth.AuthenticationRequest;
-import com.zerotrust.auth_gateway.application.dto.request.auth.RefreshTokenRequest;
 import com.zerotrust.auth_gateway.application.dto.response.auth.JwtResponse;
 import com.zerotrust.auth_gateway.application.dto.response.auth.UserLoginInfoResponse;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.AuthenticationUseCase;
@@ -27,8 +26,18 @@ public class AuthController {
         return ResponseEntity.ok(authenticationUseCase.login(request));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @RequestHeader("Authorization") String accessTokenHeader,
+            @RequestHeader("Refresh-Token") String refreshToken) {
+
+        authenticationUseCase.logout(accessTokenHeader, refreshToken);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/refresh-token")
-    public ResponseEntity<JwtResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
-        return ResponseEntity.ok(authenticationUseCase.refreshToken(request));
+    public ResponseEntity<JwtResponse> refreshToken(@RequestHeader("Refresh-Token") String refreshToken) {
+        return ResponseEntity.ok(authenticationUseCase.refreshToken(refreshToken));
     }
 }
