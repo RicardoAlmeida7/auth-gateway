@@ -12,6 +12,8 @@ import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.UUID;
+
 public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
 
     private final UserRepository userRepository;
@@ -47,9 +49,15 @@ public class PasswordResetUseCaseImpl implements PasswordResetUseCase {
 
     @Override
     public void resetPassword(String token, PasswordResetRequest request) {
-        String username = jwtTokenService.validateResetPasswordToken(token);
+        UUID userId;
+        try {
+            String userIdStr = jwtTokenService.validateResetPasswordToken(token);
+            userId = UUID.fromString(userIdStr);
+        } catch (Exception ex) {
+            throw new UserNotFoundException("User not found.");
+        }
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new PasswordResetException("User not found for password reset."));
 
         if (request == null) {

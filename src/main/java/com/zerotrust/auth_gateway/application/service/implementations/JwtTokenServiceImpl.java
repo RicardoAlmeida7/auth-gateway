@@ -22,19 +22,19 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
     @Override
     public JwtResponse generateAuthToken(User user) {
-        String accessToken = jwtTokenGenerator.generateToken(user.getUsername(), user.getRoles());
-        String refreshToken = jwtTokenGenerator.generateRefreshToken(user.getUsername());
+        String accessToken = jwtTokenGenerator.generateToken(user.getId(), user.getUsername(), user.getRoles());
+        String refreshToken = jwtTokenGenerator.generateRefreshToken(user.getId(), user.getUsername());
         return new JwtResponse(accessToken, refreshToken);
     }
 
     @Override
     public String generateActivationToken(User user) {
-        return jwtTokenGenerator.generateActivationToken(user.getUsername(), user.getEmail());
+        return jwtTokenGenerator.generateActivationToken(user.getId(), user.getUsername(), user.getEmail());
     }
 
     @Override
     public String generateResetPasswordToken(User user) {
-        return jwtTokenGenerator.generateResetPasswordToken(user.getUsername(), user.getEmail());
+        return jwtTokenGenerator.generateResetPasswordToken(user.getId(), user.getUsername(), user.getEmail());
     }
 
     @Override

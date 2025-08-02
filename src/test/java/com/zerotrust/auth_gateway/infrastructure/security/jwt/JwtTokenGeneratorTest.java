@@ -1,15 +1,14 @@
 package com.zerotrust.auth_gateway.infrastructure.security.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class JwtTokenGeneratorTest {
 
@@ -25,8 +24,9 @@ public class JwtTokenGeneratorTest {
     void shouldGenerateTokenWithValidInput() {
         String username = "user@example.com";
         List<String> roles = List.of("ROLE_USER");
+        UUID userId = UUID.randomUUID();
 
-        String token = generator.generateToken(username, roles);
+        String token = generator.generateToken(userId, username, roles);
 
         assertNotNull(token);
         assertTrue(token.startsWith("ey"), "Token should be a valid JWT string");
@@ -35,32 +35,33 @@ public class JwtTokenGeneratorTest {
     @Test
     void shouldThrowExceptionWhenUsernameIsNull() {
         List<String> roles = List.of("ROLE_USER");
-        assertThrows(IllegalArgumentException.class, () -> generator.generateToken(null, roles));
+        assertThrows(IllegalArgumentException.class, () -> generator.generateToken(null, "username", roles));
     }
 
     @Test
     void shouldThrowExceptionWhenUsernameIsBlank() {
         List<String> roles = List.of("ROLE_USER");
-        assertThrows(IllegalArgumentException.class, () -> generator.generateToken("   ", roles));
+        assertThrows(IllegalArgumentException.class, () -> generator.generateToken(UUID.randomUUID(), "   ", roles));
     }
 
     @Test
     void shouldThrowExceptionWhenRolesIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> generator.generateToken("user", null));
+        assertThrows(IllegalArgumentException.class, () -> generator.generateToken(UUID.randomUUID(), "user", null));
     }
 
     @Test
     void shouldThrowExceptionWhenRolesIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> generator.generateToken("user", List.of()));
+        assertThrows(IllegalArgumentException.class, () -> generator.generateToken(UUID.randomUUID(), "username", List.of()));
     }
 
     @Test
     void shouldVerifyTokenSuccessfully() {
-        String token = generator.generateToken("user", List.of("ROLE_USER"));
+        UUID userId = UUID.randomUUID();
+        String token = generator.generateToken(userId, "user", List.of("ROLE_USER"));
 
         assertDoesNotThrow(() -> {
             DecodedJWT decodedJWT = generator.verifyToken(token);
-            assertEquals("user", decodedJWT.getSubject());
+            assertEquals(userId, UUID.fromString(decodedJWT.getSubject()));
         });
     }
 
@@ -74,10 +75,11 @@ public class JwtTokenGeneratorTest {
 
     @Test
     void shouldGenerateActivationTokenWithExpectedClaims() {
+        UUID userId = UUID.randomUUID();
         String username = "testuser";
         String email = "testuser@example.com";
 
-        String token = generator.generateActivationToken(username, email);
+        String token = generator.generateActivationToken(userId, username, email);
 
         assertNotNull(token);
         assertTrue(token.startsWith("ey"), "Token should start with JWT format");

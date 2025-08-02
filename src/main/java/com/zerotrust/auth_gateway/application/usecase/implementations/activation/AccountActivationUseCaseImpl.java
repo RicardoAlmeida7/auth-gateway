@@ -1,5 +1,6 @@
 package com.zerotrust.auth_gateway.application.usecase.implementations.activation;
 
+import com.zerotrust.auth_gateway.application.dto.request.password.PasswordResetRequest;
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.activation.AccountActivationUseCase;
 import com.zerotrust.auth_gateway.domain.exception.FirstAccessPasswordRequiredException;
@@ -7,8 +8,9 @@ import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.validation.PasswordValidator;
-import com.zerotrust.auth_gateway.application.dto.request.password.PasswordResetRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.UUID;
 
 public class AccountActivationUseCaseImpl implements AccountActivationUseCase {
 
@@ -27,9 +29,15 @@ public class AccountActivationUseCaseImpl implements AccountActivationUseCase {
 
     @Override
     public void activate(String token, PasswordResetRequest request) {
-        String userName = jwtTokenService.validateActivationToken(token);
+        UUID userId;
+        try {
+            String userIdStr = jwtTokenService.validateActivationToken(token);
+            userId = UUID.fromString(userIdStr);
+        } catch (Exception ex) {
+            throw new UserNotFoundException("User not found.");
+        }
 
-        User user = userRepository.findByUsername(userName).orElseThrow(() -> new UserNotFoundException("User not found."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         if (user.isFirstAccessRequired()) {
             if (request == null) {

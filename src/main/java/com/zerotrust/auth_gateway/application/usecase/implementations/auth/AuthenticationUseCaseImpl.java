@@ -17,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class AuthenticationUseCaseImpl implements AuthenticationUseCase {
 
@@ -63,8 +65,15 @@ public class AuthenticationUseCaseImpl implements AuthenticationUseCase {
             throw new AuthenticationFailedException("Refresh token must be provided");
         }
 
-        String username = jwtTokenService.validateRefreshToken(refreshToken);
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
+        UUID userId;
+        try {
+            String userIdStr = jwtTokenService.validateRefreshToken(refreshToken);
+            userId = UUID.fromString(userIdStr);
+        } catch (Exception ex) {
+            throw new UserNotFoundException("User not found.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         if (user.isBlocked()) throw new UserBlockedException("User account is blocked.");
 
