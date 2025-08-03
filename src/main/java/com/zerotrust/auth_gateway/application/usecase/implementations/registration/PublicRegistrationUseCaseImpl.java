@@ -53,7 +53,7 @@ public class PublicRegistrationUseCaseImpl implements PublicRegistrationUseCase 
                 request.isMfaEnabled(),
                 null,
                 false,
-                 List.of(Role.ROLE_USER.name()),
+                List.of(Role.ROLE_USER.name()),
                 false
         );
 
@@ -74,9 +74,11 @@ public class PublicRegistrationUseCaseImpl implements PublicRegistrationUseCase 
 
     private void validateRegisterRequest(RegisterRequest request) {
         if (request == null) throw new UserNotFoundException("No user found with provided email or username.");
+
         UsernameValidator.validate(request.getUsername());
-        PasswordValidator.validate(request.getPassword(), request.getConfirmPassword());
         EmailValidator.validate(request.getEmail());
+        checkUserRegistrationConflicts(request);
+        PasswordValidator.validate(request.getPassword(), request.getConfirmPassword());
     }
 
     private User findUserByEmailOrUsername(ResendActivationRequest request) {
@@ -90,5 +92,13 @@ public class PublicRegistrationUseCaseImpl implements PublicRegistrationUseCase 
         // TODO: Move base URL to an environment variable or configuration file
         String activationLink = "http://localhost:8080/api/v1/users/activation?token=" + activationToken;
         emailService.sendActivationEmail(user.getEmail(), activationToken, activationLink, qrCodeUrl);
+    }
+
+    private void checkUserRegistrationConflicts(RegisterRequest request) {
+        userRepository.findByUsername(request.getUsername())
+                .or(() -> userRepository.findByEmail(request.getEmail()))
+                .ifPresent(u -> {
+                    throw new UserAlreadyActivatedException("If the username or email is already registered, please try a different one.");
+                });
     }
 }

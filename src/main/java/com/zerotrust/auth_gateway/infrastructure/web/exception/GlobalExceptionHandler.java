@@ -114,6 +114,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Object> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     private ResponseEntity<Object> buildResponse(HttpStatus status, String specificErrorCode, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now());
