@@ -7,6 +7,7 @@ import com.zerotrust.auth_gateway.application.dto.request.user.UpdateProfileRequ
 import com.zerotrust.auth_gateway.application.usecase.interfaces.activation.AccountActivationUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.registration.PublicRegistrationUseCase;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.user.UserProfileUseCase;
+import com.zerotrust.auth_gateway.infrastructure.config.security.Ratelimited;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,18 +31,21 @@ public class UserController {
         this.userProfileUseCase = userProfileUseCase;
     }
 
+    @Ratelimited
     @PostMapping
     public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
         publicRegistrationUseCase.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Ratelimited
     @PostMapping("/activation")
     public ResponseEntity<Void> activateAccount(@RequestParam String token, @RequestBody(required = false) PasswordResetRequest request) {
         accountActivationUseCase.activate(token, request);
         return ResponseEntity.ok().build();
     }
 
+    @Ratelimited
     @PostMapping("/activation/resend")
     public ResponseEntity<Void> resendActivation(@RequestBody ResendActivationRequest request) {
         publicRegistrationUseCase.resendActivationEmail(request);

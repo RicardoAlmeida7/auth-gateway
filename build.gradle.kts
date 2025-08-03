@@ -37,6 +37,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.3")
 	implementation("org.springframework.boot:spring-boot-starter-security:3.5.3")
 	implementation("com.auth0:java-jwt:4.5.0")
+	// rate limiting - medium: https://medium.com/@prajpatil29/implementing-rate-limiting-with-redis-and-spring-boot-a-deep-dive-0bd000bcd98c
+	implementation("com.bucket4j:bucket4j-core:8.10.1")
+	implementation("com.bucket4j:bucket4j-redis:8.10.1")
+	implementation("io.lettuce:lettuce-core:6.7.1.RELEASE")
 	// https://mvnrepository.com/artifact/com.eatthepath/java-otp
 	implementation("com.eatthepath:java-otp:0.4.0")
 
