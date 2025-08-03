@@ -2,6 +2,7 @@ package com.zerotrust.auth_gateway.application.usecase.implementations.admin;
 
 import com.zerotrust.auth_gateway.application.dto.request.registration.RegisterRequest;
 import com.zerotrust.auth_gateway.application.dto.request.user.AdminUpdateUserRequest;
+import com.zerotrust.auth_gateway.application.dto.response.user.ListManagedUserResponse;
 import com.zerotrust.auth_gateway.application.dto.response.user.ManagedUserResponse;
 import com.zerotrust.auth_gateway.application.service.interfaces.JwtTokenService;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.auth.MfaManagementUseCase;
@@ -74,19 +75,12 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
     }
 
     @Override
-    public List<ManagedUserResponse> getUsers() {
+    public List<ListManagedUserResponse> getUsers() {
         return userRepository
                 .getAll()
                 .stream()
-                .map(user ->
-                        new ManagedUserResponse(
-                                user.getId(),
-                                user.getUsername(),
-                                user.getEmail(),
-                                user.isEnabled(),
-                                user.getRoles()
-                        )
-                ).toList();
+                .map(this::mapToListManagedUserResponse)
+                .toList();
     }
 
     @Override
@@ -94,21 +88,12 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
         validateRegisterRequest(request);
         validateExistUser(request);
 
-        User user = new User(
-                UUID.randomUUID(),
-                request.getUsername(),
-                "",
-                request.getEmail(),
-                request.isMfaEnabled(),
-                null,
-                false,
-                request.getRoles(),
-                true
-        );
+        User user = buildUser(request);
+
         String qrCodeUrl = mfaManagementUseCase.generateMfaSetupIfEnabled(user);
         userRepository.save(user);
         sendActivationEmail(user, qrCodeUrl);
-        return new ManagedUserResponse(user.getId(), user.getUsername(), user.getEmail(), user.isEnabled(), user.getRoles());
+        return mapToManagedUserResponse(user);
     }
 
     @Override
@@ -126,7 +111,15 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
 
         userRepository.save(user);
 
-        return new ManagedUserResponse(user.getId(), user.getUsername(), user.getEmail(), user.isEnabled(), user.getRoles());
+        return mapToManagedUserResponse(user);
+    }
+
+    @Override
+    public ManagedUserResponse getUser(String userId) {
+        User user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        return mapToManagedUserResponse(user);
     }
 
     private void validateExistUser(RegisterRequest request) {
@@ -149,5 +142,40 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
         // TODO: Move base URL to an environment variable or configuration file
         String activationLink = "http://localhost:8080/api/v1/users/activation?token=" + activationToken;
         emailService.sendActivationEmail(user.getEmail(), activationToken, activationLink, qrCodeUrl);
+    }
+
+    private ManagedUserResponse mapToManagedUserResponse(User user) {
+        return new ManagedUserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.isEnabled(),
+                user.isBlocked(),
+                user.isMfaEnabled(),
+                user.getRoles()
+        );
+    }
+
+    private User buildUser(RegisterRequest request) {
+        return new User(
+                UUID.randomUUID(),
+                request.getUsername(),
+                "",
+                request.getEmail(),
+                request.isMfaEnabled(),
+                null,
+                false,
+                request.getRoles(),
+                true
+        );
+    }
+
+    private ListManagedUserResponse mapToListManagedUserResponse(User user) {
+        return new ListManagedUserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.isEnabled()
+        );
     }
 }
