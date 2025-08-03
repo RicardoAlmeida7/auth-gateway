@@ -90,14 +90,14 @@
 					"name": "users",
 					"item": [
 						{
-							"name": "get-users",
+							"name": "get-users (list)",
 							"request": {
 								"auth": {
 									"type": "bearer",
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE3MTMzMSwiZXhwIjoxNzU0MTcxOTMxLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.c-Nf9fhpHciWvg70Nxhtf-g_TmisMcOR4p-rOD7oTy51QFBKnJdRv6eZdIVw5gx29vXprkCm7Zl1thj0cg_2UEFIQEWlU8i3EbI8_BtfM53XBIaInuh14O91Djx6JkKuEYnGUSJ_4PbcvonGUUHraEUvFH7kbx9Md2u1rT8BLZw30zx5udI4cet8T8BDWY7eXsTgLeg2r_iR40AVL1prAiwD7_PekgeHbV38gs83g_6JpF13vOon4vNODgHFCESki8-viCS5d0541ZV29rRz24M9et1ou4eOO0sdBkjRQ1NMSixvtxh5_H7ERR9d2fPpPbC8f4DbVe9S0n6Y-4UtTw",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjQ1ZmU3Ny0wYjYzLTQyMjgtODBiZC1kNzg1YWIwZGY5ZmMiLCJpYXQiOjE3NTQyMzYxNzIsImV4cCI6MTc1NDIzNjc3MiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXX0.gyTuTTX5d_ENyF-sqC0MW-uARmDIWc8kAbyvhes_Vx8t58AJNwwBy4Cvnnb1qtAK4kN2puBzkAgvIJ7PhOE1cD-uehetjeiDkkRAIgr8AUoiIv6vtE4_F7uBfiE4EX1F9he0fV1WgkcCEnzsUiwxU2MGad-WHtb4eWztpMuHhB6zqsu34nRNrD0fh6SIBWpe-6HcHaJCPctZE9l8OTVcQlu7gQLvu2oh4UKulpcq628e3YjBS6EO26S7lGEfi1zRjfvMBgR72GPzQVak2wKSf2vEIZ7R2BJHcbVizWNbwCdY-51QZP8UzKiweEqoCEP_p_tAgvZhO7--SY5yf4AjTg",
 											"type": "string"
 										}
 									]
@@ -105,7 +105,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseURL}}/api/v1/admin/users",
+									"raw": "{{baseURL}}/api/v1/admin/users?size=1&page=1",
 									"host": [
 										"{{baseURL}}"
 									],
@@ -114,6 +114,47 @@
 										"v1",
 										"admin",
 										"users"
+									],
+									"query": [
+										{
+											"key": "size",
+											"value": "1"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjQ1ZmU3Ny0wYjYzLTQyMjgtODBiZC1kNzg1YWIwZGY5ZmMiLCJpYXQiOjE3NTQyMzQxNTEsImV4cCI6MTc1NDIzNDc1MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXX0.Pz5PS-DrXPAk8nR5lsyEV3upA3XTa6wM9FhFqLa6k8FiWK4UvrP2WcVZKsMA0jmdO37X5C-CHu-k9rIGS95_H0IcW_VV6kEJG5yKpNbNk6oDrLoWx1TIcCiS4OptKqpie5EOwrUmvSH5m_ZmnZ0EzsSSibrGYVdcV0FZg8krQap6hlDrNkQ6ZzJru-l586urB5tUymeLfzO92f2AafIyxCMRLb976-oQK4JU-NHP_g6r84jfjzp_bq0z8T_K2a2ibbEJP9I5C8A5GRSGJdzW5Is9TJ4E0yXLRiHtoIdlCob7X8PVP04ViHkUG5dEK3QAgwpvHE15MCGOanR1s2IPjw",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/admin/users/5b87c627-328d-4c17-9869-24ecae015e02",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"users",
+										"5b87c627-328d-4c17-9869-24ecae015e02"
 									]
 								}
 							},
@@ -339,7 +380,7 @@
 						"header": [
 							{
 								"key": "Refresh-Token",
-								"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1NDE2OTI3NCwiZXhwIjoxNzU0MjU1Njc0LCJ0eXBlIjoicmVmcmVzaF90b2tlbiJ9.qCx9ns8bEuDz1J3BxVkO_i6zgqV5z2fZrlQ9x69uBMioXzSUpzBBHr8h0sRxipJVWzq3YR7V2D9x8nZxUdVT47sxkFFnhgsiuwlxS0PzySOTZ-QpxneVvrDdF-cU-nrp3LSxsuQQPpIm6wfhyMon32wq7yzdT52KHW97joGqLKCAqEUTDOPfSDXsKACX4gdNzWBbDY8M01sxAVs84778ke3BIfyVE5Op_pH4a5F2TrLsl9XY4-YKNywHpjpzy4DKFffvmsejX1BuxFWtknnAQjh_kxyRjFqFnZlo-JWorNTkDnucfSDmWiIXtWYunmK1Ih_-0nJFBGGcWbHZHzddOQ",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MzY5N2UxYi1hMjQ2LTRlZmMtYTJjNi03NWQwYWExNGExNjUiLCJpYXQiOjE3NTQyMjU5MjIsImV4cCI6MTc1NDMxMjMyMiwidHlwZSI6InJlZnJlc2hfdG9rZW4iLCJ1c2VybmFtZSI6ImFkbWluIn0.OoG9WDUkmjmpa-ySgbypZPZho8SR6d4NbTp-DLTN1mvNBM93i_X2Eh5bmbdCj8pbwrecZDeKO5CI-FdOLkeYM5IkCqDA6I_7KxSp2kry74pv3oMErSMQNEjQVKdf5QgSKLSvfBxEM0KrXEvWkwug8hQ-LqUl7-YcW29ppm7TqEu2ooTIROso0L3n-xmryY6HK9rOD3wey0mOcSF8_C7XHoBlPOjthCRDLbqrsiavpc7_QdDElBmj-V3aiJPq8O7xCF56NQRYZ3X5sbTkbIj5khjOaX0Pu81oln5TOmgrTuOqaUVJQ6Jj9_qWX-mB8OZF3axgTKfw8M519ZaedkhnUg",
 								"type": "text"
 							}
 						],
@@ -364,7 +405,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/api/v1/auth/status/admin",
+							"raw": "{{baseURL}}/api/v1/auth/status/test@example.com.br",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -373,7 +414,7 @@
 								"v1",
 								"auth",
 								"status",
-								"admin"
+								"test@example.com.br"
 							]
 						}
 					},
@@ -394,7 +435,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"ricardo\",\n    \"password\": \"Test@1234\",\n    \"confirmPassword\": \"Test@1234\",\n    \"email\": \"test@example.com.br\"\n}",
+							"raw": "{\n    \"username\": \"ricardo4\",\n    \"password\": \"Test@1234\",\n    \"confirmPassword\": \"Test@1234\",\n    \"email\": \"test4@example.com.br\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

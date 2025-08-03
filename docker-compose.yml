@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: auth-gateway-postgres
+    environment:
+      POSTGRES_PASSWORD: authDev
+      POSTGRES_DB: authdb
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    container_name: auth-gateway-redis
+    command: ["redis-server", "--requirepass", "authDev"]
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
