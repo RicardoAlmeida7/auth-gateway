@@ -27,9 +27,25 @@ public class AdminControllerTest {
 
     @Test
     void shouldCreateUserWithFirstAccessRequiredTrue() {
-        RegisterRequest request = new RegisterRequest("admin", "Password1@", "admin@example.com", List.of("ROLE_ADMIN"), false, "Password1@", false);
+        RegisterRequest request = new RegisterRequest(
+                "admin",
+                "Password1@",
+                "admin@example.com",
+                List.of("ROLE_ADMIN"),
+                false,
+                "Password1@",
+                false
+        );
 
-        when(adminUserManagementUseCase.createUser(request)).thenReturn(new ManagedUserResponse(UUID.randomUUID(), request.getUsername(), request.getEmail(), false, request.getRoles()));
+        when(adminUserManagementUseCase.createUser(request)).thenReturn(new ManagedUserResponse(
+                UUID.randomUUID(),
+                request.getUsername(),
+                request.getEmail(),
+                false,
+                false,
+                false,
+                request.getRoles()
+        ));
 
         ResponseEntity<ManagedUserResponse> response = adminController.createUser(request);
 

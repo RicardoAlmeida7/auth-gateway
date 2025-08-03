@@ -1,6 +1,8 @@
 package com.zerotrust.auth_gateway.infrastructure.repository.repositories.implementations;
 
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
+import com.zerotrust.auth_gateway.domain.model.Page;
+import com.zerotrust.auth_gateway.domain.model.PageRequest;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.infrastructure.repository.entities.RoleEntity;
@@ -52,8 +54,22 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> getAll() {
-        return jpaUserRepository.findAll().stream().map(this::mapToDomain).toList();
+    public Page<User> getAll(PageRequest pageRequest) {
+        org.springframework.data.domain.PageRequest springPageRequest =
+                org.springframework.data.domain.PageRequest.of(pageRequest.page(), pageRequest.size());
+
+        var springPage = jpaUserRepository.findAll(springPageRequest);
+
+        var content = springPage.stream()
+                .map(this::mapToDomain)
+                .toList();
+
+        return new Page<>(
+                content,
+                springPage.getTotalElements(),
+                springPage.getNumber(),
+                springPage.getSize()
+        );
     }
 
     @Override

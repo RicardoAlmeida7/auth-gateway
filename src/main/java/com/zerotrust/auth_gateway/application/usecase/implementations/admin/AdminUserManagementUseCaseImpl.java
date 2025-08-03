@@ -10,6 +10,8 @@ import com.zerotrust.auth_gateway.application.usecase.interfaces.admin.AdminUser
 import com.zerotrust.auth_gateway.domain.exception.InvalidEmailException;
 import com.zerotrust.auth_gateway.domain.exception.InvalidUsernameException;
 import com.zerotrust.auth_gateway.domain.exception.UserNotFoundException;
+import com.zerotrust.auth_gateway.domain.model.Page;
+import com.zerotrust.auth_gateway.domain.model.PageRequest;
 import com.zerotrust.auth_gateway.domain.model.User;
 import com.zerotrust.auth_gateway.domain.repository.UserRepository;
 import com.zerotrust.auth_gateway.domain.service.interfaces.EmailService;
@@ -75,12 +77,20 @@ public class AdminUserManagementUseCaseImpl implements AdminUserManagementUseCas
     }
 
     @Override
-    public List<ListManagedUserResponse> getUsers() {
-        return userRepository
-                .getAll()
+    public Page<ListManagedUserResponse> getUsers(PageRequest pageRequest) {
+        Page<User> pagedUsers = userRepository.getAll(pageRequest);
+
+        List<ListManagedUserResponse> content = pagedUsers.content()
                 .stream()
                 .map(this::mapToListManagedUserResponse)
                 .toList();
+
+        return new Page<>(
+                content,
+                pagedUsers.totalElements(),
+                pagedUsers.page(),
+                pagedUsers.size()
+        );
     }
 
     @Override

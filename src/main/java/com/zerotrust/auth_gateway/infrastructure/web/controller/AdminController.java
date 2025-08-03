@@ -5,12 +5,12 @@ import com.zerotrust.auth_gateway.application.dto.request.user.AdminUpdateUserRe
 import com.zerotrust.auth_gateway.application.dto.response.user.ListManagedUserResponse;
 import com.zerotrust.auth_gateway.application.dto.response.user.ManagedUserResponse;
 import com.zerotrust.auth_gateway.application.usecase.interfaces.admin.AdminUserManagementUseCase;
+import com.zerotrust.auth_gateway.domain.model.Page;
+import com.zerotrust.auth_gateway.domain.model.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
@@ -37,8 +37,12 @@ public class AdminController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ListManagedUserResponse>> getUsers() {
-        return ResponseEntity.ok(adminUserManagementUseCase.getUsers());
+    public ResponseEntity<Page<ListManagedUserResponse>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageRequest pageRequest = new PageRequest(page, size);
+        return ResponseEntity.ok(adminUserManagementUseCase.getUsers(pageRequest));
     }
 
     @PutMapping("/{userId}")

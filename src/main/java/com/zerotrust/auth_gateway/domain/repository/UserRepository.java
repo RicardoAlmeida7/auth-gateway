@@ -1,5 +1,7 @@
 package com.zerotrust.auth_gateway.domain.repository;
 
+import com.zerotrust.auth_gateway.domain.model.Page;
+import com.zerotrust.auth_gateway.domain.model.PageRequest;
 import com.zerotrust.auth_gateway.domain.model.User;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
     Optional<User> findById(UUID id);
     void delete(UUID userId);
-    List<User> getAll();
+    Page<User> getAll(PageRequest pageRequest);
     void blockUser(UUID userId);
     void unblockUser(UUID userId);
 }
